@@ -239,13 +239,32 @@
             <!-- 5. FASCICOLI -->
             <div id="panel-matters" class="panel">
                 <div class="card">
-                    <h3>Fascicoli & Contenzioso - Studio Silella</h3>
-                    <table>
-                        <thead><tr><th>Codice</th><th>Cliente</th><th>Materia / Autorità</th><th>Referente</th><th>Valore</th></tr></thead>
-                        <tbody>
-                            <tr><td>#SL-402</td><td>Giuseppe De Nicolò c/ Condominio</td><td>Civile / Trib. Bari</td><td>Avv. Titolare Silella</td><td>€ 12.500,00</td></tr>
-                        </tbody>
-                    </table>
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+                        <div>
+                            <h3 style="margin:0">📁 Fascicoli & Contenzioso</h3>
+                            <div id="mattersStatus" style="margin-top:5px;font-size:12px;color:#64748b">Caricamento dati reali dello Studio…</div>
+                        </div>
+                        <button class="btn btn-info" type="button" id="mattersRefresh">Aggiorna</button>
+                    </div>
+                    <div class="grid-2" style="margin-top:14px">
+                        <div class="form-group" style="margin-bottom:0">
+                            <label for="mattersSearch">Cerca fascicolo</label>
+                            <input type="text" id="mattersSearch" placeholder="Cliente, CF/P.IVA, materia, controparte…">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0">
+                            <label for="mattersStatusFilter">Stato</label>
+                            <select id="mattersStatusFilter">
+                                <option value="">Tutti gli stati</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="overflow-x:auto;margin-top:14px">
+                        <table>
+                            <thead><tr><th>Fascicolo</th><th>Cliente</th><th>Materia / Controparte</th><th>Stato</th><th>IA</th><th>Documenti</th><th>Dettaglio</th></tr></thead>
+                            <tbody id="mattersTableBody"><tr><td colspan="7">Caricamento…</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div id="matterDetail" style="display:none;margin-top:16px"></div>
                 </div>
             </div>
 
@@ -540,6 +559,147 @@
             blocks.push('<div style="margin-top:8px;font-size:12px;color:#64748b;">Questa è una ricerca RAG interna sui contenuti dello Studio. Non costituisce una banca dati giurisprudenziale esterna e non sostituisce la verifica professionale delle fonti.</div>');
             result.innerHTML = blocks.join('');
         }
+
+        function getMatterStatusClass(status) {
+            return status === 'approvata' ? 'status-sent' : '';
+        }
+
+        function escapeMatter(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+        }
+
+        async function loadMatters() {
+            const body = document.getElementById('mattersTableBody');
+            const statusBox = document.getElementById('mattersStatus');
+            if(!body || !statusBox) return;
+
+            body.innerHTML = '<tr><td colspan="7">Caricamento…</td></tr>';
+            const client = getStudioClient();
+            if(!client) {
+                statusBox.textContent = 'Servizio Supabase non disponibile.';
+                body.innerHTML = '<tr><td colspan="7">Impossibile caricare i fascicoli.</td></tr>';
+                return;
+            }
+
+            const { data: { user }, error: authError } = await client.auth.getUser();
+            if(authError || !user) {
+                statusBox.textContent = 'Accesso richiesto.';
+                body.innerHTML = '<tr><td colspan="7">Effettua l’accesso per visualizzare i fascicoli.</td></tr>';
+                return;
+            }
+
+            const [pratiche, documenti, analisi, bozze] = await Promise.all([
+                client.from('studio_pratiche').select('id,client_name,tax_id,legal_area,counterparty,description,file_names,status,ai_status,created_at,updated_at').order('created_at', { ascending:false }),
+                client.from('studio_documenti').select('id,pratica_id,file_name,mime_type,size_bytes,created_at').order('created_at', { ascending:false }),
+                client.from('studio_ai_analisi').select('id,pratica_id,status,provider,model,summary,created_at,completed_at').order('created_at', { ascending:false }),
+                client.from('studio_bozze').select('id,pratica_id,status,version_no,created_at,approved_at').order('created_at', { ascending:false })
+            ]);
+
+            const firstError = pratiche.error || documenti.error || analisi.error || bozze.error;
+            if(firstError) {
+                console.error(firstError);
+                statusBox.textContent = 'Errore nel caricamento dei fascicoli.';
+                body.innerHTML = '<tr><td colspan="7">Impossibile caricare i dati reali dello Studio.</td></tr>';
+                return;
+            }
+
+            const matters = (pratiche.data || []).map(p => ({
+                ...p,
+                documents: (documenti.data || []).filter(d => d.pratica_id === p.id),
+                analyses: (analisi.data || []).filter(a => a.pratica_id === p.id),
+                drafts: (bozze.data || []).filter(b => b.pratica_id === p.id)
+            }));
+
+            window.__studioMatters = matters;
+            const filter = document.getElementById('mattersStatusFilter');
+            const currentFilter = filter?.value || '';
+            const states = [...new Set(matters.map(m => m.status || 'n/d'))].sort();
+            if(filter) {
+                filter.innerHTML = '<option value="">Tutti gli stati</option>' + states.map(s => '<option value="'+escapeMatter(s)+'">'+escapeMatter(s)+'</option>').join('');
+                if(states.includes(currentFilter)) filter.value = currentFilter;
+            }
+            renderMatters();
+        }
+
+        function renderMatters() {
+            const body = document.getElementById('mattersTableBody');
+            const statusBox = document.getElementById('mattersStatus');
+            const matters = window.__studioMatters || [];
+            const search = (document.getElementById('mattersSearch')?.value || '').trim().toLowerCase();
+            const stateFilter = document.getElementById('mattersStatusFilter')?.value || '';
+
+            const filtered = matters.filter(m => {
+                const haystack = [m.id,m.client_name,m.tax_id,m.legal_area,m.counterparty,m.description,m.status,m.ai_status].join(' ').toLowerCase();
+                return (!search || haystack.includes(search)) && (!stateFilter || (m.status || 'n/d') === stateFilter);
+            });
+
+            statusBox.textContent = 'Dati reali · ' + filtered.length + ' di ' + matters.length + ' fascicoli';
+            if(!filtered.length) {
+                body.innerHTML = '<tr><td colspan="7">Nessun fascicolo corrispondente.</td></tr>';
+                return;
+            }
+
+            body.innerHTML = filtered.map((m, index) => {
+                const originalIndex = matters.indexOf(m);
+                return '<tr>' +
+                    '<td><strong>'+escapeMatter(m.id)+'</strong><div style="font-size:11px;color:#64748b">'+escapeMatter(m.created_at ? new Date(m.created_at).toLocaleDateString('it-IT') : '')+'</div></td>' +
+                    '<td><strong>'+escapeMatter(m.client_name || 'Cliente non indicato')+'</strong>'+(m.tax_id ? '<div style="font-size:11px;color:#64748b">'+escapeMatter(m.tax_id)+'</div>' : '')+'</td>' +
+                    '<td>'+escapeMatter(m.legal_area || 'n/d')+(m.counterparty ? '<div style="font-size:12px;color:#64748b;margin-top:3px">c/ '+escapeMatter(m.counterparty)+'</div>' : '')+'</td>' +
+                    '<td><span class="badge-status '+getMatterStatusClass(m.status)+'">'+escapeMatter(m.status || 'n/d')+'</span></td>' +
+                    '<td>'+escapeMatter(m.ai_status || 'non_avviata')+'</td>' +
+                    '<td>'+m.documents.length+'</td>' +
+                    '<td><button class="btn btn-info matter-detail-btn" type="button" data-matter-index="'+originalIndex+'">Apri</button></td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        function showMatterDetail(index) {
+            const detail = document.getElementById('matterDetail');
+            const matters = window.__studioMatters || [];
+            const m = matters[index];
+            if(!detail || !m) return;
+
+            const documentRows = m.documents.length
+                ? m.documents.map(d => '<div style="padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px"><strong>'+escapeMatter(d.file_name || 'Documento')+'</strong><div style="font-size:12px;color:#64748b">'+escapeMatter(d.mime_type || 'tipo non indicato')+' · '+(d.size_bytes ? Math.round(d.size_bytes/1024)+' KB' : 'dimensione n/d')+'</div></div>').join('')
+                : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessun documento associato.</div>';
+
+            const analysisRows = m.analyses.length
+                ? m.analyses.map(a => '<div style="padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px"><strong>'+escapeMatter(a.provider || 'Analisi')+'</strong> · '+escapeMatter(a.status || 'n/d')+'<div style="font-size:12px;color:#64748b;margin-top:3px">'+escapeMatter(a.model || '')+'</div><div style="margin-top:5px;font-size:13px;white-space:pre-wrap">'+escapeMatter(a.summary || '')+'</div></div>').join('')
+                : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessuna analisi associata.</div>';
+
+            const draftRows = m.drafts.length
+                ? m.drafts.map(b => '<div style="padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px"><strong>Versione '+escapeMatter(b.version_no || '')+'</strong> · '+escapeMatter(b.status || 'n/d')+(b.approved_at ? '<div style="font-size:12px;color:#64748b;margin-top:3px">Approvata: '+escapeMatter(new Date(b.approved_at).toLocaleString('it-IT'))+'</div>' : '')+'</div>').join('')
+                : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessuna bozza associata.</div>';
+
+            detail.style.display = 'block';
+            detail.innerHTML = '<div style="padding:16px;background:rgba(248,250,252,.95);border:1px solid #e2e8f0;border-radius:10px">' +
+                '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h4 style="margin:0">📁 Fascicolo '+escapeMatter(m.id)+'</h4><button class="btn" type="button" id="closeMatterDetail">Chiudi</button></div>' +
+                '<div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;font-size:13px">' +
+                    '<div><strong>Cliente</strong><br>'+escapeMatter(m.client_name || 'n/d')+'</div>' +
+                    '<div><strong>CF/P.IVA</strong><br>'+escapeMatter(m.tax_id || 'n/d')+'</div>' +
+                    '<div><strong>Materia</strong><br>'+escapeMatter(m.legal_area || 'n/d')+'</div>' +
+                    '<div><strong>Controparte</strong><br>'+escapeMatter(m.counterparty || 'n/d')+'</div>' +
+                    '<div><strong>Stato</strong><br>'+escapeMatter(m.status || 'n/d')+'</div>' +
+                    '<div><strong>Stato IA</strong><br>'+escapeMatter(m.ai_status || 'non_avviata')+'</div>' +
+                '</div>' +
+                '<div style="margin-top:12px"><strong>Descrizione</strong><div style="margin-top:5px;white-space:pre-wrap;font-size:13px">'+escapeMatter(m.description || 'Nessuna descrizione disponibile.')+'</div></div>' +
+                '<div style="margin-top:14px"><strong>Documenti associati ('+m.documents.length+')</strong>'+documentRows+'</div>' +
+                '<div style="margin-top:14px"><strong>Analisi IA archiviate ('+m.analyses.length+')</strong>'+analysisRows+'</div>' +
+                '<div style="margin-top:14px"><strong>Bozze archiviate ('+m.drafts.length+')</strong>'+draftRows+'</div>' +
+                '</div>';
+
+            document.getElementById('closeMatterDetail').addEventListener('click', () => { detail.style.display='none'; });
+        }
+
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('.matter-detail-btn');
+            if(btn) showMatterDetail(Number(btn.dataset.matterIndex));
+        });
+        document.getElementById('mattersRefresh')?.addEventListener('click', loadMatters);
+        document.getElementById('mattersSearch')?.addEventListener('input', renderMatters);
+        document.getElementById('mattersStatusFilter')?.addEventListener('change', renderMatters);
+        document.querySelector('[onclick="switchTab(\\'matters\\', this)"]')?.addEventListener('click', () => setTimeout(loadMatters, 0));
+        loadMatters();
 
         function getStudioClient() {
             return window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
