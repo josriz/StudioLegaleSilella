@@ -1,19 +1,21 @@
 (() => {
 const init=async()=>{
+ if(window.__LEXROOM_INIT_RUNNING__)return;
+ window.__LEXROOM_INIT_RUNNING__=true;
  const sb=window.STUDIO_SUPABASE_CLIENT || (window.STUDIO_SUPABASE_CLIENT=window.supabase.createClient(window.STUDIO_SUPABASE_URL,window.STUDIO_SUPABASE_PUBLISHABLE_KEY));
  if(!window.__LEXROOM_AUTH_LISTENER__){
    window.__LEXROOM_AUTH_LISTENER__=true;
    sb.auth.onAuthStateChange((_event,session)=>{if(session)setTimeout(init,0);});
    window.addEventListener('studio-auth-ready',()=>setTimeout(init,0));
  }
- const {data:{user}}=await sb.auth.getUser(); if(!user)return;
- const {data:profile}=await sb.from('studio_utenti').select('role').eq('user_id',user.id).maybeSingle();
- if(!profile||!['studio','admin'].includes(profile.role))return;
+ const {data:{user}}=await sb.auth.getUser(); if(!user){window.__LEXROOM_INIT_RUNNING__=false;return;}
+ const {data:profile,error:profileError}=await sb.from('studio_utenti').select('role').eq('user_id',user.id).maybeSingle();
+ if(profileError||!profile||!['studio','admin'].includes(profile.role)){window.__LEXROOM_INIT_RUNNING__=false;return;}
  const menu=document.querySelector('.sidebar-menu'), area=document.querySelector('.content-area');
  if(!menu||!area)return;
  const existingPanel=document.getElementById('panel-lexroom');
  const existingItem=[...menu.querySelectorAll('.menu-item')].find(m=>m.textContent.includes('Lexroom LAB'));
- if(existingPanel&&existingItem)return;
+ if(existingPanel&&existingItem){window.__LEXROOM_INIT_RUNNING__=false;return;}
  const item=document.createElement('a');item.className='menu-item';item.href='#';item.innerHTML='🧪 <span>Lexroom LAB</span>';
  const panel=document.createElement('div');panel.id='panel-lexroom';panel.className='panel';
  panel.innerHTML=`
