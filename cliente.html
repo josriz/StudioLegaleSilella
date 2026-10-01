@@ -204,38 +204,55 @@
     </div>
 
     <script>
-        function submitClientData(event) {
+        const SUPABASE_FUNCTION_URL = 'https://dkeqicstprvvfebiaooc.supabase.co/functions/v1/studio-ricevi-pratica';
+        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_EBgrU25BpXMp9x6a2n7_Pg_FTFa5JLu';
+
+        async function submitClientData(event) {
             event.preventDefault();
 
+            const form = document.getElementById('clientRequestForm');
+            const submitButton = form.querySelector('button[type="submit"]');
             const fileInput = document.getElementById('clientFiles');
-            let fileNamesStr = "Nessun allegato";
-            
-            if (fileInput.files.length > 0) {
-                let names = [];
-                for (let i = 0; i < fileInput.files.length; i++) {
-                    names.push(fileInput.files[i].name);
-                }
-                fileNamesStr = names.join(', ');
+
+            const payload = new FormData();
+            payload.append('clientName', document.getElementById('clientName').value.trim());
+            payload.append('taxId', document.getElementById('clientTaxId').value.trim());
+            payload.append('legalArea', document.getElementById('legalArea').value);
+            payload.append('counterparty', document.getElementById('counterparty').value.trim());
+            payload.append('description', document.getElementById('description').value.trim());
+
+            for (const file of fileInput.files) {
+                payload.append('files', file, file.name);
             }
 
-            const newRequest = {
-                name: document.getElementById('clientName').value,
-                taxId: document.getElementById('clientTaxId').value,
-                legalArea: document.getElementById('legalArea').value,
-                counterparty: document.getElementById('counterparty').value,
-                description: document.getElementById('description').value,
-                fileNames: fileNamesStr,
-                date: new Date().toLocaleString()
-            };
+            submitButton.disabled = true;
+            submitButton.textContent = 'Trasmissione in corso…';
 
-            // Sincronizzazione via localStorage con la dashboard dello studio
-            let requests = JSON.parse(localStorage.getItem('studio_requests')) || [];
-            requests.unshift(newRequest);
-            localStorage.setItem('studio_requests', JSON.stringify(requests));
+            try {
+                const response = await fetch(SUPABASE_FUNCTION_URL, {
+                    method: 'POST',
+                    headers: {
+                        apikey: SUPABASE_PUBLISHABLE_KEY
+                    },
+                    body: payload
+                });
 
-            alert("✅ Pratica e file trasmessi con successo allo Studio Legale Silella! Il professionista li troverà pronti nella propria dashboard.");
-            document.getElementById('clientRequestForm').reset();
+                const result = await response.json().catch(() => ({}));
+
+                if (!response.ok || !result.ok) {
+                    throw new Error(result.error || 'Impossibile trasmettere la pratica.');
+                }
+
+                alert('✅ Pratica trasmessa correttamente allo Studio Legale Silella.');
+                form.reset();
+            } catch (error) {
+                console.error('Errore trasmissione pratica:', error);
+                alert('❌ Trasmissione non riuscita: ' + error.message);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Trasmetti Pratica e File allo Studio Silella 🚀';
+            }
         }
-    </script>
+    </script></script>
 </body>
 </html>
