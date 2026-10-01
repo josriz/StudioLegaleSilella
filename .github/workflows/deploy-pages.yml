@@ -29,29 +29,43 @@ jobs:
         run: |
           mkdir -p _site
           rsync -av --exclude='_site' --exclude='.git' ./ _site/
+
+          # La publishable key è destinata all'uso client-side. Il fallback serve
+          # solo per evitare che il gestionale rimanga senza configurazione se
+          # il secret GitHub non viene iniettato nel workflow.
+          KEY="$SUPABASE_PUBLISHABLE_KEY"
+          if [ -z "$KEY" ]; then
+            KEY='sb_publishable_EBgrU25BpXMp9x6a2n7_Pg_FTFa5JLu'
+          fi
+
           cat > _site/config.js <<EOF
           window.STUDIO_SUPABASE_URL = 'https://dkeqicstprvvfebiaooc.supabase.co';
-          window.STUDIO_SUPABASE_PUBLISHABLE_KEY = '${SUPABASE_PUBLISHABLE_KEY}';
+          window.STUDIO_SUPABASE_PUBLISHABLE_KEY = '$KEY';
           EOF
+
           python3 - <<'PY'
           from pathlib import Path
           p = Path('_site/index.html')
           s = p.read_text(encoding='utf-8')
           marker = '</body>'
-          injection = '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="studio-dashboard.js"></script>'
+          injection = '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="studio-dashboard.js?v=20261001-2"></script>'
           if injection not in s:
               s = s.replace(marker, injection + marker)
           p.write_text(s, encoding='utf-8')
+
           c = Path('_site/cliente.html')
           if c.exists():
               c.write_text(c.read_text(encoding='utf-8').replace('</script></script>', '</script>'), encoding='utf-8')
           PY
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
