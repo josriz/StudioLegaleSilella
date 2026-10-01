@@ -31,12 +31,27 @@ const init=async()=>{
   const r=await fetch(fn,{method:'POST',headers:{apikey:window.STUDIO_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'content-type':'application/json'},body:JSON.stringify({practiceId:id,action})});
   const out=await r.json().catch(()=>({}));
   if(!r.ok||!out.ok){status.textContent=out.error||'Lexroom non disponibile';return}
-  detail.style.display='block';detail.querySelector('#lxDetailTitle').textContent=action==='lab_draft'?'Bozza LAB gratuita':action==='draft'?'Bozza Lexroom':action==='approve'?'Bozza approvata':'Analisi LAB gratuita';
+  detail.style.display='block';
+  detail.querySelector('#lxDetailTitle').textContent=action==='lab_draft'?'Bozza LAB gratuita':action==='draft'?'Bozza Lexroom':action==='approve'?'Bozza approvata':'Analisi LAB gratuita';
   const isDraft=action==='draft'||action==='lab_draft';
-  const showSend=action==='approve'||isDraft;
-  detail.querySelector('#lxDetailBody').innerHTML=(out.text?'<pre id="lxText" style="white-space:pre-wrap;font:13px/1.5 inherit">'+esc(out.text)+'</pre>':'<p>Operazione completata.</p>')+(isDraft?'<div style="margin-top:12px"><button class="btn btn-success" id="lxApprove">Approva bozza</button> <button class="btn btn-info" id="lxSend">Prepara comunicazione LAB</button></div>':(showSend?'<div style="margin-top:12px"><button class="btn btn-info" id="lxSend">Prepara comunicazione LAB</button></div>':''));
-  if(isDraft||action==='approve'){const approveBtn=detail.querySelector('#lxApprove'),sendBtn=detail.querySelector('#lxSend');if(approveBtn)approveBtn.onclick=()=>run(id,'approve');if(sendBtn)sendBtn.onclick=async()=>{const to=prompt('Email destinatario:');if(!to)return;const subj=prompt('Oggetto:','Comunicazione Studio Legale Silella');if(!subj)return;await prepareLabSend(id,to,subj)}}
-  status.textContent=action.startsWith('lab_')?'Operazione LAB completata gratuitamente.':'Lexroom completata.';load();
+  const showApprove=isDraft;
+  const showSend=action==='approve';
+  detail.querySelector('#lxDetailBody').innerHTML=(out.text?'<pre id="lxText" style="white-space:pre-wrap;font:13px/1.5 inherit">'+esc(out.text)+'</pre>':'<p>Operazione completata.</p>')+
+    (showApprove?'<div style="margin-top:12px"><button class="btn btn-success" id="lxApprove">Approva bozza</button></div>':'')+
+    (showSend?'<div style="margin-top:12px"><button class="btn btn-info" id="lxSend">Prepara comunicazione LAB</button></div>');
+
+  const approveBtn=detail.querySelector('#lxApprove');
+  const sendBtn=detail.querySelector('#lxSend');
+  if(approveBtn)approveBtn.onclick=()=>run(id,'approve');
+  if(sendBtn)sendBtn.onclick=async()=>{
+    const to=prompt('Destinatario della comunicazione:');
+    if(!to)return;
+    const subj=prompt('Oggetto della comunicazione:','Comunicazione Studio Legale Silella');
+    if(!subj)return;
+    await prepareLabSend(id,to,subj);
+  };
+  status.textContent=action.startsWith('lab_')?'Operazione LAB completata gratuitamente.':'Lexroom completata.';
+  await load();
  }
  async function loadModels(){const {data}=await sb.from('studio_modelli').select('*').order('created_at',{ascending:false});panel.querySelector('#lxModels').innerHTML=(data||[]).map(m=>'<div style="padding:9px;border-bottom:1px solid #e2e8f0"><strong>'+esc(m.title)+'</strong> · '+esc(m.legal_area||'')+'</div>').join('')}
  panel.querySelector('#lxModelForm').onsubmit=async e=>{e.preventDefault();const {error}=await sb.from('studio_modelli').insert({title:panel.querySelector('#lxTitle').value.trim(),legal_area:panel.querySelector('#lxArea').value.trim()||null,content:panel.querySelector('#lxContent').value,created_by:user.id});if(error)alert(error.message);else{e.target.reset();loadModels()}};
