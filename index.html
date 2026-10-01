@@ -208,13 +208,11 @@
                         </div>
                         <div class="form-group">
                             <label>Codice Fiscale / P.IVA:</label>
-                            <input type="text" placeholder="Opzionale">
+                            <input type="text" id="conflictTaxId" placeholder="Opzionale">
                         </div>
                     </div>
                     <button class="btn btn-warning" onclick="runConflictCheck()">Esegui Verifica Incrociata 🔍</button>
-                    <div id="conflictResult" style="margin-top: 15px; display:none; padding:12px; border-radius:6px; background:rgba(240,253,244,0.95); border:1px solid #bbf7d0;">
-                        <strong style="color:var(--success);">✅ Esito Negativo: Nessun conflitto rilevato. L'incarico può essere assunto.</strong>
-                    </div>
+                    <div id="conflictResult" style="margin-top:15px;display:none;padding:12px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;"></div>
                 </div>
             </div>
 
@@ -423,10 +421,71 @@
             document.getElementById('headerTitle').innerText = titles[panelId] || 'Studio Legale Silella';
         }
 
-        function runConflictCheck() {
-            const query = document.getElementById('conflictQuery').value;
-            if(!query.trim()) { alert("Inserisci una controparte da verificare."); return; }
-            document.getElementById('conflictResult').style.display = 'block';
+        async function runConflictCheck() {
+            const query = document.getElementById('conflictQuery').value.trim();
+            const taxId = document.getElementById('conflictTaxId').value.trim();
+            const result = document.getElementById('conflictResult');
+            if(!query && !taxId) { alert("Inserisci una controparte o un Codice Fiscale / P.IVA da verificare."); return; }
+
+            result.style.display = 'block';
+            result.innerHTML = '<strong>🔍 Verifica in corso…</strong>';
+
+            const client = window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
+                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY))
+                : null);
+
+            if(!client) {
+                result.innerHTML = '<strong style="color:#b91c1c;">⚠️ Servizio di verifica non disponibile.</strong>';
+                return;
+            }
+
+            const terms = [];
+            if(query) {
+                const safeQuery = query.replace(/[%_,]/g, ' ').trim();
+                if(safeQuery) terms.push('client_name.ilike.%'+safeQuery+'%', 'counterparty.ilike.%'+safeQuery+'%');
+            }
+            if(taxId) {
+                const safeTaxId = taxId.replace(/[%_,]/g, ' ').trim();
+                if(safeTaxId) terms.push('tax_id.ilike.%'+safeTaxId+'%');
+            }
+
+            if(!terms.length) {
+                result.innerHTML = '<strong>Nessun criterio di ricerca valido.</strong>';
+                return;
+            }
+
+            const { data, error } = await client
+                .from('studio_pratiche')
+                .select('id,client_name,tax_id,legal_area,counterparty,status,created_at')
+                .or(terms.join(','))
+                .order('created_at', { ascending: false });
+
+            if(error) {
+                console.error(error);
+                result.innerHTML = '<strong style="color:#b91c1c;">⚠️ Errore durante la verifica.</strong><div style="margin-top:6px;font-size:13px;">Impossibile completare il controllo sui dati dello Studio.</div>';
+                return;
+            }
+
+            const escConflict = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+
+            if(!data || !data.length) {
+                result.style.background = 'rgba(240,253,244,0.95)';
+                result.style.borderColor = '#bbf7d0';
+                result.innerHTML = '<strong style="color:var(--success);">✅ Nessuna corrispondenza trovata nei dati delle pratiche dello Studio.</strong><div style="margin-top:6px;font-size:13px;color:#475569;">Il risultato è informativo e non sostituisce la valutazione professionale del conflitto.</div>';
+                return;
+            }
+
+            result.style.background = 'rgba(255,247,237,0.95)';
+            result.style.borderColor = '#fed7aa';
+            result.innerHTML = '<strong style="color:#9a3412;">⚠️ Potenziali corrispondenze trovate: '+data.length+'</strong>' +
+                '<div style="margin-top:10px;display:grid;gap:8px;">' +
+                data.map(p => '<div style="padding:10px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;">' +
+                    '<strong>'+escConflict(p.client_name || 'Cliente non indicato')+'</strong>' +
+                    (p.tax_id ? '<div style="font-size:12px;color:#64748b;">CF/P.IVA: '+escConflict(p.tax_id)+'</div>' : '') +
+                    (p.counterparty ? '<div style="font-size:12px;color:#64748b;">Controparte: '+escConflict(p.counterparty)+'</div>' : '') +
+                    '<div style="font-size:12px;color:#64748b;">Area: '+escConflict(p.legal_area || 'n/d')+' · Stato: '+escConflict(p.status || 'n/d')+'</div>' +
+                '</div>').join('') +
+                '</div><div style="margin-top:8px;font-size:13px;color:#475569;">Il risultato segnala corrispondenze nei dati disponibili; la decisione sul conflitto resta una valutazione professionale.</div>';
         }
 
         function runRagSearch() {
