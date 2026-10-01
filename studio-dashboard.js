@@ -5,10 +5,10 @@
       return;
     }
 
-    const client = window.supabase.createClient(
+    const client = window.STUDIO_SUPABASE_CLIENT || (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(
       window.STUDIO_SUPABASE_URL,
       window.STUDIO_SUPABASE_PUBLISHABLE_KEY
-    );
+    ));
 
     const menu = document.querySelector('.sidebar-menu');
     const contentArea = document.querySelector('.content-area');
