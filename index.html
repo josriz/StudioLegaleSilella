@@ -219,13 +219,20 @@
             <!-- 4. ANAGRAFICA -->
             <div id="panel-clients" class="panel">
                 <div class="card">
-                    <h3>Anagrafica Clienti e Controparti</h3>
-                    <table>
-                        <thead><tr><th>Nome / Società</th><th>Ruolo</th><th>Contatti / PEC</th><th>Fascicolo</th></tr></thead>
-                        <tbody>
-                            <tr><td><strong>Giuseppe De Nicolò</strong></td><td>Cliente</td><td>g.denicolo@pec.it</td><td>#SL-402</td></tr>
-                        </tbody>
-                    </table>
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+                        <div>
+                            <h3 style="margin:0">👥 Anagrafica Clienti e Controparti</h3>
+                            <div id="clientsStatus" style="margin-top:5px;font-size:12px;color:#64748b">Caricamento dati reali dello Studio…</div>
+                        </div>
+                        <button class="btn btn-info" type="button" id="clientsRefresh">Aggiorna</button>
+                    </div>
+                    <div style="overflow-x:auto;margin-top:14px">
+                        <table>
+                            <thead><tr><th>Nome / Società</th><th>CF / P.IVA</th><th>Fascicoli</th><th>Ultima pratica</th><th>Stato</th><th>Dettaglio</th></tr></thead>
+                            <tbody id="clientsTableBody"><tr><td colspan="6">Caricamento…</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div id="clientDetail" style="display:none;margin-top:16px"></div>
                 </div>
             </div>
 
@@ -533,6 +540,104 @@
             blocks.push('<div style="margin-top:8px;font-size:12px;color:#64748b;">Questa è una ricerca RAG interna sui contenuti dello Studio. Non costituisce una banca dati giurisprudenziale esterna e non sostituisce la verifica professionale delle fonti.</div>');
             result.innerHTML = blocks.join('');
         }
+
+        function getStudioClient() {
+            return window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
+                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY))
+                : null);
+        }
+
+        async function loadClients() {
+            const body = document.getElementById('clientsTableBody');
+            const status = document.getElementById('clientsStatus');
+            if(!body || !status) return;
+
+            body.innerHTML = '<tr><td colspan="6">Caricamento…</td></tr>';
+            const client = getStudioClient();
+            if(!client) {
+                status.textContent = 'Servizio Supabase non disponibile.';
+                body.innerHTML = '<tr><td colspan="6">Impossibile caricare l’anagrafica.</td></tr>';
+                return;
+            }
+
+            const { data: { user }, error: authError } = await client.auth.getUser();
+            if(authError || !user) {
+                status.textContent = 'Accesso richiesto.';
+                body.innerHTML = '<tr><td colspan="6">Effettua l’accesso per visualizzare i clienti.</td></tr>';
+                return;
+            }
+
+            const { data, error } = await client
+                .from('studio_pratiche')
+                .select('id,client_name,tax_id,status,created_at')
+                .order('created_at', { ascending: false });
+
+            if(error) {
+                console.error(error);
+                status.textContent = 'Errore nel caricamento dell’anagrafica.';
+                body.innerHTML = '<tr><td colspan="6">Impossibile caricare i dati reali dello Studio.</td></tr>';
+                return;
+            }
+
+            const groups = new Map();
+            (data || []).forEach(p => {
+                const key = (p.client_name || '').trim().toLowerCase() || ('id:' + p.id);
+                if(!groups.has(key)) groups.set(key, { name:p.client_name || 'Cliente non indicato', taxId:p.tax_id || '', practices:[] });
+                groups.get(key).practices.push(p);
+            });
+
+            const clients = Array.from(groups.values());
+            const escClient = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+
+            status.textContent = 'Dati reali · ' + clients.length + ' clienti · ' + (data || []).length + ' pratiche';
+
+            if(!clients.length) {
+                body.innerHTML = '<tr><td colspan="6">Nessun cliente presente nelle pratiche dello Studio.</td></tr>';
+                return;
+            }
+
+            body.innerHTML = clients.map((cl, index) => {
+                const latest = cl.practices[0];
+                const states = cl.practices.map(p => p.status || 'n/d');
+                const state = states[0] || 'n/d';
+                return '<tr>' +
+                    '<td><strong>' + escClient(cl.name) + '</strong></td>' +
+                    '<td>' + escClient(cl.taxId || '—') + '</td>' +
+                    '<td>' + cl.practices.length + '</td>' +
+                    '<td>' + escClient(latest.created_at ? new Date(latest.created_at).toLocaleDateString('it-IT') : '—') + '</td>' +
+                    '<td><span class="badge-status status-sent">' + escClient(state) + '</span></td>' +
+                    '<td><button class="btn btn-info client-detail-btn" type="button" data-client-index="' + index + '">Apri</button></td>' +
+                    '</tr>';
+            }).join('');
+
+            window.__studioClients = clients;
+        }
+
+        function showClientDetail(index) {
+            const detail = document.getElementById('clientDetail');
+            const clients = window.__studioClients || [];
+            const cl = clients[index];
+            if(!detail || !cl) return;
+            const escClient = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+            detail.style.display = 'block';
+            detail.innerHTML = '<div style="padding:16px;background:rgba(248,250,252,.95);border:1px solid #e2e8f0;border-radius:10px;">' +
+                '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"><h4 style="margin:0">👤 ' + escClient(cl.name) + '</h4><button class="btn" type="button" id="closeClientDetail">Chiudi</button></div>' +
+                '<div style="margin-top:8px;font-size:13px;color:#475569;">CF/P.IVA: ' + escClient(cl.taxId || 'non disponibile') + ' · Fascicoli: ' + cl.practices.length + '</div>' +
+                '<div style="margin-top:12px"><strong>Pratiche associate</strong><div style="margin-top:8px;display:grid;gap:6px;">' +
+                cl.practices.map(p => '<div style="padding:9px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;font-size:13px;">' +
+                    '<strong>' + escClient(p.id) + '</strong> · ' + escClient(p.status || 'n/d') +
+                    '<div style="font-size:12px;color:#64748b;margin-top:3px;">' + escClient(p.created_at ? new Date(p.created_at).toLocaleString('it-IT') : '') + '</div>' +
+                '</div>').join('') + '</div></div></div>';
+            document.getElementById('closeClientDetail').addEventListener('click', () => { detail.style.display='none'; });
+        }
+
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('.client-detail-btn');
+            if(btn) showClientDetail(Number(btn.dataset.clientIndex));
+        });
+        document.getElementById('clientsRefresh')?.addEventListener('click', loadClients);
+        document.querySelector('[onclick="switchTab(\'clients\', this)"]')?.addEventListener('click', () => setTimeout(loadClients, 0));
+        loadClients();
 
         let timerInterval, secondsElapsed = 0;
         function startTimer() {
