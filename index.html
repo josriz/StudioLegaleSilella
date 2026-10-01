@@ -555,13 +555,59 @@
             document.getElementById('stopwatchDisplay').innerText = "00:00:00";
         }
 
-        function generateAILetter() {
-            const desc = document.getElementById('caseDescription').value;
+        async function generateAILetter() {
+            const desc = document.getElementById('caseDescription').value.trim();
             const outputBox = document.getElementById('aiOutputResult');
-            outputBox.value = "Elaborazione in corso con RAG e standard Studio Silella...";
-            setTimeout(() => {
-                outputBox.value = `TRIBUNALE ORDINARIO DI BARI\n\nCOMPARSA DI COSTITUZIONE E RISPOSTA\n\nPer il Sig. Giuseppe De Nicolò, c/ Condominio...\nIn relazione a: "${desc}"\n\nStudio Legale Silella`;
-            }, 600);
+            if(!desc) {
+                alert("Inserisci le istruzioni per la redazione.");
+                return;
+            }
+
+            outputBox.value = "Elaborazione della bozza IA in corso...";
+
+            const client = window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
+                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY))
+                : null);
+
+            if(!client) {
+                outputBox.value = "Servizio Supabase non disponibile.";
+                return;
+            }
+
+            const { data: sessionData, error: sessionError } = await client.auth.getSession();
+            const session = sessionData?.session;
+            if(sessionError || !session?.access_token) {
+                outputBox.value = "Sessione Studio non disponibile. Effettua nuovamente l'accesso.";
+                return;
+            }
+
+            const { data: practice, error: practiceError } = await client
+                .from('studio_pratiche')
+                .select('id,client_name,legal_area,counterparty,description,status')
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            if(practiceError || !practice) {
+                outputBox.value = "Nessuna pratica disponibile per la redazione.";
+                return;
+            }
+
+            const { data, error } = await client.functions.invoke('studio-lexroom', {
+                body: {
+                    practiceId: practice.id,
+                    action: 'draft',
+                    instructions: desc
+                }
+            });
+
+            if(error || !data?.ok) {
+                console.error(error || data);
+                outputBox.value = data?.error || "Impossibile generare la bozza IA.";
+                return;
+            }
+
+            outputBox.value = data.text || data.draft?.content || "La funzione IA non ha restituito testo.";
         }
 
         function signAndSendDocument() {
