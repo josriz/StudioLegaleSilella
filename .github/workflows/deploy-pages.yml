@@ -39,7 +39,7 @@ jobs:
           fi
 
           cat > _site/config.js <<EOF
-          window.STUDIO_SUPABASE_URL = 'https://dkeqicstprvvfebiaooc.supabase.co';
+          window.STUDIO_SUPABASE_URL = 'https://dscinvstqizfxwrovsbb.supabase.co';
           window.STUDIO_SUPABASE_PUBLISHABLE_KEY = '$KEY';
           EOF
 
