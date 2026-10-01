@@ -25,14 +25,14 @@ const init=async()=>{
   body.querySelectorAll('.lx-an').forEach(b=>b.onclick=()=>run(b.dataset.id,'analyze'));
   body.querySelectorAll('.lx-dr').forEach(b=>b.onclick=()=>run(b.dataset.id,'draft'));
  }
- async function run(id,action){
+ async function sendEmail(id,to,subject){const {data:{session}}=await sb.auth.getSession();const r=await fetch(fn,{method:'POST',headers:{apikey:window.STUDIO_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'content-type':'application/json'},body:JSON.stringify({practiceId:id,action:'send_email',to,subject})});const out=await r.json().catch(()=>({}));status.textContent=out.ok?'Email trasmessa correttamente.':(out.error||'Invio non riuscito');if(out.ok)load()} async function run(id,action){
   status.textContent='Lexroom in elaborazione…';
   const {data:{session}}=await sb.auth.getSession(); if(!session)return;
   const r=await fetch(fn,{method:'POST',headers:{apikey:window.STUDIO_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'content-type':'application/json'},body:JSON.stringify({practiceId:id,action})});
   const out=await r.json().catch(()=>({}));
   if(!r.ok||!out.ok){status.textContent=out.error||'Lexroom non disponibile';return}
-  detail.style.display='block';detail.querySelector('#lxDetailTitle').textContent=action==='draft'?'Bozza Lexroom':'Analisi Lexroom';
-  detail.querySelector('#lxDetailBody').innerHTML='<pre style="white-space:pre-wrap;font:13px/1.5 inherit">'+esc(out.text)+'</pre>';
+  detail.style.display='block';detail.querySelector('#lxDetailTitle').textContent=action==='draft'?'Bozza Lexroom':action==='approve'?'Bozza approvata':'Analisi Lexroom';
+  detail.querySelector('#lxDetailBody').innerHTML=out.text?'<pre id="lxText" style="white-space:pre-wrap;font:13px/1.5 inherit">'+esc(out.text)+'</pre>': '<p>Operazione completata.</p>'+(action==='draft'?'<div style="margin-top:12px"><button class="btn btn-success" id="lxApprove">Approva bozza</button> <button class="btn btn-info" id="lxSend">Invia email</button></div>':''); if(action==='draft'){detail.querySelector('#lxApprove').onclick=()=>run(id,'approve');detail.querySelector('#lxSend').onclick=async()=>{const to=prompt('Email destinatario:');if(!to)return;const subj=prompt('Oggetto:','Comunicazione Studio Legale Silella');if(!subj)return;await sendEmail(id,to,subj)}}
   status.textContent='Lexroom completata.';load();
  }
  async function loadModels(){const {data}=await sb.from('studio_modelli').select('*').order('created_at',{ascending:false});panel.querySelector('#lxModels').innerHTML=(data||[]).map(m=>'<div style="padding:9px;border-bottom:1px solid #e2e8f0"><strong>'+esc(m.title)+'</strong> · '+esc(m.legal_area||'')+'</div>').join('')}
