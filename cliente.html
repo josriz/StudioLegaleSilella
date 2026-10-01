@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Legale Silella - Portale Clienti</title>
+    <style>
+        :root {
+            --primary: #0b1329;
+            --accent-gold: #c5a059;
+            --accent-gold-hover: #b08d46;
+            --bg-main: #f4f6f9;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --border-gold: #e2d3b2;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --success: #15803d;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif; }
+        
+        body { 
+            background-color: var(--bg-main); 
+            background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px); 
+            background-size: 24px 24px;
+            color: var(--text-main); 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .client-container {
+            width: 100%;
+            max-width: 680px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05), 0 5px 15px rgba(0, 0, 0, 0.03);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .client-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            background: var(--accent-gold);
+        }
+
+        .client-header {
+            background: #ffffff;
+            padding: 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .client-header img {
+            height: 48px;
+            object-fit: contain;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+        }
+
+        .client-header h1 {
+            font-size: 15px;
+            color: var(--primary);
+            font-weight: 600;
+            letter-spacing: -0.2px;
+        }
+
+        .client-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"], select, textarea, input[type="file"] {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 12.5px;
+            background: #fafbfc;
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15);
+            background: #fff;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 105px;
+            line-height: 1.5;
+        }
+
+        .btn-submit {
+            background-color: var(--primary);
+            color: #fff;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 20px;
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="client-container">
+        <div class="client-header">
+            <!-- Logo del portale clienti con fallback -->
+            <img src="Studio_Silella.jpg" alt="Studio Legale Silella" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <h1 style="display:none; font-family:'Georgia', serif; font-style:italic; font-size:16px; color:#c5a059;">Studio Legale Silella</h1>
+            <p style="font-size:11.5px; color:var(--text-light); margin-top:4px;">Area Sicura di Trasmissione Pratiche e Documenti</p>
+        </div>
+
+        <div class="client-body">
+            <form id="clientRequestForm" onsubmit="submitClientData(event)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Nome e Cognome / Ragione Sociale:</label>
+                        <input type="text" id="clientName" placeholder="Es. Giuseppe De Nicolò" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Codice Fiscale / P.IVA:</label>
+                        <input type="text" id="clientTaxId" placeholder="Es. DNCGPP80A01A001Z" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Area Legale di Interesse:</label>
+                    <select id="legalArea">
+                        <option>Diritto Civile & Contenzioso</option>
+                        <option>Diritto Immobiliare & Condominiale</option>
+                        <option>Diritto del Lavoro & Previdenza</option>
+                        <option>Recupero Crediti & Esecuzioni</option>
+                        <option>Diritto di Famiglia & Successioni</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Controparte / Parte in Causa:</label>
+                    <input type="text" id="counterparty" placeholder="Es. Condominio Via Sparano n. 12" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Esposizione dei Fatti / Richiesta:</label>
+                    <textarea id="description" placeholder="Descrivi dettagliatamente la problematica giuridica e le tue richieste..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Carica Documenti e Allegati:</label>
+                    <input type="file" id="clientFiles" multiple>
+                    <small style="font-size:10.5px; color:var(--text-light); margin-top:4px; display:block;">Puoi selezionare uno o più file (PDF, immagini, documenti).</small>
+                </div>
+
+                <button type="submit" class="btn-submit">Trasmetti Pratica e File allo Studio Silella 🚀</button>
+            </form>
+
+            <div class="footer-note">
+                I dati e i file trasmessi saranno elaborati in conformità al GDPR e presi in carico direttamente dal team legale dello Studio Silella.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function submitClientData(event) {
+            event.preventDefault();
+
+            const fileInput = document.getElementById('clientFiles');
+            let fileNamesStr = "Nessun allegato";
+            
+            if (fileInput.files.length > 0) {
+                let names = [];
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    names.push(fileInput.files[i].name);
+                }
+                fileNamesStr = names.join(', ');
+            }
+
+            const newRequest = {
+                name: document.getElementById('clientName').value,
+                taxId: document.getElementById('clientTaxId').value,
+                legalArea: document.getElementById('legalArea').value,
+                counterparty: document.getElementById('counterparty').value,
+                description: document.getElementById('description').value,
+                fileNames: fileNamesStr,
+                date: new Date().toLocaleString()
+            };
+
+            // Sincronizzazione via localStorage con la dashboard dello studio
+            let requests = JSON.parse(localStorage.getItem('studio_requests')) || [];
+            requests.unshift(newRequest);
+            localStorage.setItem('studio_requests', JSON.stringify(requests));
+
+            alert("✅ Pratica e file trasmessi con successo allo Studio Legale Silella! Il professionista li troverà pronti nella propria dashboard.");
+            document.getElementById('clientRequestForm').reset();
+        }
+    </script>
+</body>
+</html>
