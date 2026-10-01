@@ -698,7 +698,7 @@
         document.getElementById('mattersRefresh')?.addEventListener('click', loadMatters);
         document.getElementById('mattersSearch')?.addEventListener('input', renderMatters);
         document.getElementById('mattersStatusFilter')?.addEventListener('change', renderMatters);
-        document.querySelector('[onclick="switchTab(\\'matters\\', this)"]')?.addEventListener('click', () => setTimeout(loadMatters, 0));
+        const mattersMenuItem = Array.from(document.querySelectorAll('.menu-item')).find(m => (m.getAttribute('onclick') || '').includes("'matters'"));
         loadMatters();
 
         function getStudioClient() {
