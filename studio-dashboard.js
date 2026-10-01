@@ -96,11 +96,15 @@
 
     async function ensureAuth() {
       const { data: { user }, error } = await client.auth.getUser();
-      if (error) {
-        console.error(error);
-        return false;
-      }
       if (user) return user;
+
+      // Nessuna sessione: AuthSessionMissingError è normale al primo accesso.
+      // In questo caso apriamo il login invece di trattarlo come errore applicativo.
+      if (error && error.name !== 'AuthSessionMissingError') {
+        console.error(error);
+        status.textContent = 'Errore autenticazione: ' + (error.message || error.name || 'errore sconosciuto');
+      }
+
       showLogin();
       return null;
     }
