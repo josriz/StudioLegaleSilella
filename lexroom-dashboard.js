@@ -38,7 +38,7 @@ const init=async()=>{
   const showSend=action==='approve';
   detail.querySelector('#lxDetailBody').innerHTML=(out.text?'<pre id="lxText" style="white-space:pre-wrap;font:13px/1.5 inherit">'+esc(out.text)+'</pre>':'<p>Operazione completata.</p>')+
     (showApprove?'<div style="margin-top:12px"><button class="btn btn-success" id="lxApprove">Approva bozza</button></div>':'')+
-    (showSend?'<div style="margin-top:12px"><button class="btn btn-info" id="lxSend">Prepara comunicazione LAB</button></div>');
+    (showSend?'<div style="margin-top:12px"><button class="btn btn-info" id="lxSend">Prepara comunicazione LAB</button></div>':'');
 
   const approveBtn=detail.querySelector('#lxApprove');
   const sendBtn=detail.querySelector('#lxSend');
