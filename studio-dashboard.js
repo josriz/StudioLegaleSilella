@@ -61,7 +61,7 @@
     const status = document.getElementById('studioAuthStatus');
     const loginModal = document.createElement('div');
     loginModal.id = 'studioLoginModal';
-    loginModal.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:9999;align-items:center;justify-content:center;padding:20px;';
+    loginModal.style.cssText = 'display:flex;position:fixed;inset:0;background:#ffffff;z-index:9999;align-items:center;justify-content:center;padding:20px;';
     loginModal.innerHTML = `
       <div style="width:min(420px,100%);background:#fff;border-radius:14px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.25)">
         <h2 style="margin:0 0 6px">Accesso Studio Legale Silella</h2>
@@ -84,6 +84,8 @@
       }[c]));
     }
 
+    let studioAccessGranted = false;
+
     function showLogin() {
       document.getElementById('studioLoginError').textContent = '';
       document.getElementById('studioLoginPassword').value = '';
@@ -96,6 +98,11 @@
     }
 
     async function ensureAuth() {
+      if (!studioAccessGranted) {
+        showLogin();
+        return null;
+      }
+
       const { data: { user }, error } = await client.auth.getUser();
       if (user) return user;
 
@@ -210,6 +217,7 @@
         return;
       }
 
+      studioAccessGranted = true;
       hideLogin();
       await loadPractices();
     });
@@ -218,7 +226,9 @@
 
     document.getElementById('studioLogout').addEventListener('click', async () => {
       await client.auth.signOut();
+      studioAccessGranted = false;
       status.textContent = 'Sessione chiusa.';
+      showLogin();
       body.innerHTML = '<tr><td colspan="8">Effettua nuovamente l’accesso per visualizzare le pratiche.</td></tr>';
     });
 
@@ -233,9 +243,14 @@
       await loadPractices();
     });
 
-    loadPractices();
+    // Il pannello Studio non viene mostrato senza una nuova autenticazione esplicita.
+    showLogin();
 
     client.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        studioAccessGranted = false;
+        showLogin();
+      }
       if (!session && panel.classList.contains('active')) {
         status.textContent = 'Sessione chiusa.';
         body.innerHTML = '<tr><td colspan="8">Effettua nuovamente l’accesso per visualizzare le pratiche.</td></tr>';
