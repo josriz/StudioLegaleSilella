@@ -603,7 +603,8 @@
 
             if(error || !data?.ok) {
                 console.error(error || data);
-                outputBox.value = data?.error || "Impossibile generare la bozza IA.";
+                const edgeMessage = data?.error || error?.message || error?.context?.message || "Impossibile generare la bozza IA.";
+                outputBox.value = edgeMessage;
                 return;
             }
 
