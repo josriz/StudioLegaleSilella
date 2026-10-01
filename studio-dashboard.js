@@ -221,6 +221,7 @@
       studioAccessGranted = true;
       hideLogin();
       window.dispatchEvent(new Event('studio-auth-ready'));
+      if (window.initLexroomLab) window.initLexroomLab();
       await loadPractices();
     });
 
