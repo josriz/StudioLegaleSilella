@@ -220,6 +220,7 @@
 
       studioAccessGranted = true;
       hideLogin();
+      window.dispatchEvent(new Event('studio-auth-ready'));
       await loadPractices();
     });
 
