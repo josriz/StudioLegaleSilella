@@ -5,7 +5,10 @@ const init=async()=>{
  const {data:profile}=await sb.from('studio_utenti').select('role').eq('user_id',user.id).maybeSingle();
  if(!profile||!['studio','admin'].includes(profile.role))return;
  const menu=document.querySelector('.sidebar-menu'), area=document.querySelector('.content-area');
- if(!menu||!area||document.getElementById('panel-lexroom'))return;
+ if(!menu||!area)return;
+ const existingPanel=document.getElementById('panel-lexroom');
+ const existingItem=[...menu.querySelectorAll('.menu-item')].find(m=>m.textContent.includes('Lexroom LAB'));
+ if(existingPanel&&existingItem)return;
  const item=document.createElement('a');item.className='menu-item';item.href='#';item.innerHTML='🧪 <span>Lexroom LAB</span>';
  const panel=document.createElement('div');panel.id='panel-lexroom';panel.className='panel';
  panel.innerHTML=`
