@@ -3,7 +3,8 @@ const init=async()=>{
  const sb=window.STUDIO_SUPABASE_CLIENT || (window.STUDIO_SUPABASE_CLIENT=window.supabase.createClient(window.STUDIO_SUPABASE_URL,window.STUDIO_SUPABASE_PUBLISHABLE_KEY));
  if(!window.__LEXROOM_AUTH_LISTENER__){
    window.__LEXROOM_AUTH_LISTENER__=true;
-   sb.auth.onAuthStateChange((_event,session)=>{if(session)init();});
+   sb.auth.onAuthStateChange((_event,session)=>{if(session)setTimeout(init,0);});
+   window.addEventListener('studio-auth-ready',()=>setTimeout(init,0));
  }
  const {data:{user}}=await sb.auth.getUser(); if(!user)return;
  const {data:profile}=await sb.from('studio_utenti').select('role').eq('user_id',user.id).maybeSingle();
