@@ -1,258 +1,65 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Legale Silella - Portale Clienti</title>
-    <style>
-        :root {
-            --primary: #0b1329;
-            --accent-gold: #c5a059;
-            --accent-gold-hover: #b08d46;
-            --bg-main: #f4f6f9;
-            --card-bg: #ffffff;
-            --border: #e2e8f0;
-            --border-gold: #e2d3b2;
-            --text-main: #1e293b;
-            --text-light: #64748b;
-            --success: #15803d;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif; }
-        
-        body { 
-            background-color: var(--bg-main); 
-            background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px); 
-            background-size: 24px 24px;
-            color: var(--text-main); 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .client-container {
-            width: 100%;
-            max-width: 680px;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05), 0 5px 15px rgba(0, 0, 0, 0.03);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .client-container::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 4px;
-            background: var(--accent-gold);
-        }
-
-        .client-header {
-            background: #ffffff;
-            padding: 24px;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .client-header img {
-            height: 48px;
-            object-fit: contain;
-            margin-bottom: 8px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
-        }
-
-        .client-header h1 {
-            font-size: 15px;
-            color: var(--primary);
-            font-weight: 600;
-            letter-spacing: -0.2px;
-        }
-
-        .client-body {
-            padding: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 11px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--text-main);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        input[type="text"], select, textarea, input[type="file"] {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 12.5px;
-            background: #fafbfc;
-            color: var(--text-main);
-            transition: all 0.2s;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent-gold);
-            box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15);
-            background: #fff;
-        }
-
-        textarea {
-            resize: vertical;
-            height: 105px;
-            line-height: 1.5;
-        }
-
-        .btn-submit {
-            background-color: var(--primary);
-            color: #fff;
-            border: none;
-            width: 100%;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 10px;
-            letter-spacing: 0.3px;
-        }
-
-        .btn-submit:hover {
-            opacity: 0.95;
-            transform: translateY(-1px);
-        }
-
-        .footer-note {
-            text-align: center;
-            font-size: 11px;
-            color: var(--text-light);
-            margin-top: 20px;
-            border-top: 1px solid var(--border);
-            padding-top: 15px;
-        }
-    </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Studio Legale Silella - Area Cliente</title>
+<style>
+:root{--p:#0b1329;--g:#c5a059;--bg:#f4f6f9;--b:#e2e8f0;--t:#1e293b;--mut:#64748b;--ok:#15803d}
+*{box-sizing:border-box;font-family:Inter,'Segoe UI',sans-serif}body{margin:0;background:var(--bg);color:var(--t);padding:24px}
+.wrap{max-width:900px;margin:auto;background:#fff;border:1px solid var(--b);border-radius:12px;box-shadow:0 15px 35px rgba(0,0,0,.06);overflow:hidden}
+.head{text-align:center;padding:24px;border-top:4px solid var(--g);border-bottom:1px solid var(--b)}.head img{height:48px;object-fit:contain}.head h1{font:600 17px Georgia,serif;color:var(--p);margin:8px 0 3px}.head p{font-size:12px;color:var(--mut);margin:0}
+.body{padding:24px}.hidden{display:none!important}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{margin-bottom:14px}.field label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;padding:11px;border:1px solid var(--b);border-radius:7px;background:#fafbfc}.field textarea{min-height:110px;resize:vertical}
+.btn{border:0;border-radius:7px;padding:11px 15px;background:var(--p);color:#fff;font-weight:650;cursor:pointer}.btn.alt{background:#fff;color:var(--p);border:1px solid var(--b)}.btn.gold{background:var(--g)}.btn:disabled{opacity:.55;cursor:not-allowed}
+.bar{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px}.card{border:1px solid var(--b);border-radius:9px;padding:16px;margin-top:14px}.status{font-size:12px;color:var(--mut)}.ok{color:var(--ok)}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:10px;border-bottom:1px solid var(--b);text-align:left;vertical-align:top}.badge{display:inline-block;padding:4px 7px;border-radius:12px;background:#eef2ff}.err{color:#b91c1c;font-size:12px;min-height:18px;margin:8px 0}
+@media(max-width:700px){body{padding:8px}.grid{grid-template-columns:1fr}.body{padding:16px}}
+</style>
 </head>
 <body>
+<div class="wrap">
+<div class="head"><img src="Logo_Studio_Silella.jpg" alt="Studio Legale Silella"><h1>Studio Legale Silella</h1><p>Portale sicuro per pratiche, documenti e comunicazioni</p></div>
+<div class="body">
+<section id="authView">
+<div class="bar"><div><h2 style="margin:0">Accesso cliente</h2><p class="status">Accedi per inviare pratiche e vedere esclusivamente le tue.</p></div></div>
+<div class="grid">
+<div class="card"><h3>Accedi</h3><form id="loginForm"><div class="field"><label>Email</label><input id="loginEmail" type="email" required autocomplete="username"></div><div class="field"><label>Password</label><input id="loginPassword" type="password" required autocomplete="current-password"></div><div id="loginErr" class="err"></div><button class="btn" id="loginBtn">Accedi</button></form></div>
+<div class="card"><h3>Nuovo cliente</h3><form id="signupForm"><div class="field"><label>Email</label><input id="signupEmail" type="email" required autocomplete="email"></div><div class="field"><label>Password</label><input id="signupPassword" type="password" minlength="8" required autocomplete="new-password"></div><div id="signupErr" class="err"></div><button class="btn gold" id="signupBtn">Crea accesso</button></form><p class="status">La conferma email può essere richiesta dalle impostazioni Auth dello Studio.</p></div>
+</div>
+</section>
 
-    <div class="client-container">
-        <div class="client-header">
-            <!-- Logo del portale clienti con fallback -->
-            <img src="Logo_Studio_Silella.jpg" alt="Studio Legale Silella" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-            <h1 style="display:none; font-family:'Georgia', serif; font-style:italic; font-size:16px; color:#c5a059;">Studio Legale Silella</h1>
-            <p style="font-size:11.5px; color:var(--text-light); margin-top:4px;">Area Sicura di Trasmissione Pratiche e Documenti</p>
-        </div>
-
-        <div class="client-body">
-            <form id="clientRequestForm" onsubmit="submitClientData(event)">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group">
-                        <label>Nome e Cognome / Ragione Sociale:</label>
-                        <input type="text" id="clientName" placeholder="Es. Giuseppe De Nicolò" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Codice Fiscale / P.IVA:</label>
-                        <input type="text" id="clientTaxId" placeholder="Es. DNCGPP80A01A001Z" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Area Legale di Interesse:</label>
-                    <select id="legalArea">
-                        <option>Diritto Civile & Contenzioso</option>
-                        <option>Diritto Immobiliare & Condominiale</option>
-                        <option>Diritto del Lavoro & Previdenza</option>
-                        <option>Recupero Crediti & Esecuzioni</option>
-                        <option>Diritto di Famiglia & Successioni</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Controparte / Parte in Causa:</label>
-                    <input type="text" id="counterparty" placeholder="Es. Condominio Via Sparano n. 12" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Esposizione dei Fatti / Richiesta:</label>
-                    <textarea id="description" placeholder="Descrivi dettagliatamente la problematica giuridica e le tue richieste..." required></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Carica Documenti e Allegati:</label>
-                    <input type="file" id="clientFiles" multiple>
-                    <small style="font-size:10.5px; color:var(--text-light); margin-top:4px; display:block;">Puoi selezionare uno o più file (PDF, immagini, documenti).</small>
-                </div>
-
-                <button type="submit" class="btn-submit">Trasmetti Pratica e File allo Studio Silella 🚀</button>
-            </form>
-
-            <div class="footer-note">
-                I dati e i file trasmessi saranno elaborati in conformità al GDPR e presi in carico direttamente dal team legale dello Studio Silella.
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const SUPABASE_FUNCTION_URL = 'https://dscinvstqizfxwrovsbb.supabase.co/functions/v1/studio-ricevi-pratica';
-        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_aVF8u7kXdbznCYQakC3NqQ_fJQkBZQ9';
-
-        async function submitClientData(event) {
-            event.preventDefault();
-
-            const form = document.getElementById('clientRequestForm');
-            const submitButton = form.querySelector('button[type="submit"]');
-            const fileInput = document.getElementById('clientFiles');
-
-            const payload = new FormData();
-            payload.append('clientName', document.getElementById('clientName').value.trim());
-            payload.append('taxId', document.getElementById('clientTaxId').value.trim());
-            payload.append('legalArea', document.getElementById('legalArea').value);
-            payload.append('counterparty', document.getElementById('counterparty').value.trim());
-            payload.append('description', document.getElementById('description').value.trim());
-
-            for (const file of fileInput.files) {
-                payload.append('files', file, file.name);
-            }
-
-            submitButton.disabled = true;
-            submitButton.textContent = 'Trasmissione in corso…';
-
-            try {
-                const response = await fetch(SUPABASE_FUNCTION_URL, {
-                    method: 'POST',
-                    headers: {
-                        apikey: SUPABASE_PUBLISHABLE_KEY
-                    },
-                    body: payload
-                });
-
-                const result = await response.json().catch(() => ({}));
-
-                if (!response.ok || !result.ok) {
-                    throw new Error(result.error || 'Impossibile trasmettere la pratica.');
-                }
-
-                alert('✅ Pratica trasmessa correttamente allo Studio Legale Silella.');
-                form.reset();
-            } catch (error) {
-                console.error('Errore trasmissione pratica:', error);
-                alert('❌ Trasmissione non riuscita: ' + error.message);
-            } finally {
-                submitButton.disabled = false;
-                submitButton.textContent = 'Trasmetti Pratica e File allo Studio Silella 🚀';
-            }
-        }
-    </script>
-</body>
-</html>
+<section id="appView" class="hidden">
+<div class="bar"><div><h2 style="margin:0">Area personale</h2><p id="userStatus" class="status"></p></div><button class="btn alt" id="logoutBtn">Esci</button></div>
+<div class="card"><h3>➕ Nuova pratica</h3>
+<form id="practiceForm">
+<div class="grid"><div class="field"><label>Nome e Cognome / Ragione Sociale</label><input id="clientName" required></div><div class="field"><label>Codice Fiscale / P.IVA</label><input id="taxId" required></div></div>
+<div class="field"><label>Area legale</label><select id="legalArea"><option>Diritto Civile & Contenzioso</option><option>Diritto Immobiliare & Condominiale</option><option>Diritto del Lavoro & Previdenza</option><option>Recupero Crediti & Esecuzioni</option><option>Diritto di Famiglia & Successioni</option></select></div>
+<div class="field"><label>Controparte</label><input id="counterparty" required></div>
+<div class="field"><label>Esposizione dei fatti / richiesta</label><textarea id="description" required></textarea></div>
+<div class="field"><label>Documenti</label><input id="clientFiles" type="file" multiple><div class="status">PDF, immagini, DOC/DOCX — massimo 10 MB per file.</div></div>
+<button class="btn" id="submitBtn">Trasmetti pratica allo Studio</button><div id="submitStatus" class="status"></div>
+</form></div>
+<div class="card"><div class="bar"><h3 style="margin:0">📁 Le mie pratiche</h3><button class="btn alt" id="refreshBtn">Aggiorna</button></div><div style="overflow:auto"><table><thead><tr><th>Data</th><th>Pratica</th><th>Controparte</th><th>Stato</th><th>AI</th></tr></thead><tbody id="practiceBody"><tr><td colspan="5">Caricamento…</td></tr></tbody></table></div></div>
+</section>
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+const sb=supabase.createClient(window.STUDIO_SUPABASE_URL,window.STUDIO_SUPABASE_PUBLISHABLE_KEY);
+const fn=window.STUDIO_SUPABASE_URL+'/functions/v1/studio-ricevi-pratica';
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function showApp(){
+ const {data:{user}}=await sb.auth.getUser();
+ if(!user){$('authView').classList.remove('hidden');$('appView').classList.add('hidden');return}
+ $('authView').classList.add('hidden');$('appView').classList.remove('hidden');$('userStatus').textContent=user.email;loadPractices();
+}
+async function loadPractices(){
+ const {data,error}=await sb.from('studio_pratiche').select('id,created_at,client_name,legal_area,counterparty,status,ai_status,file_names').order('created_at',{ascending:false});
+ if(error){$('practiceBody').innerHTML='<tr><td colspan="5">Errore nel caricamento.</td></tr>';console.error(error);return}
+ $('practiceBody').innerHTML=data.length?data.map(p=>'<tr><td>'+esc(new Date(p.created_at).toLocaleString('it-IT'))+'</td><td><strong>'+esc(p.client_name)+'</strong><br><small>'+esc(p.legal_area)+'</small></td><td>'+esc(p.counterparty)+'</td><td><span class="badge">'+esc(p.status)+'</span></td><td>'+esc(p.ai_status)+'</td></tr>').join(''):'<tr><td colspan="5">Nessuna pratica.</td></tr>';
+}
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginErr').textContent='';$('loginBtn').disabled=true;const {error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});$('loginBtn').disabled=false;if(error){$('loginErr').textContent=error.message;return}showApp()});
+$('signupForm').addEventListener('submit',async e=>{e.preventDefault();$('signupErr').textContent='';$('signupBtn').disabled=true;const {data,error}=await sb.auth.signUp({email:$('signupEmail').value.trim(),password:$('signupPassword').value});$('signupBtn').disabled=false;if(error){$('signupErr').textContent=error.message;return}if(data.session){showApp()}else $('signupErr').className='err ok', $('signupErr').textContent='Account creato. Controlla la posta per confermare l’email, poi accedi.'});
+$('practiceForm').addEventListener('submit',async e=>{e.preventDefault();$('submitStatus').textContent='Trasmissione in corso…';$('submitBtn').disabled=true;try{const {data:{session}}=await sb.auth.getSession();if(!session)throw Error('Sessione scaduta. Effettua nuovamente l’accesso.');const fd=new FormData();fd.append('clientName',$('clientName').value.trim());fd.append('taxId',$('taxId').value.trim());fd.append('legalArea',$('legalArea').value);fd.append('counterparty',$('counterparty').value.trim());fd.append('description',$('description').value.trim());for(const f of $('clientFiles').files)fd.append('files',f,f.name);const res=await fetch(fn,{method:'POST',headers:{apikey:window.STUDIO_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token},body:fd});const out=await res.json().catch(()=>({}));if(!res.ok||!out.ok)throw Error(out.error||'Trasmissione non riuscita');$('submitStatus').className='status ok';$('submitStatus').textContent='Pratica trasmessa correttamente.';$('practiceForm').reset();loadPractices()}catch(err){$('submitStatus').className='err';$('submitStatus').textContent=err.message}finally{$('submitBtn').disabled=false}});
+$('refreshBtn').addEventListener('click',loadPractices);$('logoutBtn').addEventListener('click',async()=>{await sb.auth.signOut();showApp()});sb.auth.onAuthStateChange(()=>showApp());showApp();
+</script>
+</body></html>
