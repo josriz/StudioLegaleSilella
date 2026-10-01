@@ -42,7 +42,8 @@
                 <th>Controparte</th>
                 <th>Richiesta</th>
                 <th>Allegati</th>
-                <th>Stato</th><th>Gestione</th>
+                <th>Stato</th>
+                <th>Gestione</th>
               </tr>
             </thead>
             <tbody id="studioPracticesBody">
@@ -64,7 +65,7 @@
     loginModal.innerHTML = `
       <div style="width:min(420px,100%);background:#fff;border-radius:14px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.25)">
         <h2 style="margin:0 0 6px">Accesso Studio Legale Silella</h2>
-        <p style="margin:0 0 18px;color:#64748b;font-size:14px">Accedi per visualizzare le pratiche ricevute dai clienti e aprire i documenti allegati.</p>
+        <p style="margin:0 0 18px;color:#64748b;font-size:14px">Accedi per visualizzare le pratiche ricevute dai clienti.</p>
         <form id="studioLoginForm">
           <label style="display:block;margin-bottom:6px;font-weight:600">Email</label>
           <input id="studioLoginEmail" type="email" autocomplete="username" required style="width:100%;box-sizing:border-box;margin-bottom:14px;padding:10px;border:1px solid #cbd5e1;border-radius:8px">
@@ -149,66 +150,40 @@
         : '<tr><td colspan="8">Nessuna pratica ricevuta.</td></tr>';
     }
 
-
-      body.querySelectorAll('.studio-open').forEach(btn => {
-        btn.addEventListener('click', () => openPractice(btn.dataset.id));
-      });
-    }
+    body.addEventListener('click', async (e) => {
+      const btn = e.target.closest('.studio-open');
+      if (!btn) return;
+      await openPractice(btn.dataset.id);
+    });
 
     async function openPractice(practiceId) {
       const user = await ensureAuth();
       if (!user) return;
       const { data: practice, error: practiceError } = await client.from('studio_pratiche').select('*').eq('id', practiceId).maybeSingle();
-      if (practiceError || !practice) {
-        alert('Pratica non trovata.');
-        return;
-      }
+      if (practiceError || !practice) { alert('Pratica non trovata.'); return; }
       const { data: docs, error: docsError } = await client.from('studio_documenti').select('id,file_name,storage_path,mime_type,size_bytes,created_at').eq('pratica_id', practiceId).order('created_at', { ascending: true });
-      if (docsError) {
-        alert('Impossibile caricare gli allegati: ' + docsError.message);
-        return;
-      }
+      if (docsError) { alert('Impossibile caricare gli allegati: ' + docsError.message); return; }
       const detail = document.createElement('div');
       detail.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;';
-      detail.innerHTML = `
-        <div style="width:min(900px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:14px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.25)">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h2 style="margin:0">📁 Pratica · ${esc(practice.client_name)}</h2><button class="btn" id="closePractice">Chiudi</button></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px">
-            <div><strong>Cliente</strong><br>${esc(practice.client_name)}</div>
-            <div><strong>Codice fiscale / P.IVA</strong><br>${esc(practice.tax_id)}</div>
-            <div><strong>Area legale</strong><br>${esc(practice.legal_area)}</div>
-            <div><strong>Controparte</strong><br>${esc(practice.counterparty)}</div>
-            <div><strong>Stato</strong><br><span class="badge-status status-sent">${esc(practice.status)}</span></div>
-            <div><strong>AI</strong><br>${esc(practice.ai_status || 'non avviata')}</div>
-          </div>
-          <div style="margin-top:18px"><strong>Esposizione dei fatti / richiesta</strong><div style="margin-top:7px;padding:12px;background:#f8fafc;border-radius:8px;white-space:pre-wrap">${esc(practice.description)}</div></div>
-          <div style="margin-top:18px"><strong>📎 Allegati</strong><div id="practiceDocs" style="margin-top:8px"></div></div>
-        </div>`;
+      detail.innerHTML = '<div style="width:min(900px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:14px;padding:24px">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">📁 Pratica · '+esc(practice.client_name)+'</h2><button class="btn" id="closePractice" type="button">Chiudi</button></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px">' +
+        '<div><strong>Cliente</strong><br>'+esc(practice.client_name)+'</div><div><strong>Codice fiscale / P.IVA</strong><br>'+esc(practice.tax_id)+'</div>' +
+        '<div><strong>Area legale</strong><br>'+esc(practice.legal_area)+'</div><div><strong>Controparte</strong><br>'+esc(practice.counterparty)+'</div>' +
+        '<div><strong>Stato</strong><br>'+esc(practice.status)+'</div><div><strong>AI</strong><br>'+esc(practice.ai_status || 'non avviata')+'</div></div>' +
+        '<div style="margin-top:18px"><strong>Esposizione dei fatti / richiesta</strong><div style="margin-top:7px;padding:12px;background:#f8fafc;border-radius:8px;white-space:pre-wrap">'+esc(practice.description)+'</div></div>' +
+        '<div style="margin-top:18px"><strong>📎 Allegati</strong><div id="practiceDocs" style="margin-top:8px"></div></div></div>';
       document.body.appendChild(detail);
-      detail.querySelector('#closePractice').onclick = () => detail.remove();
-      const docsBox = detail.querySelector('#practiceDocs');
-      if (!docs || !docs.length) {
-        docsBox.innerHTML = '<div style="color:#64748b">Nessun allegato.</div>';
-        return;
-      }
-      docsBox.innerHTML = docs.map(d => `
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #e2e8f0">
-          <div><strong>${esc(d.file_name)}</strong><br><small style="color:#64748b">${esc(d.mime_type || '')} · ${Math.round(Number(d.size_bytes || 0)/1024)} KB</small></div>
-          <button class="btn btn-info doc-open" type="button" data-path="${esc(d.storage_path)}">Apri allegato</button>
-        </div>`).join('');
-      docsBox.querySelectorAll('.doc-open').forEach(btn => {
-        btn.onclick = async () => {
-          btn.disabled = true;
-          btn.textContent = 'Apertura…';
-          const { data, error } = await client.storage.from('studio-legale-documenti').createSignedUrl(btn.dataset.path, 300);
-          btn.disabled = false;
-          btn.textContent = 'Apri allegato';
-          if (error || !data?.signedUrl) {
-            alert('Impossibile aprire il documento: ' + (error?.message || 'URL non disponibile'));
-            return;
-          }
-          window.open(data.signedUrl, '_blank', 'noopener,noreferrer');
-        };
+      detail.querySelector('#closePractice').onclick=()=>detail.remove();
+      const docsBox=detail.querySelector('#practiceDocs');
+      if(!docs || !docs.length){docsBox.innerHTML='<div style="color:#64748b">Nessun allegato.</div>';return;}
+      docsBox.innerHTML=docs.map(d=>'<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #e2e8f0"><div><strong>'+esc(d.file_name)+'</strong><br><small style="color:#64748b">'+esc(d.mime_type||'')+' · '+Math.round(Number(d.size_bytes||0)/1024)+' KB</small></div><button class="btn btn-info doc-open" type="button" data-path="'+esc(d.storage_path)+'">Apri allegato</button></div>').join('');
+      docsBox.querySelectorAll('.doc-open').forEach(btn=>btn.onclick=async()=>{
+        btn.disabled=true;btn.textContent='Apertura…';
+        const {data,error}=await client.storage.from('studio-legale-documenti').createSignedUrl(btn.dataset.path,300);
+        btn.disabled=false;btn.textContent='Apri allegato';
+        if(error||!data?.signedUrl){alert('Impossibile aprire il documento: '+(error?.message||'URL non disponibile'));return;}
+        window.open(data.signedUrl,'_blank','noopener,noreferrer');
       });
     }
 
@@ -258,7 +233,6 @@
       await loadPractices();
     });
 
-    // All'ingresso nell'area Studio chiediamo subito l'autenticazione.
     loadPractices();
 
     client.auth.onAuthStateChange((_event, session) => {
