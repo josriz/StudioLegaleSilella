@@ -206,14 +206,15 @@
       button.disabled = true;
       button.textContent = 'Accesso in corso…';
 
-      const { error } = await client.auth.signInWithPassword({ email, password });
+      const { data: authData, error } = await client.auth.signInWithPassword({ email, password });
 
       button.disabled = false;
       button.textContent = 'Accedi';
 
-      if (error) {
-        errorBox.textContent = 'Accesso non riuscito. Verifica email e password.';
-        console.error(error);
+      if (error || !authData?.user || !authData?.session) {
+        const msg = error?.message || 'Autenticazione non completata.';
+        errorBox.textContent = msg;
+        console.error('Studio login:', error || 'sessione mancante');
         return;
       }
 
