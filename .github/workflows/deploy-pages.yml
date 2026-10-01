@@ -35,7 +35,7 @@ jobs:
           # il secret GitHub non viene iniettato nel workflow.
           KEY="$SUPABASE_PUBLISHABLE_KEY"
           if [ -z "$KEY" ]; then
-            KEY='sb_publishable_EBgrU25BpXMp9x6a2n7_Pg_FTFa5JLu'
+            KEY='sb_publishable_aVF8u7kXdbznCYQakC3NqQ_fJQkBZQ9'
           fi
 
           cat > _site/config.js <<EOF
@@ -43,20 +43,9 @@ jobs:
           window.STUDIO_SUPABASE_PUBLISHABLE_KEY = '$KEY';
           EOF
 
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('_site/index.html')
-          s = p.read_text(encoding='utf-8')
-          marker = '</body>'
-          injection = '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="studio-dashboard.js?v=20261001-2"></script>'
-          if injection not in s:
-              s = s.replace(marker, injection + marker)
-          p.write_text(s, encoding='utf-8')
-
-          c = Path('_site/cliente.html')
-          if c.exists():
-              c.write_text(c.read_text(encoding='utf-8').replace('</script></script>', '</script>'), encoding='utf-8')
-          PY
+          # index.html contiene già i loader Supabase, config.js, studio-dashboard.js e lexroom-dashboard.js.
+          # Evitiamo di reiniettarli nel build per non creare script duplicati.
+          :
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
