@@ -219,6 +219,7 @@
 
       studioAccessGranted = true;
       hideLogin();
+      if(window.__LEXROOM_INIT__) await window.__LEXROOM_INIT__();
       await loadPractices();
     });
 
