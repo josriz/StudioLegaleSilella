@@ -245,18 +245,13 @@
             <!-- 6. RAG -->
             <div id="panel-jurisprudence" class="panel">
                 <div class="card">
-                    <h3>🔍 Ricerca Giurisprudenziale (RAG & Precedenti Silella)</h3>
+                    <h3>🔍 Ricerca RAG & Conoscenza dello Studio</h3>
                     <div class="form-group">
-                        <label>Quesito Giuridico:</label>
-                        <input type="text" id="ragQuery" placeholder="Es. revoca amministratore condominiale gravi irregolarità">
+                        <label>Quesito / Parola chiave:</label>
+                        <input type="text" id="ragQuery" placeholder="Es. condominio, revoca amministratore, risarcimento...">
                     </div>
-                    <button class="btn btn-info" onclick="runRagSearch()">Interroga Banca Dati & Precedenti ⚡</button>
-                    <div id="ragResults" style="margin-top: 15px; display:none;">
-                        <div class="card" style="background:rgba(250,248,245,0.95); margin-bottom:10px;">
-                            <h4 style="font-size:12px; color:var(--primary);">Massima di Riferimento (Cass. Civ. Sez. II, n. 8412/2025)</h4>
-                            <p style="font-size:11px; color:var(--text-main); margin-top:4px;">"Costituisce grave irregolarità legittimante la revoca giudiziaria dell'amministratore..."</p>
-                        </div>
-                    </div>
+                    <button class="btn btn-info" onclick="runRagSearch()">Cerca nei dati dello Studio 🔎</button>
+                    <div id="ragResults" style="margin-top:15px;display:none;"></div>
                 </div>
             </div>
 
@@ -488,10 +483,55 @@
                 '</div><div style="margin-top:8px;font-size:13px;color:#475569;">Il risultato segnala corrispondenze nei dati disponibili; la decisione sul conflitto resta una valutazione professionale.</div>';
         }
 
-        function runRagSearch() {
-            const query = document.getElementById('ragQuery').value;
-            if(!query.trim()) { alert("Inserisci un quesito di ricerca."); return; }
-            document.getElementById('ragResults').style.display = 'block';
+        async function runRagSearch() {
+            const query = document.getElementById('ragQuery').value.trim();
+            const result = document.getElementById('ragResults');
+            if(!query) { alert("Inserisci un quesito di ricerca."); return; }
+
+            result.style.display = 'block';
+            result.innerHTML = '<div class="card"><strong>🔎 Ricerca in corso…</strong></div>';
+
+            const client = window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
+                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY))
+                : null);
+            if(!client) {
+                result.innerHTML = '<div class="card"><strong style="color:#b91c1c;">⚠️ Servizio di ricerca non disponibile.</strong></div>';
+                return;
+            }
+
+            const safe = query.replace(/[%_,]/g, ' ').trim();
+            if(!safe) { result.innerHTML = '<div class="card"><strong>Nessun criterio di ricerca valido.</strong></div>'; return; }
+            const pattern = '%'+safe+'%';
+
+            const [pratiche, analisi, bozze] = await Promise.all([
+                client.from('studio_pratiche').select('id,client_name,tax_id,legal_area,counterparty,description,status,created_at').or('client_name.ilike.'+pattern+',legal_area.ilike.'+pattern+',counterparty.ilike.'+pattern+',description.ilike.'+pattern).order('created_at',{ascending:false}).limit(20),
+                client.from('studio_ai_analisi').select('id,pratica_id,summary,provider,model,created_at').ilike('summary',pattern).order('created_at',{ascending:false}).limit(20),
+                client.from('studio_bozze').select('id,pratica_id,content,status,created_at').ilike('content',pattern).order('created_at',{ascending:false}).limit(20)
+            ]);
+
+            const firstError = pratiche.error || analisi.error || bozze.error;
+            if(firstError) {
+                console.error(firstError);
+                result.innerHTML = '<div class="card"><strong style="color:#b91c1c;">⚠️ Errore durante la ricerca.</strong><div style="margin-top:6px;font-size:13px;">La ricerca non ha potuto interrogare tutti i dati disponibili.</div></div>';
+                return;
+            }
+
+            const escRag = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+            const pRows = pratiche.data || [];
+            const aRows = analisi.data || [];
+            const bRows = bozze.data || [];
+
+            if(!pRows.length && !aRows.length && !bRows.length) {
+                result.innerHTML = '<div class="card" style="background:rgba(240,253,244,.95);"><strong>ℹ️ Nessun contenuto corrispondente trovato nei dati dello Studio.</strong><div style="margin-top:6px;font-size:13px;color:#475569;">La ricerca utilizza esclusivamente contenuti realmente presenti in Supabase; non viene mostrata una sentenza o una fonte giurisprudenziale inventata.</div></div>';
+                return;
+            }
+
+            const blocks = [];
+            if(pRows.length) blocks.push('<div class="card"><h4>📁 Pratiche corrispondenti ('+pRows.length+')</h4>'+pRows.map(p=>'<div style="padding:10px 0;border-bottom:1px solid #e2e8f0;"><strong>'+escRag(p.client_name||'Cliente non indicato')+'</strong><div style="font-size:12px;color:#64748b;">'+escRag(p.legal_area||'')+' · '+escRag(p.status||'')+' · '+escRag(p.counterparty||'')+'</div><div style="margin-top:5px;font-size:13px;white-space:pre-wrap;">'+escRag(p.description||'')+'</div></div>').join('')+'</div>');
+            if(aRows.length) blocks.push('<div class="card"><h4>🧠 Analisi archiviate ('+aRows.length+')</h4>'+aRows.map(a=>'<div style="padding:10px 0;border-bottom:1px solid #e2e8f0;"><strong>'+escRag(a.provider||'Analisi')+' · '+escRag(a.model||'')+'</strong><div style="margin-top:5px;font-size:13px;white-space:pre-wrap;">'+escRag(a.summary||'')+'</div></div>').join('')+'</div>');
+            if(bRows.length) blocks.push('<div class="card"><h4>📝 Bozze archiviate ('+bRows.length+')</h4>'+bRows.map(b=>'<div style="padding:10px 0;border-bottom:1px solid #e2e8f0;"><strong>Stato: '+escRag(b.status||'')+'</strong><div style="margin-top:5px;font-size:13px;white-space:pre-wrap;">'+escRag(b.content||'')+'</div></div>').join('')+'</div>');
+            blocks.push('<div style="margin-top:8px;font-size:12px;color:#64748b;">Questa è una ricerca RAG interna sui contenuti dello Studio. Non costituisce una banca dati giurisprudenziale esterna e non sostituisce la verifica professionale delle fonti.</div>');
+            result.innerHTML = blocks.join('');
         }
 
         let timerInterval, secondsElapsed = 0;
