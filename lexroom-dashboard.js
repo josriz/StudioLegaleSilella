@@ -58,5 +58,10 @@ const init=async()=>{
  panel.querySelector('#lxRefresh').onclick=load; item.onclick=async e=>{e.preventDefault();document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));item.classList.add('active');panel.classList.add('active');const t=document.getElementById('headerTitle');if(t)t.innerText='Lexroom LAB — Test gratuito';await load();await loadModels()};
  load();loadModels();
 };
+window.__LEXROOM_INIT__=init;
+if(!window.__LEXROOM_AUTH_BOUND__){
+ window.__LEXROOM_AUTH_BOUND__=true;
+ sb.auth.onAuthStateChange((_event,session)=>{if(session)setTimeout(init,0);});
+}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
