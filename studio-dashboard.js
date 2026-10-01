@@ -206,22 +206,19 @@
       button.disabled = true;
       button.textContent = 'Accesso in corso…';
 
-      const { data: authData, error } = await client.auth.signInWithPassword({ email, password });
+      const { error } = await client.auth.signInWithPassword({ email, password });
 
       button.disabled = false;
       button.textContent = 'Accedi';
 
-      if (error || !authData?.user || !authData?.session) {
-        const msg = error?.message || 'Autenticazione non completata.';
-        errorBox.textContent = msg;
-        console.error('Studio login:', error || 'sessione mancante');
+      if (error) {
+        errorBox.textContent = 'Accesso non riuscito. Verifica email e password.';
+        console.error(error);
         return;
       }
 
       studioAccessGranted = true;
       hideLogin();
-      window.dispatchEvent(new Event('studio-auth-ready'));
-      if (window.initLexroomLab) window.initLexroomLab();
       await loadPractices();
     });
 
