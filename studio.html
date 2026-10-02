@@ -213,8 +213,12 @@
             <div class="header-left">
                 <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
                 <div>
-                    <h3 id="headerTitle" style="font-size: 16px; color: var(--primary);">Dashboard Studio Legale Silella</h3>
-                    <span style="font-size: 11px; color: #64748b; font-weight: 600;">📍 Via Sparano, 72 - 70121 Bari</span>
+                    <div id="headerTitle" style="font-size: 13px; line-height: 1.45; color: var(--primary); font-weight: 700;">
+                        <div>Viale Antonio Salandra</div>
+                        <div>70124 Bari (BA)</div>
+                        <div>EMAIL: <a href="mailto:studiolegalesilella@gmail.com">studiolegalesilella@gmail.com</a></div>
+                        <div>Tel. +39 080 914 6254</div>
+                    </div>
                 </div>
             </div>
             <div style="display:flex;align-items:center;gap:12px"><button id="studioNotifyBtn" class="studio-notify-btn" title="Notifiche">🔔<span id="studioNotifyCount" class="studio-notify-count" style="display:none">0</span></button><div style="font-size: 13px; font-weight: 600; color: #1e293b;">Area Riservata - Avv. Titolare Silella</div><button id="studioHeaderLogout" class="btn" type="button">Esci</button></div>
@@ -530,7 +534,7 @@
                 'client-portal': 'Portale Clienti (Extranet)',
                 'archive': 'Archivio Storico e Audit Trail'
             };
-            document.getElementById('headerTitle').innerText = titles[panelId] || 'Studio Legale Silella';
+            // L'intestazione superiore mantiene sempre i recapiti dello Studio.
         }
 
         async function runConflictCheck() {
