@@ -284,6 +284,7 @@ async function enterPortal(){
     $('loginErr').className='err';
   }
 }
+// Accesso Cliente: nessun ingresso automatico da sessioni persistenti. Solo il login esplicito apre il portale.
 sb.auth.onAuthStateChange((_event,session)=>{if(!session){currentUser=null;currentClient=null;show('landing')}});
 (async()=>{show('landing');})();
 </script>
