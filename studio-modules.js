@@ -4,7 +4,7 @@
   const esc = v => String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const fmt = v => v ? new Date(v).toLocaleString('it-IT') : '—';
   const day = v => v ? new Date(v).toLocaleDateString('it-IT') : '—';
-  const state = {user:null,profile:null,practices:[],docs:[],audit:[],communications:[],team:[],agenda:[],pct:[],time:[],clients:[],bills:[],portalInvites:[],teamInvites:[],portalDocs:[]};
+  const state = {user:null,profile:null,practices:[],docs:[],audit:[],communications:[],team:[],agenda:[],pct:[],time:[],clients:[],bills:[],portalInvites:[],teamInvites:[],portalDocs:[],notifications:[]};
 
   async function loadData(){
     const c=getClient(); if(!c) throw new Error('Supabase non disponibile.');
@@ -24,10 +24,11 @@
       c.from('studio_fatture').select('*').order('issue_date',{ascending:false}),
       c.from('studio_portale_inviti').select('*').order('invited_at',{ascending:false}),
       c.from('studio_professionisti_inviti').select('*').order('invited_at',{ascending:false}),
-      c.from('studio_portale_documenti').select('*').order('created_at',{ascending:false}).limit(100)
+      c.from('studio_portale_documenti').select('*').order('created_at',{ascending:false}).limit(100),
+      c.from('studio_notifiche').select('*').eq('recipient_user_id',user.id).order('created_at',{ascending:false}).limit(100)
     ];
     const rs=await Promise.all(qs); for(const x of rs) if(x.error) throw x.error;
-    [state.practices,state.docs,state.audit,state.communications,state.team,state.agenda,state.pct,state.time,state.clients,state.bills,state.portalInvites,state.teamInvites,state.portalDocs]=rs.map(x=>x.data||[]);
+    [state.practices,state.docs,state.audit,state.communications,state.team,state.agenda,state.pct,state.time,state.clients,state.bills,state.portalInvites,state.teamInvites,state.portalDocs,state.notifications]=rs.map(x=>x.data||[]);
     state.user=user; state.profile=profile;
   }
   const panel=(id,html)=>{const p=document.getElementById('panel-'+id); if(p)p.innerHTML=html;};
@@ -38,6 +39,21 @@
   async function refreshAll(){try{await loadData();renderAll()}catch(e){console.error(e);renderError(e.message)}}
   function renderError(msg){['dashboard','team','clients','agenda','pec-client','pct-deposit','time-tracker','billing','client-portal','archive'].forEach(id=>{const p=document.getElementById('panel-'+id);if(p){const b=p.querySelector('[data-module-body]');if(b)b.innerHTML='<div style="padding:14px;color:#b91c1c">'+esc(msg)+'</div>'}})}
   function bindMenu(id,fn){document.querySelectorAll('.menu-item').forEach(m=>{if((m.getAttribute('onclick')||'').includes("'"+id+"'"))m.addEventListener('click',()=>setTimeout(fn,0))})}
+
+  function renderStudioNotifications(){
+    const unread=state.notifications.filter(n=>!n.letta_at).length;
+    const count=document.getElementById('studioNotifyCount');
+    if(count){count.textContent=String(unread);count.style.display=unread?'inline-block':'none';}
+    const list=document.getElementById('studioNotifyList');
+    if(list) list.innerHTML=state.notifications.length?state.notifications.map(n=>'<div class="studio-notify-row '+(!n.letta_at?'unread':'')+'"><strong>'+esc(n.titolo)+'</strong><div>'+esc(n.messaggio||'')+'</div><small>'+fmt(n.created_at)+'</small></div>').join(''):'<div style="padding:24px;text-align:center;color:#64748b">Nessuna notifica.</div>';
+  }
+  function bindStudioNotifications(){
+    const b=document.getElementById('studioNotifyBtn'), m=document.getElementById('studioNotifyModal'), x=document.getElementById('studioNotifyClose'), r=document.getElementById('studioNotifyRead');
+    if(!b||!m)return;
+    b.onclick=async()=>{renderStudioNotifications();m.style.display='grid'};
+    if(x)x.onclick=()=>m.style.display='none';
+    if(r)r.onclick=async()=>{await getClient().from('studio_notifiche').update({letta_at:new Date().toISOString()}).eq('recipient_user_id',state.user.id).is('letta_at',null);await refreshAll();renderStudioNotifications();};
+  }
 
   function renderDashboard(){
     const next=state.agenda.filter(a=>a.status==='da_fare' && new Date(a.starts_at)>=new Date()).slice(0,10);
@@ -106,7 +122,7 @@
     document.getElementById('archiveRefresh').onclick=refreshAll;
   }
 
-  function renderAll(){renderDashboard();renderTeam();renderClients();renderAgenda();renderPec();renderPct();renderTimer();renderBilling();renderPortal();renderArchive();}
+  function renderAll(){renderDashboard();renderTeam();renderClients();renderAgenda();renderPec();renderPct();renderTimer();renderBilling();renderPortal();renderArchive();renderStudioNotifications();bindStudioNotifications();}
   function init(){['dashboard','team','clients','agenda','pec-client','pct-deposit','time-tracker','billing','client-portal','archive'].forEach(id=>bindMenu(id,refreshAll));refreshAll();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
