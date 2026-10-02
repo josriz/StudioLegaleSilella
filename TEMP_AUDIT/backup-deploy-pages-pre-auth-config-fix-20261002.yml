@@ -1,0 +1,60 @@
+name: Deploy Studio Legale Silella
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Prepare site
+        env:
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          mkdir -p _site
+          rsync -av --exclude='_site' --exclude='.git' ./ _site/
+
+          # La publishable key è destinata all'uso client-side. Il fallback serve
+          # solo per evitare che il gestionale rimanga senza configurazione se
+          # il secret GitHub non viene iniettato nel workflow.
+          KEY="$SUPABASE_PUBLISHABLE_KEY"
+          if [ -z "$KEY" ]; then
+            KEY='sb_publishable_aVF8u7kXdbznCYQakC3NqQ_fJQkBZQ9'
+          fi
+
+          cat > _site/config.js <<EOF
+          window.STUDIO_SUPABASE_URL = 'https://dscinvstqizfxwrovsbb.supabase.co';
+          window.STUDIO_SUPABASE_PUBLISHABLE_KEY = '$KEY';
+          EOF
+
+          # index.html contiene già i loader Supabase, config.js, studio-dashboard.js e lexroom-dashboard.js.
+          # Evitiamo di reiniettarli nel build per non creare script duplicati.
+          :
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
