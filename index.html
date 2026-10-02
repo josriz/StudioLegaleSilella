@@ -187,13 +187,19 @@
             <!-- 2. TEAM -->
             <div id="panel-team" class="panel">
                 <div class="card">
-                    <h3>⚖️ Gestione Professionisti & Team Silella</h3>
-                    <table>
-                        <thead><tr><th>Professionista</th><th>Ruolo / Qualifica</th><th>Fascicoli Assegnati</th><th>Contatto Email</th><th>Stato</th></tr></thead>
-                        <tbody>
-                            <tr><td><strong>Avv. Titolare Silella</strong></td><td>Name Partner / Dominus</td><td>22</td><td>studiolegalesilella@gmail.com</td><td><span style="color:var(--success); font-weight:650;">Online</span></td></tr>
-                        </tbody>
-                    </table>
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+                        <div>
+                            <h3 style="margin:0">⚖️ Gestione Professionisti & Team Silella</h3>
+                            <div id="teamStatus" style="margin-top:5px;font-size:12px;color:#64748b">Caricamento dati reali dello Studio…</div>
+                        </div>
+                        <button class="btn btn-info" type="button" id="teamRefresh">Aggiorna</button>
+                    </div>
+                    <div style="overflow-x:auto;margin-top:14px">
+                        <table>
+                            <thead><tr><th>Professionista</th><th>Ruolo</th><th>Fascicoli assegnati</th><th>Contatto</th><th>Stato</th></tr></thead>
+                            <tbody id="teamTableBody"><tr><td colspan="5">Caricamento…</td></tr></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -803,6 +809,78 @@
         document.getElementById('clientsRefresh')?.addEventListener('click', loadClients);
         document.querySelector('[onclick="switchTab(\'clients\', this)"]')?.addEventListener('click', () => setTimeout(loadClients, 0));
         loadClients();
+
+        async function loadTeam() {
+            const body = document.getElementById('teamTableBody');
+            const status = document.getElementById('teamStatus');
+            if(!body || !status) return;
+
+            body.innerHTML = '<tr><td colspan="5">Caricamento…</td></tr>';
+            const client = getStudioClient();
+            if(!client) {
+                status.textContent = 'Servizio Supabase non disponibile.';
+                body.innerHTML = '<tr><td colspan="5">Impossibile caricare il Team.</td></tr>';
+                return;
+            }
+
+            const { data: { user }, error: authError } = await client.auth.getUser();
+            if(authError || !user) {
+                status.textContent = 'Accesso richiesto.';
+                body.innerHTML = '<tr><td colspan="5">Effettua l’accesso per visualizzare il Team.</td></tr>';
+                return;
+            }
+
+            const [{ data: members, error: membersError }, { data: practices, error: practicesError }] = await Promise.all([
+                client.from('studio_utenti').select('user_id,role,full_name,created_at').order('created_at', { ascending: true }),
+                client.from('studio_pratiche').select('id,owner_user_id')
+            ]);
+
+            if(membersError || practicesError) {
+                console.error(membersError || practicesError);
+                status.textContent = 'Errore nel caricamento dei dati del Team.';
+                body.innerHTML = '<tr><td colspan="5">Impossibile caricare il Team.</td></tr>';
+                return;
+            }
+
+            const counts = {};
+            (practices || []).forEach(p => {
+                if(p.owner_user_id) counts[p.owner_user_id] = (counts[p.owner_user_id] || 0) + 1;
+            });
+
+            const rows = (members || []).map(member => {
+                const isCurrent = member.user_id === user.id;
+                const name = escapeTeam(member.full_name || (isCurrent ? (user.email || 'Utente autenticato') : 'Professionista'));
+                const role = escapeTeam(member.role || '—');
+                const count = counts[member.user_id] || 0;
+                const contact = isCurrent ? escapeTeam(user.email || '—') : '—';
+                return '<tr>' +
+                    '<td><strong>' + name + '</strong></td>' +
+                    '<td>' + role + '</td>' +
+                    '<td>' + count + '</td>' +
+                    '<td>' + contact + '</td>' +
+                    '<td><span style="color:var(--success);font-weight:650;">' + (isCurrent ? 'Online' : 'Registrato') + '</span></td>' +
+                    '</tr>';
+            });
+
+            body.innerHTML = rows.length ? rows.join('') : '<tr><td colspan="5">Nessun professionista presente.</td></tr>';
+            status.textContent = (members || []).length + ' professionista/i presenti · dati reali Supabase';
+            window.__studioTeam = members || [];
+        }
+
+        function escapeTeam(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({
+                '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+            }[ch]));
+        }
+
+        document.getElementById('teamRefresh')?.addEventListener('click', loadTeam);
+        const teamMenuItem = Array.from(document.querySelectorAll('.menu-item')).find(m => (m.getAttribute('onclick') || '').includes("'team'"));
+        teamMenuItem?.addEventListener('click', () => setTimeout(loadTeam, 0));
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadTeam);
+        } else {
+            setTimeout(loadTeam, 0);
+        }
 
         let timerInterval, secondsElapsed = 0;
         function startTimer() {
