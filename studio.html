@@ -984,13 +984,18 @@
   async function guardStudioAccess(){
     try {
       if(!window.supabase || !window.STUDIO_SUPABASE_URL || !window.STUDIO_SUPABASE_PUBLISHABLE_KEY){
-        window.location.replace('index.html');
+        document.body.classList.remove('studio-auth-pending');
         return;
       }
-      const client = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY);
+      window.STUDIO_SUPABASE_CLIENT = window.STUDIO_SUPABASE_CLIENT || window.supabase.createClient(
+        window.STUDIO_SUPABASE_URL,
+        window.STUDIO_SUPABASE_PUBLISHABLE_KEY,
+        {auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
+      );
+      const client = window.STUDIO_SUPABASE_CLIENT;
       const {data:{user}} = await client.auth.getUser();
       if(!user){
-        window.location.replace('index.html');
+        document.body.classList.remove('studio-auth-pending');
         return;
       }
       const {data:profile,error} = await client
@@ -1000,17 +1005,17 @@
         .maybeSingle();
       if(error || !profile || !['studio','admin'].includes(profile.role)){
         await client.auth.signOut();
-        window.location.replace('index.html');
+        document.body.classList.remove('studio-auth-pending');
         return;
       }
       document.body.classList.remove('studio-auth-pending');
     } catch(e) {
       console.error('Controllo accesso Area Studio:',e);
-      window.location.replace('index.html');
+      document.body.classList.remove('studio-auth-pending');
     }
   }
   guardStudioAccess();
 })();
-</script>
+</script></script>
 <script src="studio-dashboard.js?v=20261002-5"></script><script src="lexroom-dashboard.js?v=20261002-2"></script><script src="studio-modules.js?v=20261002-6"></script></body>
 </html>
