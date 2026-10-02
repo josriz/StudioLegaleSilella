@@ -97,7 +97,7 @@ button,input,select,textarea{font:inherit}.container{width:min(1160px,calc(100% 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js?v=20261002-4"></script>
 <script>
-const sb=supabase.createClient(window.STUDIO_SUPABASE_URL,window.STUDIO_SUPABASE_PUBLISHABLE_KEY);
+const sb=supabase.createClient(window.STUDIO_SUPABASE_URL,window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-client-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const FN=window.STUDIO_SUPABASE_URL+'/functions/v1/studio-ricevi-pratica';
 const BUCKET='studio-legale-documenti';
 const $=id=>document.getElementById(id);
@@ -285,7 +285,7 @@ async function enterPortal(){
   }
 }
 sb.auth.onAuthStateChange(async(_event,session)=>{if(session&&!currentUser){currentUser=session.user;try{await enterPortal()}catch(e){console.error(e)}}});
-(async()=>{const {data:{session}}=await sb.auth.getSession();if(session){currentUser=session.user;await enterPortal()}else show('landing')})();
+(async()=>{show('landing');})();
 </script>
 </body>
 </html>
