@@ -2,67 +2,12 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Studio Legale Silella — accesso al sito istituzionale, Area Studio e Area Cliente.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="refresh" content="0; url=cliente.html">
 <title>Studio Legale Silella</title>
-<style>
-:root{--navy:#0b1730;--navy2:#162846;--gold:#c8a45d;--gold2:#ead39a;--ink:#172033;--muted:#647087;--line:#e4e8ef}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:#f7f8fb}
-a{text-decoration:none;color:inherit}.container{width:min(1120px,calc(100% - 36px));margin:auto}
-.hero{min-height:100vh;color:#fff;position:relative;overflow:hidden;background:linear-gradient(110deg,rgba(7,16,32,.94),rgba(10,27,49,.84) 52%,rgba(16,40,65,.72)),url("https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&w=2200&q=85") center/cover no-repeat}
-.hero:after{content:"";position:absolute;inset:auto -8% -35% 48%;height:520px;border:1px solid rgba(234,211,154,.18);border-radius:50%;transform:rotate(-10deg);pointer-events:none}
-.nav{height:88px;display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;z-index:2;border-bottom:1px solid rgba(255,255,255,.12)}
-.brand{display:flex;align-items:center;gap:14px}.brand img{width:220px;height:68px;object-fit:contain;background:#fff;border-radius:10px;padding:5px;box-shadow:0 10px 35px rgba(0,0,0,.2)}
-.homeTag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);font-weight:800}
-.heroGrid{display:grid;grid-template-columns:1.08fr .92fr;gap:65px;align-items:center;min-height:calc(100vh - 88px);padding:70px 0 90px;position:relative;z-index:1}
-.eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold2);font-weight:800}
-h1{font:600 clamp(44px,6vw,72px)/1.02 Georgia,serif;margin:16px 0 20px;max-width:720px}h1 em{font-style:normal;color:var(--gold2)}
-.lead{font-size:18px;line-height:1.7;color:#d6deea;max-width:650px;margin:0}
-.intro{margin-top:28px;color:#b8c4d4;font-size:13px;line-height:1.6}
-.accessPanel{background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.18);border-radius:24px;padding:28px;backdrop-filter:blur(14px);box-shadow:0 25px 80px rgba(0,0,0,.2)}
-.accessPanel h2{font:600 30px Georgia,serif;margin:0 0 7px}.accessPanel>p{margin:0 0 22px;color:#c5cfdd;font-size:13px}
-.access{display:grid;gap:13px}.accessCard{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:18px;border:1px solid rgba(255,255,255,.15);border-radius:15px;background:rgba(255,255,255,.06);transition:.18s}.accessCard:hover{transform:translateY(-2px);border-color:rgba(234,211,154,.5);background:rgba(255,255,255,.1)}
-.accessText{display:flex;gap:13px;align-items:center}.icon{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;background:rgba(200,164,93,.16);color:var(--gold2);font-size:20px;flex:0 0 auto}.accessCard h3{font:600 19px Georgia,serif;margin:0 0 3px}.accessCard p{margin:0;color:#bdc8d7;font-size:12px;line-height:1.4}
-.btn{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;border-radius:9px;padding:10px 14px;font-size:13px;font-weight:750;background:var(--gold);color:var(--navy)}
-.note{margin-top:20px;padding-top:17px;border-top:1px solid rgba(255,255,255,.12);font-size:11px;line-height:1.5;color:#9eabbd}
-footer{position:absolute;bottom:0;left:0;right:0;padding:16px 0;color:#9daabd;font-size:11px;z-index:2}
-@media(max-width:800px){.nav{height:76px}.brand img{width:185px;height:58px}.heroGrid{grid-template-columns:1fr;gap:28px;min-height:auto;padding:55px 0 80px}.hero{min-height:100vh}h1{font-size:clamp(40px,12vw,60px)}.lead{font-size:16px}.accessPanel{padding:21px}.accessCard{align-items:flex-start}.btn{padding:9px 12px}footer{position:static;padding:0 0 20px}}
-</style>
+<script>window.location.replace("cliente.html");</script>
 </head>
 <body>
-<main class="hero">
-<div class="container">
-<header class="nav">
-<a class="brand" href="./" aria-label="Studio Legale Silella Home">
-<img src="Logo_Studio_Silella.jpg" alt="Studio Legale Silella">
-</a>
-<div class="homeTag">Sito principale</div>
-</header>
-<section class="heroGrid">
-<div>
-<div class="eyebrow">Studio Legale Silella</div>
-<h1>Professionalità,<br><em>tutela e innovazione.</em></h1>
-<p class="lead">Benvenuti nello spazio digitale dello Studio Legale Silella.</p>
-<p class="intro">Questa è la <strong>pagina principale</strong>. Da qui si accede separatamente agli strumenti riservati dello Studio e al Portale Cliente.</p>
-</div>
-<div class="accessPanel">
-<h2>Accessi riservati</h2>
-<p>Scegli l'area di interesse.</p>
-<div class="access">
-<a class="accessCard" href="studio.html">
-<div class="accessText"><div class="icon">⚖</div><div><h3>Area Studio</h3><p>Gestione interna, professionisti, fascicoli e strumenti dello Studio.</p></div></div>
-<span class="btn">Entra</span>
-</a>
-<a class="accessCard" href="cliente.html">
-<div class="accessText"><div class="icon">▣</div><div><h3>Area Cliente</h3><p>Pratiche, documenti, comunicazioni e servizi riservati ai clienti.</p></div></div>
-<span class="btn">Accedi</span>
-</a>
-</div>
-<div class="note">L'Area Studio e l'Area Cliente sono pagine separate: questa Home non contiene il gestionale e non sostituisce l'autenticazione delle aree riservate.</div>
-</div>
-</section>
-<footer>© Studio Legale Silella · Pagina principale</footer>
-</div>
-</main>
+<p>Reindirizzamento alla landing page dello Studio Legale Silella…</p>
 </body>
 </html>
