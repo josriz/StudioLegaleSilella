@@ -243,14 +243,11 @@
       await loadPractices();
     });
 
-    const existingSession = await client.auth.getSession();
-    if (existingSession.data?.session?.user) {
-      studioAccessGranted = true;
-      hideLogin();
-      await loadPractices();
-    } else {
-      showLogin();
-    }
+    // Il login deve essere sempre visibile all'apertura della pagina.
+    // Non usiamo una sessione locale già presente per saltare il gate:
+    // l'accesso viene verificato esplicitamente con email e password.
+    studioAccessGranted = false;
+    showLogin();
 
     client.auth.onAuthStateChange((_event, session) => {
       if (!session) {
