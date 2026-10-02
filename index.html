@@ -31,7 +31,7 @@ button,input,select,textarea{font:inherit}.container{width:min(1160px,calc(100% 
   <div class="container">
     <nav class="nav">
       <div class="brand"><img src="Logo_Studio_Silella.jpg" alt="Logo Studio Silella" onerror="this.src='Logo_Studio_Silella.webp'"><div><strong>Studio Legale Silella</strong><span>Portale Clienti</span></div></div>
-      <div class="navlinks"><a href="#come-funziona">Come funziona</a><a href="#sicurezza">Sicurezza</a><button id="openLoginTop">Accedi</button></div>
+      <div class="navlinks"><a href="#come-funziona">Come funziona</a><a href="#sicurezza">Sicurezza</a></div>
     </nav>
     <div class="heroGrid">
       <div>
@@ -261,7 +261,7 @@ function openLegal(type){const data={privacy:['Privacy','Il portale tratta i dat
 function closeLegal(){$('legalModal').classList.add('hidden')}
 window.openLegal=openLegal;window.closeLegal=closeLegal;window.downloadDoc=downloadDoc;window.prepareSign=prepareSign;window.returnSigned=returnSigned;
 
-$('openLoginTop').onclick=()=>openAuth('login');$('openLoginHero').onclick=()=>openAuth('login');$('openRegister').onclick=()=>openAuth('register');$('backLanding').onclick=()=>show('landing');$('showRegister').onclick=()=>openAuth('register');$('showLogin').onclick=()=>openAuth('login');
+$('openLoginHero').onclick=()=>openAuth('login');$('openRegister').onclick=()=>openAuth('register');$('backLanding').onclick=()=>show('landing');$('showRegister').onclick=()=>openAuth('register');$('showLogin').onclick=()=>openAuth('login');
 $('loginForm').onsubmit=async e=>{e.preventDefault();$('loginErr').textContent='';$('loginBtn').disabled=true;const {data:authData,error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});$('loginBtn').disabled=false;if(error){$('loginErr').textContent=error.message;return}const {data:profile,error:roleError}=await sb.from('studio_utenti').select('role').eq('user_id',authData.user.id).maybeSingle();if(roleError){await sb.auth.signOut();$('loginErr').textContent='Impossibile verificare il tipo di account.';return}if(profile?.role!=='cliente'){await sb.auth.signOut();$('loginErr').textContent='Questo account è abilitato all’Area Studio e non può entrare nell’Area Cliente.';return}await enterPortal()};
 $('signupForm').onsubmit=async e=>{e.preventDefault();$('signupErr').textContent='';$('signupBtn').disabled=true;try{const {data,error}=await sb.auth.signUp({email:$('signupEmail').value.trim(),password:$('signupPassword').value,options:{data:{full_name:$('signupName').value.trim()}}});if(error)throw error;if(data.session){localStorage.setItem('studio_portal_consents_v1','1');await bootstrap();await saveNewName($('signupName').value.trim());await enterPortal()}else{localStorage.setItem('studio_portal_consents_v1','1');$('signupErr').className='err ok';$('signupErr').textContent='Account creato. Controlla la posta, conferma l’email e poi accedi.'}}catch(err){$('signupErr').textContent=err.message}finally{$('signupBtn').disabled=false}};
 async function saveNewName(name){if(currentUser)await sb.from('studio_clienti').update({full_name:name}).eq('user_id',currentUser.id)}
