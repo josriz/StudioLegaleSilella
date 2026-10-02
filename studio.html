@@ -507,6 +507,10 @@
             document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
             if(element) element.classList.add('active');
 
+            if (window.matchMedia('(max-width: 900px)').matches) {
+                document.getElementById('appSidebar')?.classList.remove('mobile-open');
+            }
+
             const titles = {
                 'manual': 'Manuale Operativo e Guida in Linea',
                 'dashboard': 'Dashboard Studio Legale Silella',
