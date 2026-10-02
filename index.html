@@ -699,7 +699,12 @@
         document.getElementById('mattersSearch')?.addEventListener('input', renderMatters);
         document.getElementById('mattersStatusFilter')?.addEventListener('change', renderMatters);
         const mattersMenuItem = Array.from(document.querySelectorAll('.menu-item')).find(m => (m.getAttribute('onclick') || '').includes("'matters'"));
-        loadMatters();
+        mattersMenuItem?.addEventListener('click', () => setTimeout(loadMatters, 0));
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadMatters);
+        } else {
+            setTimeout(loadMatters, 0);
+        }
 
         function getStudioClient() {
             return window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
