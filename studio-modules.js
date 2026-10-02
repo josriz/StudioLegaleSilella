@@ -24,8 +24,8 @@
     const results = await Promise.all([
       client.from('studio_pratiche').select('id,client_name,tax_id,legal_area,counterparty,status,created_at,updated_at,owner_user_id').order('created_at',{ascending:false}),
       client.from('studio_documenti').select('id,pratica_id,file_name,size_bytes,created_at').order('created_at',{ascending:false}),
-      client.from('studio_audit').select('*').order('sent_at',{ascending:false}).limit(100),
-      client.from('studio_comunicazioni').select('*').order('created_at',{ascending:false}).limit(100),
+      client.from('studio_audit').select('*').order('created_at',{ascending:false}).limit(100),
+      client.from('studio_comunicazioni').select('*').order('sent_at',{ascending:false}).limit(100),
       client.from('studio_utenti').select('user_id,role,full_name,created_at').order('created_at',{ascending:true})
     ]);
     for (const r of results) if (r.error) throw r.error;
