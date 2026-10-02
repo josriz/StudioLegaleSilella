@@ -507,8 +507,9 @@
             document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
             if(element) element.classList.add('active');
 
-            if (window.matchMedia('(max-width: 900px)').matches) {
-                document.getElementById('appSidebar')?.classList.remove('mobile-open');
+            const sidebar = document.getElementById('appSidebar');
+            if (sidebar) {
+                sidebar.classList.remove('mobile-open');
             }
 
             const titles = {
