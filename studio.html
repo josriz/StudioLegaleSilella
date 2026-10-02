@@ -134,144 +134,36 @@
         .status-sent { background: rgba(220, 252, 231, 0.95); color: #166534; }
         .signature-box { border: 1px dashed var(--accent); padding: 12px; border-radius: 8px; background: rgba(255, 251, 235, 0.9); }
      .studio-notify-btn{position:relative;border:1px solid rgba(15,23,42,.15);background:rgba(255,255,255,.75);border-radius:10px;padding:9px 12px;cursor:pointer;font-size:18px}.studio-notify-count{position:absolute;top:-6px;right:-6px;background:#b42318;color:#fff;border-radius:20px;font-size:10px;padding:2px 6px}.studio-notify-modal{position:fixed;inset:0;background:rgba(7,15,31,.58);display:none;place-items:center;padding:20px;z-index:100}.studio-notify-box{width:min(560px,100%);max-height:80vh;overflow:auto;background:#fff;border-radius:16px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.25)}.studio-notify-row{padding:12px;border-bottom:1px solid #e5e7eb}.studio-notify-row.unread{background:#f7fbff}.studio-notify-row strong{display:block;color:#0f172a}.studio-notify-row small{color:#64748b}
-        /* RESPONSIVE MOBILE - solo layout, nessuna modifica ai contenuti o alla logica */
+        /* RESPONSIVE MOBILE - solo layout, nessuna modifica ai contenuti */
         @media (max-width: 900px) {
-            body {
-                height: 100dvh;
-                min-height: 100vh;
-                overflow: hidden;
-            }
-            aside {
-                position: fixed;
-                top: 0;
-                left: -280px;
-                width: 280px;
-                height: 100dvh;
-                max-height: 100dvh;
-                z-index: 100;
-                transition: left 0.25s ease;
-            }
-            aside.mobile-open {
-                left: 0;
-            }
-            aside.collapsed {
-                width: 280px;
-            }
-            aside.collapsed .sidebar-header img {
-                max-height: none;
-                transform: scale(1.5) scaleY(0.75);
-            }
-            main {
-                width: 100%;
-                min-width: 0;
-                flex: 1 1 100%;
-            }
-            header {
-                height: auto;
-                min-height: 72px;
-                padding: 10px 12px;
-                gap: 10px;
-                flex-wrap: wrap;
-            }
-            .header-left {
-                min-width: 0;
-                flex: 1 1 auto;
-                gap: 10px;
-            }
-            .header-left > div {
-                min-width: 0;
-            }
-            #headerTitle {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: calc(100vw - 115px);
-            }
-            .header-left span {
-                display: block;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: calc(100vw - 115px);
-            }
-            header > div:last-child {
-                width: 100%;
-                justify-content: flex-end;
-                gap: 7px !important;
-                flex-wrap: wrap;
-            }
-            header > div:last-child > div {
-                font-size: 11px !important;
-                max-width: 48vw;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            .content-area {
-                min-width: 0;
-                padding: 12px;
-                overflow-x: hidden;
-            }
-            .grid-3,
-            .grid-2 {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-            .card,
-            .stat-card {
-                padding: 14px;
-                margin-bottom: 12px;
-            }
-            table {
-                min-width: 650px;
-            }
-            .content-area .card {
-                overflow-x: hidden;
-            }
-            .form-group input,
-            .form-group select,
-            .form-group textarea {
-                max-width: 100%;
-            }
+            body { height: 100dvh; min-height: 100vh; overflow: hidden; }
+            aside { position: fixed; top: 0; left: -280px; width: 280px; height: 100dvh; max-height: 100dvh; z-index: 100; transition: left 0.25s ease; }
+            aside.mobile-open { left: 0; }
+            aside.collapsed { width: 280px; }
+            main { width: 100%; min-width: 0; flex: 1 1 100%; }
+            header { height: auto; min-height: 72px; padding: 10px 12px; gap: 10px; flex-wrap: wrap; }
+            .header-left { min-width: 0; flex: 1 1 auto; gap: 10px; }
+            .header-left > div { min-width: 0; }
+            #headerTitle { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100vw - 115px); }
+            .header-left span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100vw - 115px); }
+            header > div:last-child { width: 100%; justify-content: flex-end; gap: 7px !important; flex-wrap: wrap; }
+            header > div:last-child > div { font-size: 11px !important; max-width: 48vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .content-area { min-width: 0; padding: 12px; overflow-x: hidden; }
+            .grid-3, .grid-2 { grid-template-columns: 1fr; gap: 12px; }
+            .card, .stat-card { padding: 14px; margin-bottom: 12px; }
+            .form-group input, .form-group select, .form-group textarea { max-width: 100%; }
         }
-
         @media (max-width: 600px) {
-            .sidebar-header {
-                height: 82px;
-            }
-            header {
-                min-height: 68px;
-            }
-            .toggle-btn {
-                font-size: 20px;
-                flex: 0 0 auto;
-            }
-            .studio-notify-btn {
-                padding: 7px 9px;
-                font-size: 16px;
-            }
-            #studioHeaderLogout {
-                padding: 8px 11px;
-                font-size: 12px;
-            }
-            .content-area {
-                padding: 10px;
-            }
-            .card,
-            .stat-card {
-                padding: 12px;
-                border-radius: 10px;
-            }
-            h3 {
-                font-size: 17px;
-                line-height: 1.3;
-            }
-            .stat-card h4 {
-                font-size: 24px;
-            }
-            .btn {
-                min-height: 40px;
-            }
+            .sidebar-header { height: 82px; }
+            header { min-height: 68px; }
+            .toggle-btn { font-size: 20px; flex: 0 0 auto; }
+            .studio-notify-btn { padding: 7px 9px; font-size: 16px; }
+            #studioHeaderLogout { padding: 8px 11px; font-size: 12px; }
+            .content-area { padding: 10px; }
+            .card, .stat-card { padding: 12px; border-radius: 10px; }
+            h3 { font-size: 17px; line-height: 1.3; }
+            .stat-card h4 { font-size: 24px; }
+            .btn { min-height: 40px; }
         }
 </style>
 </head>
@@ -954,3 +846,204 @@
             const clients = window.__studioClients || [];
             const cl = clients[index];
             if(!detail || !cl) return;
+            const escClient = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+            detail.style.display = 'block';
+            detail.innerHTML = '<div style="padding:16px;background:rgba(248,250,252,.95);border:1px solid #e2e8f0;border-radius:10px;">' +
+                '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"><h4 style="margin:0">👤 ' + escClient(cl.name) + '</h4><button class="btn" type="button" id="closeClientDetail">Chiudi</button></div>' +
+                '<div style="margin-top:8px;font-size:13px;color:#475569;">CF/P.IVA: ' + escClient(cl.taxId || 'non disponibile') + ' · Fascicoli: ' + cl.practices.length + '</div>' +
+                '<div style="margin-top:12px"><strong>Pratiche associate</strong><div style="margin-top:8px;display:grid;gap:6px;">' +
+                cl.practices.map(p => '<div style="padding:9px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;font-size:13px;">' +
+                    '<strong>' + escClient(p.id) + '</strong> · ' + escClient(p.status || 'n/d') +
+                    '<div style="font-size:12px;color:#64748b;margin-top:3px;">' + escClient(p.created_at ? new Date(p.created_at).toLocaleString('it-IT') : '') + '</div>' +
+                '</div>').join('') + '</div></div></div>';
+            document.getElementById('closeClientDetail').addEventListener('click', () => { detail.style.display='none'; });
+        }
+
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('.client-detail-btn');
+            if(btn) showClientDetail(Number(btn.dataset.clientIndex));
+        });
+        document.getElementById('clientsRefresh')?.addEventListener('click', loadClients);
+        document.querySelector('[onclick="switchTab(\'clients\', this)"]')?.addEventListener('click', () => setTimeout(loadClients, 0));
+        loadClients();
+
+        async function loadTeam() {
+            const body = document.getElementById('teamTableBody');
+            const status = document.getElementById('teamStatus');
+            if(!body || !status) return;
+
+            body.innerHTML = '<tr><td colspan="5">Caricamento…</td></tr>';
+            const client = getStudioClient();
+            if(!client) {
+                status.textContent = 'Servizio Supabase non disponibile.';
+                body.innerHTML = '<tr><td colspan="5">Impossibile caricare il Team.</td></tr>';
+                return;
+            }
+
+            const { data: { user }, error: authError } = await client.auth.getUser();
+            if(authError || !user) {
+                status.textContent = 'Accesso richiesto.';
+                body.innerHTML = '<tr><td colspan="5">Effettua l’accesso per visualizzare il Team.</td></tr>';
+                return;
+            }
+
+            const [{ data: members, error: membersError }, { data: practices, error: practicesError }] = await Promise.all([
+                client.from('studio_utenti').select('user_id,role,full_name,created_at').order('created_at', { ascending: true }),
+                client.from('studio_pratiche').select('id,owner_user_id')
+            ]);
+
+            if(membersError || practicesError) {
+                console.error(membersError || practicesError);
+                status.textContent = 'Errore nel caricamento dei dati del Team.';
+                body.innerHTML = '<tr><td colspan="5">Impossibile caricare il Team.</td></tr>';
+                return;
+            }
+
+            const counts = {};
+            (practices || []).forEach(p => {
+                if(p.owner_user_id) counts[p.owner_user_id] = (counts[p.owner_user_id] || 0) + 1;
+            });
+
+            const rows = (members || []).map(member => {
+                const isCurrent = member.user_id === user.id;
+                const name = escapeTeam(member.full_name || (isCurrent ? (user.email || 'Utente autenticato') : 'Professionista'));
+                const role = escapeTeam(member.role || '—');
+                const count = counts[member.user_id] || 0;
+                const contact = isCurrent ? escapeTeam(user.email || '—') : '—';
+                return '<tr>' +
+                    '<td><strong>' + name + '</strong></td>' +
+                    '<td>' + role + '</td>' +
+                    '<td>' + count + '</td>' +
+                    '<td>' + contact + '</td>' +
+                    '<td><span style="color:var(--success);font-weight:650;">' + (isCurrent ? 'Online' : 'Registrato') + '</span></td>' +
+                    '</tr>';
+            });
+
+            body.innerHTML = rows.length ? rows.join('') : '<tr><td colspan="5">Nessun professionista presente.</td></tr>';
+            status.textContent = (members || []).length + ' professionista/i presenti · dati reali Supabase';
+            window.__studioTeam = members || [];
+        }
+
+        function escapeTeam(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({
+                '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+            }[ch]));
+        }
+
+        document.getElementById('teamRefresh')?.addEventListener('click', loadTeam);
+        const teamMenuItem = Array.from(document.querySelectorAll('.menu-item')).find(m => (m.getAttribute('onclick') || '').includes("'team'"));
+        teamMenuItem?.addEventListener('click', () => setTimeout(loadTeam, 0));
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadTeam);
+        } else {
+            setTimeout(loadTeam, 0);
+        }
+
+        let timerInterval, secondsElapsed = 0;
+        function startTimer() {
+            if(timerInterval) return;
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                let hrs = Math.floor(secondsElapsed / 3600).toString().padStart(2, '0');
+                let mins = Math.floor((secondsElapsed % 3600) / 60).toString().padStart(2, '0');
+                let secs = (secondsElapsed % 60).toString().padStart(2, '0');
+                document.getElementById('stopwatchDisplay').innerText = `${hrs}:${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if(!timerInterval) return;
+            clearInterval(timerInterval);
+            timerInterval = null;
+            alert(`⏱️ Sessione registrata per lo Studio Silella! Tempo: ${Math.floor(secondsElapsed/60)} min.`);
+            secondsElapsed = 0;
+            document.getElementById('stopwatchDisplay').innerText = "00:00:00";
+        }
+
+        async function generateAILetter() {
+            const desc = document.getElementById('caseDescription').value.trim();
+            const outputBox = document.getElementById('aiOutputResult');
+            if(!desc) {
+                alert("Inserisci le istruzioni per la redazione.");
+                return;
+            }
+
+            outputBox.value = "Elaborazione della bozza IA in corso...";
+
+            const client = window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
+                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY))
+                : null);
+
+            if(!client) {
+                outputBox.value = "Servizio Supabase non disponibile.";
+                return;
+            }
+
+            const { data: sessionData, error: sessionError } = await client.auth.getSession();
+            const session = sessionData?.session;
+            if(sessionError || !session?.access_token) {
+                outputBox.value = "Sessione Studio non disponibile. Effettua nuovamente l'accesso.";
+                return;
+            }
+
+            const { data: practice, error: practiceError } = await client
+                .from('studio_pratiche')
+                .select('id,client_name,legal_area,counterparty,description,status')
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            if(practiceError || !practice) {
+                outputBox.value = "Nessuna pratica disponibile per la redazione.";
+                return;
+            }
+
+            const { data, error } = await client.functions.invoke('studio-lexroom', {
+                body: {
+                    practiceId: practice.id,
+                    action: 'lab_draft',
+                    instructions: desc
+                }
+            });
+
+            if(error || !data?.ok) {
+                console.error(error || data);
+                const edgeMessage = data?.error || error?.message || error?.context?.message || "Impossibile generare la bozza IA.";
+                outputBox.value = edgeMessage;
+                return;
+            }
+
+            outputBox.value = data.text || data.draft?.content || "La funzione IA non ha restituito testo.";
+        }
+
+        async function signAndSendDocument() {
+            const output = document.getElementById('aiOutputResult');
+            if (!output || !output.value.trim()) {
+                alert("Genera prima una bozza.");
+                return;
+            }
+            alert("La firma FEQ e l'invio PEC non sono collegati a un provider reale in questo progetto. La bozza resta disponibile per la revisione professionale; nessuna firma o PEC è stata eseguita.");
+        }
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.76.0"></script><script src="config.js?v=20261002-5"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const btn=document.getElementById('studioHeaderLogout');
+  if(!btn)return;
+  btn.addEventListener('click',async()=>{
+    btn.disabled=true;
+    btn.textContent='Uscita…';
+    try{
+      const client=window.supabase.createClient(
+        window.STUDIO_SUPABASE_URL,
+        window.STUDIO_SUPABASE_PUBLISHABLE_KEY,
+        {auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
+      );
+      await client.auth.signOut();
+    }catch(e){console.error('Logout Studio:',e);}
+    window.location.href='index.html';
+  });
+});
+</script>
+<script src="studio-dashboard.js?v=20261002-8"></script><script src="lexroom-dashboard.js?v=20261002-2"></script><script src="studio-modules.js?v=20261002-6"></script></body>
+</html>
