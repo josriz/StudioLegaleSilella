@@ -1,133 +1,105 @@
 (() => {
-  const getClient = () => {
-    if (window.STUDIO_SUPABASE_CLIENT) return window.STUDIO_SUPABASE_CLIENT;
-    if (!window.supabase || !window.STUDIO_SUPABASE_URL || !window.STUDIO_SUPABASE_PUBLISHABLE_KEY) return null;
-    return (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(
-      window.STUDIO_SUPABASE_URL,
-      window.STUDIO_SUPABASE_PUBLISHABLE_KEY
-    ));
-  };
+  const getClient = () => window.STUDIO_SUPABASE_CLIENT || (window.STUDIO_SUPABASE_CLIENT =
+    window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY));
+  const esc = v => String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const fmt = v => v ? new Date(v).toLocaleString('it-IT') : '—';
+  const day = v => v ? new Date(v).toLocaleDateString('it-IT') : '—';
+  const state = {user:null,profile:null,practices:[],docs:[],audit:[],communications:[],team:[],agenda:[],pct:[],time:[],clients:[],bills:[],portalInvites:[],teamInvites:[]};
 
-  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]));
+  async function loadData(){
+    const c=getClient(); if(!c) throw new Error('Supabase non disponibile.');
+    const {data:{user},error:ae}=await c.auth.getUser(); if(ae||!user) throw new Error('Sessione Studio non autenticata.');
+    const {data:profile,error:pe}=await c.from('studio_utenti').select('role,full_name').eq('user_id',user.id).maybeSingle();
+    if(pe) throw pe; if(!profile || !['studio','admin'].includes(profile.role)) throw new Error('Utente non autorizzato.');
+    const qs=[
+      c.from('studio_pratiche').select('id,client_name,tax_id,legal_area,counterparty,status,created_at,updated_at,owner_user_id,ai_status,description').order('created_at',{ascending:false}),
+      c.from('studio_documenti').select('id,pratica_id,file_name,size_bytes,created_at').order('created_at',{ascending:false}),
+      c.from('studio_audit').select('*').order('created_at',{ascending:false}).limit(100),
+      c.from('studio_comunicazioni').select('*').order('sent_at',{ascending:false}).limit(100),
+      c.from('studio_utenti').select('user_id,role,full_name,created_at').order('created_at',{ascending:true}),
+      c.from('studio_agenda').select('*').order('starts_at',{ascending:true}),
+      c.from('studio_pct_depositi').select('*').order('created_at',{ascending:false}),
+      c.from('studio_time_entries').select('*').order('started_at',{ascending:false}).limit(200),
+      c.from('studio_clienti').select('*').order('created_at',{ascending:false}),
+      c.from('studio_fatture').select('*').order('issue_date',{ascending:false}),
+      c.from('studio_portale_inviti').select('*').order('invited_at',{ascending:false}),
+      c.from('studio_professionisti_inviti').select('*').order('invited_at',{ascending:false})
+    ];
+    const rs=await Promise.all(qs); for(const x of rs) if(x.error) throw x.error;
+    [state.practices,state.docs,state.audit,state.communications,state.team,state.agenda,state.pct,state.time,state.clients,state.bills,state.portalInvites,state.teamInvites]=rs.map(x=>x.data||[]);
+    state.user=user; state.profile=profile;
+  }
+  const panel=(id,html)=>{const p=document.getElementById('panel-'+id); if(p)p.innerHTML=html;};
+  const docsFor=id=>state.docs.filter(d=>d.pratica_id===id);
+  const practiceOptions=()=>'<option value="">— seleziona —</option>'+state.practices.map(p=>'<option value="'+p.id+'">'+esc(p.client_name)+' · '+esc(p.legal_area||'')+'</option>').join('');
+  const isAdmin=()=>state.profile && ['studio','admin'].includes(state.profile.role);
 
-  const date = v => v ? new Date(v).toLocaleString('it-IT') : '—';
+  async function refreshAll(){try{await loadData();renderAll()}catch(e){console.error(e);renderError(e.message)}}
+  function renderError(msg){['dashboard','team','clients','agenda','pec-client','pct-deposit','time-tracker','billing','client-portal','archive'].forEach(id=>{const p=document.getElementById('panel-'+id);if(p){const b=p.querySelector('[data-module-body]');if(b)b.innerHTML='<div style="padding:14px;color:#b91c1c">'+esc(msg)+'</div>'}})}
+  function bindMenu(id,fn){document.querySelectorAll('.menu-item').forEach(m=>{if((m.getAttribute('onclick')||'').includes("'"+id+"'"))m.addEventListener('click',()=>setTimeout(fn,0))})}
 
-  const state = { practices: [], docs: [], audit: [], communications: [], team: [] };
-
-  async function loadData() {
-    const client = getClient();
-    if (!client) throw new Error('Servizio Supabase non disponibile.');
-    const { data: { user }, error: authError } = await client.auth.getUser();
-    if (authError || !user) throw new Error('Sessione Studio non autenticata.');
-    const results = await Promise.all([
-      client.from('studio_pratiche').select('id,client_name,tax_id,legal_area,counterparty,status,created_at,updated_at,owner_user_id').order('created_at',{ascending:false}),
-      client.from('studio_documenti').select('id,pratica_id,file_name,size_bytes,created_at').order('created_at',{ascending:false}),
-      client.from('studio_audit').select('*').order('created_at',{ascending:false}).limit(100),
-      client.from('studio_comunicazioni').select('*').order('sent_at',{ascending:false}).limit(100),
-      client.from('studio_utenti').select('user_id,role,full_name,created_at').order('created_at',{ascending:true})
-    ]);
-    for (const r of results) if (r.error) throw r.error;
-    state.practices = results[0].data || [];
-    state.docs = results[1].data || [];
-    state.audit = results[2].data || [];
-    state.communications = results[3].data || [];
-    state.team = results[4].data || [];
-    state.user = user;
+  function renderDashboard(){
+    const next=state.agenda.filter(a=>a.status==='da_fare' && new Date(a.starts_at)>=new Date()).slice(0,10);
+    const recent=state.audit.slice(0,10);
+    panel('dashboard','<div class="grid-3" style="margin-bottom:20px"><div class="stat-card"><span>Fascicoli</span><h4>'+state.practices.length+'</h4></div><div class="stat-card"><span>Scadenze aperte</span><h4>'+state.agenda.filter(a=>a.status==='da_fare').length+'</h4></div><div class="stat-card"><span>Comunicazioni</span><h4>'+state.communications.length+'</h4></div></div><div class="card"><h3>Attività recenti reali</h3><table><thead><tr><th>Data</th><th>Evento</th><th>Pratica</th><th>Dettagli</th></tr></thead><tbody data-module-body>'+(recent.map(a=>'<tr><td>'+fmt(a.created_at)+'</td><td>'+esc(a.event_type||'—')+'</td><td>'+esc(a.pratica_id||'—')+'</td><td>'+esc(JSON.stringify(a.details||{}))+'</td></tr>').join('')||'<tr><td colspan="4">Nessun evento.</td></tr>')+'</tbody></table></div><div class="card"><h3>Prossime scadenze</h3><table><thead><tr><th>Data</th><th>Titolo</th><th>Stato</th></tr></thead><tbody>'+(next.map(a=>'<tr><td>'+fmt(a.starts_at)+'</td><td>'+esc(a.title)+'</td><td>'+esc(a.status)+'</td></tr>').join('')||'<tr><td colspan="3">Nessuna scadenza.</td></tr>')+'</tbody></table></div>');
   }
 
-  function panel(id, html) {
-    const p = document.getElementById('panel-' + id);
-    if (p) p.innerHTML = html;
-  }
-
-  function docsFor(id) { return state.docs.filter(d => d.pratica_id === id); }
-
-  function bindMenu(id, fn) {
-    document.querySelectorAll('.menu-item').forEach(m => {
-      const oc = m.getAttribute('onclick') || '';
-      if (oc.includes("'"+id+"'")) m.addEventListener('click', () => setTimeout(fn, 0));
-    });
-  }
-
-  async function refreshAll() {
-    try {
-      await loadData();
-      renderAll();
-    } catch (e) {
-      console.error('Studio modules:', e);
-      renderError(e.message || 'Errore di caricamento');
-    }
-  }
-
-  function renderError(message) {
-    ['team','agenda','pec-client','pct-deposit','time-tracker','billing','client-portal','archive'].forEach(id => {
-      const p=document.getElementById('panel-'+id);
-      if(p) {
-        const box=p.querySelector('[data-module-body]');
-        if(box) box.innerHTML='<div style="padding:14px;color:#b91c1c">'+esc(message)+'</div>';
-      }
-    });
-  }
-
-  function renderTeam() {
-    panel('team', '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h3>⚖️ Gestione Professionisti & Team Silella</h3><div data-module-body style="font-size:12px;color:#64748b">Dati reali Supabase</div></div><button class="btn btn-info" id="teamRefresh" type="button">Aggiorna</button></div><div style="overflow:auto;margin-top:14px"><table><thead><tr><th>Professionista</th><th>Ruolo</th><th>Fascicoli assegnati</th><th>Email</th><th>Stato</th></tr></thead><tbody data-team-body></tbody></table></div></div>');
-    const email=state.user?.email||'';
-    document.querySelector('[data-team-body]').innerHTML=state.team.map(u=>{
-      const count=state.practices.filter(p=>p.owner_user_id===u.user_id).length;
-      return '<tr><td><strong>'+esc(u.full_name||u.user_id)+'</strong></td><td>'+esc(u.role)+'</td><td>'+count+'</td><td>'+esc(u.user_id===state.user?.id?email:'—')+'</td><td><span class="badge-status status-sent">Registrato</span></td></tr>';
-    }).join('') || '<tr><td colspan="5">Nessun professionista visibile.</td></tr>';
+  function renderTeam(){
+    panel('team','<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div><h3>⚖️ Gestione Professionisti & Team Silella</h3><div id="teamStatus" style="font-size:12px;color:#64748b">Dati reali Supabase</div></div><button class="btn btn-info" id="teamRefresh">Aggiorna</button></div><div class="card" style="margin-top:14px;background:#f8fafc"><h4>Aggiungi professionista</h4><form id="teamInviteForm" style="display:grid;grid-template-columns:1fr 1fr 160px auto;gap:8px;align-items:end"><div class="form-group"><label>Nome</label><input id="inviteName" required></div><div class="form-group"><label>Email</label><input id="inviteEmail" type="email" required></div><div class="form-group"><label>Ruolo</label><select id="inviteRole"><option value="studio">Professionista</option><option value="admin">Admin</option></select></div><button class="btn btn-success">Invia invito</button></form><div id="teamInviteStatus" style="font-size:12px;margin-top:8px"></div></div><div style="overflow:auto"><table><thead><tr><th>Professionista</th><th>Ruolo</th><th>Fascicoli</th><th>Email</th><th>Stato</th></tr></thead><tbody data-module-body>'+state.team.map(u=>'<tr><td>'+esc(u.full_name||u.user_id)+'</td><td>'+esc(u.role)+'</td><td>'+state.practices.filter(p=>p.owner_user_id===u.user_id).length+'</td><td>'+esc(u.user_id===state.user.id?state.user.email:'—')+'</td><td>Registrato</td></tr>').join('')+'</tbody></table></div></div>');
     document.getElementById('teamRefresh').onclick=refreshAll;
+    document.getElementById('teamInviteForm').onsubmit=async e=>{e.preventDefault();const s=document.getElementById('teamInviteStatus');s.textContent='Invio…';const {data:{session}}=await getClient().auth.getSession();const r=await fetch(window.STUDIO_SUPABASE_URL+'/functions/v1/studio-invita-professionista',{method:'POST',headers:{apikey:window.STUDIO_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'content-type':'application/json'},body:JSON.stringify({email:inviteEmail.value,full_name:inviteName.value,role:inviteRole.value})});const out=await r.json().catch(()=>({}));s.textContent=out.ok?'Invito inviato. Il professionista completerà l’attivazione tramite email.':('Errore: '+(out.error||'invito non riuscito'));if(out.ok)e.target.reset();await loadData();};
   }
 
-  function renderAgenda() {
-    panel('agenda','<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h3>📅 Agenda Legale & Scadenze</h3><div style="font-size:12px;color:#64748b">Audit schema: nessuna tabella scadenze presente in Supabase</div></div><button class="btn btn-info" id="agendaRefresh" type="button">Aggiorna</button></div><div data-module-body style="margin-top:14px;padding:14px;background:#f8fafc;border-radius:8px">Nessuna scadenza inventata: il database attuale non contiene un modulo agenda/scadenze persistente.</div></div>');
+  function renderClients(){
+    panel('clients','<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h3>👥 Anagrafica Clienti e Controparti</h3><div style="font-size:12px;color:#64748b">Archivio persistente Supabase</div></div><button class="btn btn-info" id="clientsRefresh">Aggiorna</button></div><div class="card" style="margin-top:14px;background:#f8fafc"><h4>Nuovo cliente/controparte</h4><form id="clientForm" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:8px;align-items:end"><input id="clName" placeholder="Nome / società" required><input id="clTax" placeholder="CF / P.IVA"><input id="clEmail" type="email" placeholder="Email"><input id="clPhone" placeholder="Telefono"><button class="btn btn-success">Salva</button></form><div id="clientStatus" style="font-size:12px;margin-top:8px"></div></div><div style="overflow:auto"><table><thead><tr><th>Nome</th><th>CF/P.IVA</th><th>Email</th><th>Stato</th><th>Azioni</th></tr></thead><tbody data-module-body>'+state.clients.map(c=>'<tr><td>'+esc(c.full_name)+'</td><td>'+esc(c.tax_id||'—')+'</td><td>'+esc(c.email||'—')+'</td><td>'+esc(c.status)+'</td><td><button class="btn btn-danger" data-del-client="'+c.id+'">Elimina</button></td></tr>').join('')||'<tr><td colspan="5">Nessun cliente.</td></tr>'+'</tbody></table></div></div>');
+    document.getElementById('clientsRefresh').onclick=refreshAll;
+    document.getElementById('clientForm').onsubmit=async e=>{e.preventDefault();const c=getClient();const {error}=await c.from('studio_clienti').insert({full_name:clName.value.trim(),tax_id:clTax.value.trim()||null,email:clEmail.value.trim()||null,phone:clPhone.value.trim()||null,created_by:state.user.id});document.getElementById('clientStatus').textContent=error?error.message:'Cliente salvato.';if(!error){e.target.reset();await refreshAll()}};
+    document.querySelectorAll('[data-del-client]').forEach(b=>b.onclick=async()=>{if(!confirm('Eliminare il cliente?'))return;const {error}=await getClient().from('studio_clienti').delete().eq('id',b.dataset.delClient);if(error)alert(error.message);else refreshAll()});
+  }
+
+  function renderAgenda(){
+    panel('agenda','<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h3>📅 Agenda Legale & Scadenze</h3><div style="font-size:12px;color:#64748b">Scadenze persistenti in studio_agenda</div></div><button class="btn btn-info" id="agendaRefresh">Aggiorna</button></div><div class="card" style="margin-top:14px;background:#f8fafc"><form id="agendaForm" style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr auto;gap:8px;align-items:end"><input id="agTitle" placeholder="Titolo" required><select id="agPractice">'+practiceOptions()+'</select><select id="agType"><option>udienza</option><option>termine</option><option>deposito</option><option>adempimento</option><option>appuntamento</option><option>altro</option></select><input id="agStart" type="datetime-local" required><select id="agPriority"><option value="normale">Normale</option><option value="alta">Alta</option><option value="urgente">Urgente</option><option value="bassa">Bassa</option></select><button class="btn btn-success">Salva</button></form><div id="agendaStatus" style="font-size:12px;margin-top:8px"></div></div><table><thead><tr><th>Data</th><th>Titolo</th><th>Tipo</th><th>Pratica</th><th>Priorità</th><th>Stato</th><th>Azioni</th></tr></thead><tbody data-module-body>'+(state.agenda.map(a=>'<tr><td>'+fmt(a.starts_at)+'</td><td>'+esc(a.title)+'</td><td>'+esc(a.type)+'</td><td>'+esc(state.practices.find(p=>p.id===a.pratica_id)?.client_name||'—')+'</td><td>'+esc(a.priority)+'</td><td>'+esc(a.status)+'</td><td>'+(a.status==='da_fare'?'<button class="btn btn-success" data-ag-done="'+a.id+'">Completa</button> ':'')+'<button class="btn btn-danger" data-ag-del="'+a.id+'">Elimina</button></td></tr>').join('')||'<tr><td colspan="7">Nessuna scadenza.</td></tr>')+'</tbody></table></div>');
     document.getElementById('agendaRefresh').onclick=refreshAll;
+    document.getElementById('agendaForm').onsubmit=async e=>{e.preventDefault();const {error}=await getClient().from('studio_agenda').insert({title:agTitle.value.trim(),pratica_id:agPractice.value||null,type:agType.value,starts_at:new Date(agStart.value).toISOString(),priority:agPriority.value,created_by:state.user.id});document.getElementById('agendaStatus').textContent=error?error.message:'Scadenza salvata.';if(!error){e.target.reset();refreshAll()}};
+    document.querySelectorAll('[data-ag-done]').forEach(b=>b.onclick=async()=>{const {error}=await getClient().from('studio_agenda').update({status:'completata'}).eq('id',b.dataset.agDone);if(error)alert(error.message);else refreshAll()});
+    document.querySelectorAll('[data-ag-del]').forEach(b=>b.onclick=async()=>{if(!confirm('Eliminare la scadenza?'))return;const {error}=await getClient().from('studio_agenda').delete().eq('id',b.dataset.agDel);if(error)alert(error.message);else refreshAll()});
   }
 
-  function renderPec() {
-    const rows=state.communications;
-    panel('pec-client','<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h3>✉️ Comunicazioni Studio</h3><div style="font-size:12px;color:#64748b">Dati reali da studio_comunicazioni · nessuna casella PEC collegata</div></div><button class="btn btn-info" id="pecRefresh" type="button">Aggiorna</button></div><div style="overflow:auto;margin-top:14px"><table><thead><tr><th>Data</th><th>Canale</th><th>Pratica</th><th>Oggetto / contenuto</th><th>Stato</th></tr></thead><tbody data-module-body>'+ (rows.length?rows.map(r=>'<tr><td>'+date(r.sent_at)+'</td><td>'+esc(r.channel||'—')+'</td><td>'+esc(r.pratica_id||'—')+'</td><td>'+esc(r.subject||r.content||r.body||'—')+'</td><td>'+esc(r.status||'—')+'</td></tr>').join(''):'<tr><td colspan="5">Nessuna comunicazione registrata.</td></tr>')+'</tbody></table></div></div>');
+  function renderPec(){
+    panel('pec-client','<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h3>✉️ Comunicazioni Studio</h3><div style="font-size:12px;color:#64748b">Registro persistente · nessuna casella PEC automatica collegata</div></div><button class="btn btn-info" id="pecRefresh">Aggiorna</button></div><div class="card" style="margin-top:14px;background:#f8fafc"><form id="pecForm" style="display:grid;grid-template-columns:1fr 1fr 1fr 2fr auto;gap:8px;align-items:end"><select id="pcChannel"><option value="email">Email</option><option value="pec">PEC</option><option value="pct">PCT</option></select><select id="pcPractice">'+practiceOptions()+'</select><input id="pcRecipient" placeholder="Destinatario"><input id="pcSubject" placeholder="Oggetto / contenuto" required><button class="btn btn-success">Registra</button></form><div id="pecStatus" style="font-size:12px;margin-top:8px"></div></div><table><thead><tr><th>Data</th><th>Canale</th><th>Pratica</th><th>Destinatario</th><th>Oggetto</th><th>Stato</th></tr></thead><tbody data-module-body>'+(state.communications.map(r=>'<tr><td>'+fmt(r.sent_at||r.created_at)+'</td><td>'+esc(r.channel)+'</td><td>'+esc(r.pratica_id||'—')+'</td><td>'+esc(r.recipient||'—')+'</td><td>'+esc(r.subject||r.body||'—')+'</td><td>'+esc(r.status||'—')+'</td></tr>').join('')||'<tr><td colspan="6">Nessuna comunicazione.</td></tr>')+'</tbody></table></div>');
     document.getElementById('pecRefresh').onclick=refreshAll;
+    document.getElementById('pecForm').onsubmit=async e=>{e.preventDefault();const {error}=await getClient().from('studio_comunicazioni').insert({channel:pcChannel.value,pratica_id:pcPractice.value||null,recipient:pcRecipient.value.trim()||null,subject:pcSubject.value.trim(),body:pcSubject.value.trim(),status:'registrata',created_by:state.user.id,sent_at:new Date().toISOString()});document.getElementById('pecStatus').textContent=error?error.message:'Comunicazione registrata. Nessun invio PEC automatico è stato eseguito.';if(!error){e.target.reset();refreshAll()}};
   }
 
-  function renderPct() {
-    const pct=state.communications.filter(r=>String(r.channel||'').toLowerCase()==='pct');
-    panel('pct-deposit','<div class="card"><h3>🏛️ Deposito Telematico (PCT)</h3><div style="font-size:12px;color:#64748b;margin-bottom:14px">Audit: non esiste nel progetto una funzione PCT reale né un connettore ministeriale. Il pannello non simula invii.</div><div data-module-body>'+ (pct.length ? pct.map(r=>'<div style="padding:10px;border-bottom:1px solid #e2e8f0"><strong>'+esc(r.subject||'Deposito PCT')+'</strong><br><small>'+date(r.sent_at)+' · '+esc(r.status||'—')+'</small></div>').join('') : '<div style="padding:14px;background:#f8fafc;border-radius:8px">Nessun deposito PCT reale registrato.</div>')+'</div></div>');
+  function renderPct(){
+    panel('pct-deposit','<div class="card"><h3>🏛️ Deposito Telematico PCT</h3><div style="font-size:12px;color:#64748b">Gestione della pratica di deposito persistente. Nessun invio ministeriale viene simulato.</div><div class="card" style="margin-top:14px;background:#f8fafc"><form id="pctForm" style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;align-items:end"><select id="pctPractice" required>'+practiceOptions()+'</select><input id="pctType" placeholder="Tipo atto" required><input id="pctRecipient" placeholder="Ufficio / destinatario"><button class="btn btn-success">Crea deposito</button></form><div id="pctStatus" style="font-size:12px;margin-top:8px"></div></div><table><thead><tr><th>Data</th><th>Pratica</th><th>Tipo</th><th>Ufficio</th><th>Stato</th><th>Azioni</th></tr></thead><tbody data-module-body>'+(state.pct.map(p=>'<tr><td>'+fmt(p.created_at)+'</td><td>'+esc(state.practices.find(x=>x.id===p.pratica_id)?.client_name||p.pratica_id)+'</td><td>'+esc(p.type)+'</td><td>'+esc(p.recipient||'—')+'</td><td>'+esc(p.status)+'</td><td><select data-pct-status="'+p.id+'"><option>preparazione</option><option>pronto</option><option>inviato</option><option>ricevuto</option><option>rifiutato</option><option>annullato</option></select></td></tr>').join('')||'<tr><td colspan="6">Nessun deposito.</td></tr>')+'</tbody></table></div>');
+    document.getElementById('pctForm').onsubmit=async e=>{e.preventDefault();const {error}=await getClient().from('studio_pct_depositi').insert({pratica_id:pctPractice.value,created_by:state.user.id,type:pctType.value.trim(),recipient:pctRecipient.value.trim()||null,status:'preparazione'});document.getElementById('pctStatus').textContent=error?error.message:'Deposito creato in stato preparazione.';if(!error){e.target.reset();refreshAll()}};
+    document.querySelectorAll('[data-pct-status]').forEach(s=>{const row=state.pct.find(x=>x.id===s.dataset.pctStatus);s.value=row?.status||'preparazione';s.onchange=async()=>{const {error}=await getClient().from('studio_pct_depositi').update({status:s.value,submitted_at:s.value==='inviato'?new Date().toISOString():row.submitted_at}).eq('id',s.dataset.pctStatus);if(error)alert(error.message);else refreshAll()}});
   }
 
-  function renderTimer() {
-    panel('time-tracker','<div class="card"><h3>⏱️ Time Tracker & Ore Lavorate</h3><div style="font-size:12px;color:#64748b">Modalità locale: nessuna tabella time-tracking presente nel database.</div><div style="margin:18px 0;font-family:monospace;font-size:30px;font-weight:700" id="moduleStopwatch">00:00:00</div><button class="btn btn-success" id="moduleTimerStart" type="button">Avvia</button> <button class="btn btn-danger" id="moduleTimerStop" type="button">Ferma</button><div id="moduleTimerStatus" style="margin-top:12px"></div></div>');
-    let elapsed=Number(sessionStorage.getItem('studio_timer_seconds')||0), started=sessionStorage.getItem('studio_timer_started')==='1', tick=null;
-    const out=document.getElementById('moduleStopwatch');
-    const paint=()=>{const h=String(Math.floor(elapsed/3600)).padStart(2,'0'),m=String(Math.floor(elapsed%3600/60)).padStart(2,'0'),s=String(elapsed%60).padStart(2,'0');out.textContent=h+':'+m+':'+s;};
-    const start=()=>{if(tick)return;started=true;sessionStorage.setItem('studio_timer_started','1');tick=setInterval(()=>{elapsed++;sessionStorage.setItem('studio_timer_seconds',String(elapsed));paint();},1000);};
-    const stop=()=>{if(tick){clearInterval(tick);tick=null;} started=false;sessionStorage.setItem('studio_timer_started','0');document.getElementById('moduleTimerStatus').textContent='Sessione fermata. Salvataggio persistente non disponibile nel database attuale.';};
-    paint(); document.getElementById('moduleTimerStart').onclick=start; document.getElementById('moduleTimerStop').onclick=stop; if(started) start();
+  function renderTimer(){
+    const open=state.time.find(x=>x.user_id===state.user.id&&!x.ended_at);
+    panel('time-tracker','<div class="card"><h3>⏱️ Time Tracker & Ore Lavorate</h3><div style="font-size:12px;color:#64748b">Sessioni persistenti in studio_time_entries</div><div class="card" style="margin-top:14px;background:#f8fafc"><form id="timeForm" style="display:grid;grid-template-columns:2fr 2fr auto;gap:8px"><select id="timePractice">'+practiceOptions()+'</select><input id="timeDesc" placeholder="Attività"><button class="btn btn-success">'+(open?'Sessione già attiva':'Avvia sessione')+'</button></form><div id="timeStatus" style="font-size:12px;margin-top:8px"></div></div><table><thead><tr><th>Inizio</th><th>Fine</th><th>Durata</th><th>Pratica</th><th>Attività</th><th>Azioni</th></tr></thead><tbody data-module-body>'+(state.time.map(t=>'<tr><td>'+fmt(t.started_at)+'</td><td>'+fmt(t.ended_at)+'</td><td>'+esc(t.duration_seconds!=null?Math.floor(t.duration_seconds/60)+' min':'in corso')+'</td><td>'+esc(state.practices.find(p=>p.id===t.pratica_id)?.client_name||'—')+'</td><td>'+esc(t.description||'—')+'</td><td>'+(!t.ended_at&&t.user_id===state.user.id?'<button class="btn btn-danger" data-time-stop="'+t.id+'">Ferma</button>':'')+'</td></tr>').join('')||'<tr><td colspan="6">Nessuna sessione.</td></tr>')+'</tbody></table></div>');
+    document.getElementById('timeForm').onsubmit=async e=>{e.preventDefault();if(open){document.getElementById('timeStatus').textContent='Esiste già una sessione aperta: usa Ferma.';return}const {error}=await getClient().from('studio_time_entries').insert({pratica_id:timePractice.value||null,user_id:state.user.id,started_at:new Date().toISOString(),description:timeDesc.value.trim()||null});document.getElementById('timeStatus').textContent=error?error.message:'Sessione avviata.';if(!error)refreshAll()};
+    document.querySelectorAll('[data-time-stop]').forEach(b=>b.onclick=async()=>{const {error}=await getClient().from('studio_time_entries').update({ended_at:new Date().toISOString()}).eq('id',b.dataset.timeStop);if(error)alert(error.message);else refreshAll()});
   }
 
-  function renderBilling() {
-    panel('billing','<div class="card"><h3>💶 Parcelle & Fatturazione Elettronica SDI</h3><div data-module-body style="margin-top:12px;padding:14px;background:#f8fafc;border-radius:8px"><strong>Modulo SDI non collegato.</strong><br>Audit database: non esiste una tabella fatture/SDI nel progetto. Il pannello non mostra fatture fittizie.</div><div style="margin-top:14px;font-size:12px;color:#64748b">Pratiche presenti: '+state.practices.length+' · clienti/pratiche reali disponibili nel modulo Fascicoli.</div></div>');
+  function renderBilling(){
+    panel('billing','<div class="card"><h3>💶 Parcelle & Fatturazione</h3><div style="font-size:12px;color:#64748b">Fatture persistenti in studio_fatture · SDI esterno non collegato</div><div class="card" style="margin-top:14px;background:#f8fafc"><form id="billForm" style="display:grid;grid-template-columns:1fr 1fr 2fr 1fr 1fr auto;gap:8px;align-items:end"><select id="billClient">'+state.clients.map(c=>'<option value="'+c.id+'">'+esc(c.full_name)+'</option>').join('')+'</select><select id="billPractice">'+practiceOptions()+'</select><input id="billDesc" placeholder="Descrizione" required><input id="billSub" type="number" min="0" step="0.01" placeholder="Imponibile" required><input id="billVat" type="number" min="0" step="0.01" placeholder="IVA" value="0"><button class="btn btn-success">Salva</button></form><div id="billStatus" style="font-size:12px;margin-top:8px"></div></div><table><thead><tr><th>N.</th><th>Data</th><th>Cliente</th><th>Descrizione</th><th>Totale</th><th>Stato</th><th>SDI</th></tr></thead><tbody data-module-body>'+(state.bills.map(b=>'<tr><td>'+esc(b.invoice_number||'—')+'</td><td>'+day(b.issue_date)+'</td><td>'+esc(state.clients.find(c=>c.id===b.cliente_id)?.full_name||'—')+'</td><td>'+esc(b.description)+'</td><td>€ '+Number(b.total||0).toFixed(2)+'</td><td>'+esc(b.status)+'</td><td>'+esc(b.sdi_status)+'</td></tr>').join('')||'<tr><td colspan="7">Nessuna fattura.</td></tr>')+'</tbody></table></div>');
+    document.getElementById('billForm').onsubmit=async e=>{e.preventDefault();const sub=Number(billSub.value||0),vat=Number(billVat.value||0);const {error}=await getClient().from('studio_fatture').insert({cliente_id:billClient.value||null,pratica_id:billPractice.value||null,created_by:state.user.id,description:billDesc.value.trim(),subtotal:sub,vat,total:sub+vat,status:'bozza',sdi_status:'non_collegato'});document.getElementById('billStatus').textContent=error?error.message:'Fattura salvata in bozza.';if(!error){e.target.reset();refreshAll()}};
   }
 
-  function renderPortal() {
-    const rows=state.practices.map(p=>'<tr><td>'+esc(p.client_name)+'</td><td>'+date(p.updated_at||p.created_at)+'</td><td>'+docsFor(p.id).length+'</td><td>'+esc(p.status||'—')+'</td></tr>').join('');
-    panel('client-portal','<div class="card"><h3>🌐 Portale Clienti (Extranet)</h3><div style="font-size:12px;color:#64748b">Dati reali da pratiche/documenti · gestione account cliente non configurata</div><div style="overflow:auto;margin-top:14px"><table><thead><tr><th>Cliente</th><th>Ultimo aggiornamento</th><th>File</th><th>Stato pratica</th></tr></thead><tbody data-module-body>'+ (rows||'<tr><td colspan="4">Nessuna pratica.</td></tr>')+'</tbody></table></div></div>');
+  function renderPortal(){
+    panel('client-portal','<div class="card"><h3>🌐 Portale Clienti</h3><div style="font-size:12px;color:#64748b">Anagrafica e inviti persistenti. L’autenticazione cliente sarà completata dall’invito.</div><div class="card" style="margin-top:14px;background:#f8fafc"><form id="portalForm" style="display:grid;grid-template-columns:2fr 2fr auto;gap:8px"><select id="portalClient" required>'+state.clients.map(c=>'<option value="'+c.id+'">'+esc(c.full_name)+'</option>').join('')+'</select><input id="portalEmail" type="email" placeholder="Email cliente" required><button class="btn btn-success">Registra invito</button></form><div id="portalStatus" style="font-size:12px;margin-top:8px"></div></div><table><thead><tr><th>Cliente</th><th>Email</th><th>Invitato</th><th>Stato</th></tr></thead><tbody data-module-body>'+(state.portalInvites.map(i=>'<tr><td>'+esc(state.clients.find(c=>c.id===i.client_id)?.full_name||'—')+'</td><td>'+esc(i.email)+'</td><td>'+fmt(i.invited_at)+'</td><td>'+esc(i.status)+'</td></tr>').join('')||'<tr><td colspan="4">Nessun invito.</td></tr>')+'</tbody></table></div>');
+    document.getElementById('portalForm').onsubmit=async e=>{e.preventDefault();const {error}=await getClient().from('studio_portale_inviti').insert({client_id:portalClient.value,email:portalEmail.value.trim().toLowerCase(),invited_by:state.user.id,status:'pending'});document.getElementById('portalStatus').textContent=error?error.message:'Invito registrato. Per l’invio email automatico serve il canale Auth/SMTP configurato.';if(!error){e.target.reset();refreshAll()}};
   }
 
-  function renderArchive() {
-    const rows=state.audit.map(a=>'<tr><td>'+date(a.created_at||a.timestamp)+'</td><td>'+esc(a.action||a.event_type||a.operation||'—')+'</td><td>'+esc(a.user_id||'—')+'</td><td>'+esc(a.details||a.metadata||a.description||'—')+'</td></tr>').join('');
-    panel('archive','<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h3>🗄️ Archivio Storico e Audit Trail</h3><div style="font-size:12px;color:#64748b">Dati reali da studio_audit</div></div><button class="btn btn-info" id="archiveRefresh" type="button">Aggiorna</button></div><div style="overflow:auto;margin-top:14px"><table><thead><tr><th>Timestamp</th><th>Operazione</th><th>Utente</th><th>Dettagli</th></tr></thead><tbody data-module-body>'+ (rows||'<tr><td colspan="4">Nessun evento.</td></tr>')+'</tbody></table></div></div>');
+  function renderArchive(){
+    panel('archive','<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h3>🗄️ Archivio Storico e Audit Trail</h3><div style="font-size:12px;color:#64748b">Dati reali da studio_audit</div></div><button class="btn btn-info" id="archiveRefresh">Aggiorna</button></div><table><thead><tr><th>Timestamp</th><th>Evento</th><th>Pratica</th><th>Utente</th><th>Dettagli</th></tr></thead><tbody data-module-body>'+(state.audit.map(a=>'<tr><td>'+fmt(a.created_at)+'</td><td>'+esc(a.event_type||'—')+'</td><td>'+esc(a.pratica_id||'—')+'</td><td>'+esc(a.actor_user_id||'—')+'</td><td>'+esc(JSON.stringify(a.details||{}))+'</td></tr>').join('')||'<tr><td colspan="5">Nessun evento.</td></tr>')+'</tbody></table></div>');
     document.getElementById('archiveRefresh').onclick=refreshAll;
   }
 
-  function renderAll(){ renderTeam(); renderAgenda(); renderPec(); renderPct(); renderTimer(); renderBilling(); renderPortal(); renderArchive(); }
-
-  function init(){
-    ['team','agenda','pec-client','pct-deposit','time-tracker','billing','client-portal','archive'].forEach(id=>bindMenu(id,refreshAll));
-    refreshAll();
-  }
-
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+  function renderAll(){renderDashboard();renderTeam();renderClients();renderAgenda();renderPec();renderPct();renderTimer();renderBilling();renderPortal();renderArchive();}
+  function init(){['dashboard','team','clients','agenda','pec-client','pct-deposit','time-tracker','billing','client-portal','archive'].forEach(id=>bindMenu(id,refreshAll));refreshAll();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
