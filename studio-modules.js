@@ -24,7 +24,7 @@
     const results = await Promise.all([
       client.from('studio_pratiche').select('id,client_name,tax_id,legal_area,counterparty,status,created_at,updated_at,owner_user_id').order('created_at',{ascending:false}),
       client.from('studio_documenti').select('id,pratica_id,file_name,size_bytes,created_at').order('created_at',{ascending:false}),
-      client.from('studio_audit').select('*').order('created_at',{ascending:false}).limit(100),
+      client.from('studio_audit').select('*').order('sent_at',{ascending:false}).limit(100),
       client.from('studio_comunicazioni').select('*').order('created_at',{ascending:false}).limit(100),
       client.from('studio_utenti').select('user_id,role,full_name,created_at').order('created_at',{ascending:true})
     ]);
@@ -88,13 +88,13 @@
 
   function renderPec() {
     const rows=state.communications;
-    panel('pec-client','<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h3>✉️ Comunicazioni Studio</h3><div style="font-size:12px;color:#64748b">Dati reali da studio_comunicazioni · nessuna casella PEC collegata</div></div><button class="btn btn-info" id="pecRefresh" type="button">Aggiorna</button></div><div style="overflow:auto;margin-top:14px"><table><thead><tr><th>Data</th><th>Canale</th><th>Pratica</th><th>Oggetto / contenuto</th><th>Stato</th></tr></thead><tbody data-module-body>'+ (rows.length?rows.map(r=>'<tr><td>'+date(r.created_at)+'</td><td>'+esc(r.channel||'—')+'</td><td>'+esc(r.pratica_id||'—')+'</td><td>'+esc(r.subject||r.content||r.body||'—')+'</td><td>'+esc(r.status||'—')+'</td></tr>').join(''):'<tr><td colspan="5">Nessuna comunicazione registrata.</td></tr>')+'</tbody></table></div></div>');
+    panel('pec-client','<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h3>✉️ Comunicazioni Studio</h3><div style="font-size:12px;color:#64748b">Dati reali da studio_comunicazioni · nessuna casella PEC collegata</div></div><button class="btn btn-info" id="pecRefresh" type="button">Aggiorna</button></div><div style="overflow:auto;margin-top:14px"><table><thead><tr><th>Data</th><th>Canale</th><th>Pratica</th><th>Oggetto / contenuto</th><th>Stato</th></tr></thead><tbody data-module-body>'+ (rows.length?rows.map(r=>'<tr><td>'+date(r.sent_at)+'</td><td>'+esc(r.channel||'—')+'</td><td>'+esc(r.pratica_id||'—')+'</td><td>'+esc(r.subject||r.content||r.body||'—')+'</td><td>'+esc(r.status||'—')+'</td></tr>').join(''):'<tr><td colspan="5">Nessuna comunicazione registrata.</td></tr>')+'</tbody></table></div></div>');
     document.getElementById('pecRefresh').onclick=refreshAll;
   }
 
   function renderPct() {
     const pct=state.communications.filter(r=>String(r.channel||'').toLowerCase()==='pct');
-    panel('pct-deposit','<div class="card"><h3>🏛️ Deposito Telematico (PCT)</h3><div style="font-size:12px;color:#64748b;margin-bottom:14px">Audit: non esiste nel progetto una funzione PCT reale né un connettore ministeriale. Il pannello non simula invii.</div><div data-module-body>'+ (pct.length ? pct.map(r=>'<div style="padding:10px;border-bottom:1px solid #e2e8f0"><strong>'+esc(r.subject||'Deposito PCT')+'</strong><br><small>'+date(r.created_at)+' · '+esc(r.status||'—')+'</small></div>').join('') : '<div style="padding:14px;background:#f8fafc;border-radius:8px">Nessun deposito PCT reale registrato.</div>')+'</div></div>');
+    panel('pct-deposit','<div class="card"><h3>🏛️ Deposito Telematico (PCT)</h3><div style="font-size:12px;color:#64748b;margin-bottom:14px">Audit: non esiste nel progetto una funzione PCT reale né un connettore ministeriale. Il pannello non simula invii.</div><div data-module-body>'+ (pct.length ? pct.map(r=>'<div style="padding:10px;border-bottom:1px solid #e2e8f0"><strong>'+esc(r.subject||'Deposito PCT')+'</strong><br><small>'+date(r.sent_at)+' · '+esc(r.status||'—')+'</small></div>').join('') : '<div style="padding:14px;background:#f8fafc;border-radius:8px">Nessun deposito PCT reale registrato.</div>')+'</div></div>');
   }
 
   function renderTimer() {
