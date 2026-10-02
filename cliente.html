@@ -142,8 +142,16 @@ async function loadClient(){
   $('pPec').value=data?.pec||'';
   $('pIban').value=data?.iban||'';
 }
+async function recordPendingConsents(){
+  const pending=localStorage.getItem('studio_portal_consents_v1');
+  if(!pending||!currentUser)return;
+  const types=['privacy','terms'];
+  for(const tipo of types){await sb.from('studio_consensi_portale').upsert({user_id:currentUser.id,tipo,versione:'v1.0',accettato:true},{onConflict:'user_id,tipo,versione'});}
+  localStorage.removeItem('studio_portal_consents_v1');
+}
 async function loadAll(){
   await loadClient();
+  await recordPendingConsents();
   const [d,n,p]=await Promise.all([
     sb.from('studio_portale_documenti').select('*').or('recipient_user_id.eq.'+currentUser.id+',sender_user_id.eq.'+currentUser.id).order('created_at',{ascending:false}),
     sb.from('studio_notifiche').select('*').eq('recipient_user_id',currentUser.id).order('created_at',{ascending:false}).limit(50),
@@ -250,7 +258,7 @@ window.openLegal=openLegal;window.closeLegal=closeLegal;window.downloadDoc=downl
 
 $('openLoginTop').onclick=()=>openAuth('login');$('openLoginHero').onclick=()=>openAuth('login');$('openRegister').onclick=()=>openAuth('register');$('backLanding').onclick=()=>show('landing');$('showRegister').onclick=()=>openAuth('register');$('showLogin').onclick=()=>openAuth('login');
 $('loginForm').onsubmit=async e=>{e.preventDefault();$('loginErr').textContent='';$('loginBtn').disabled=true;const {error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});$('loginBtn').disabled=false;if(error){$('loginErr').textContent=error.message;return}await enterPortal()};
-$('signupForm').onsubmit=async e=>{e.preventDefault();$('signupErr').textContent='';$('signupBtn').disabled=true;try{const {data,error}=await sb.auth.signUp({email:$('signupEmail').value.trim(),password:$('signupPassword').value,options:{data:{full_name:$('signupName').value.trim()}}});if(error)throw error;if(data.session){await bootstrap();await saveNewName($('signupName').value.trim());await enterPortal()}else{$('signupErr').className='err ok';$('signupErr').textContent='Account creato. Controlla la posta, conferma l’email e poi accedi.'}}catch(err){$('signupErr').textContent=err.message}finally{$('signupBtn').disabled=false}};
+$('signupForm').onsubmit=async e=>{e.preventDefault();$('signupErr').textContent='';$('signupBtn').disabled=true;try{const {data,error}=await sb.auth.signUp({email:$('signupEmail').value.trim(),password:$('signupPassword').value,options:{data:{full_name:$('signupName').value.trim()}}});if(error)throw error;if(data.session){localStorage.setItem('studio_portal_consents_v1','1');await bootstrap();await saveNewName($('signupName').value.trim());await enterPortal()}else{localStorage.setItem('studio_portal_consents_v1','1');$('signupErr').className='err ok';$('signupErr').textContent='Account creato. Controlla la posta, conferma l’email e poi accedi.'}}catch(err){$('signupErr').textContent=err.message}finally{$('signupBtn').disabled=false}};
 async function saveNewName(name){if(currentUser)await sb.from('studio_clienti').update({full_name:name}).eq('user_id',currentUser.id)}
 $('forgotBtn').onclick=async()=>{const email=$('loginEmail').value.trim();if(!email){$('loginErr').textContent='Inserisci prima l’email.';return}const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});$('loginErr').textContent=error?error.message:'Controlla la posta per il link di recupero.';$('loginErr').className=error?'err':'status ok'};
 $('logoutBtn').onclick=async()=>{await sb.auth.signOut();currentUser=null;currentClient=null;show('landing')};
