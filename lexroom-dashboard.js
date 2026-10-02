@@ -1,7 +1,14 @@
 (() => {
 const init=async()=>{
  const sb=window.STUDIO_SUPABASE_CLIENT || (window.STUDIO_SUPABASE_CLIENT=window.supabase.createClient(window.STUDIO_SUPABASE_URL,window.STUDIO_SUPABASE_PUBLISHABLE_KEY));
- const {data:{user}}=await sb.auth.getUser(); if(!user)return;
+ const {data:{user}}=await sb.auth.getUser();
+ if(!user){
+  if(!window.__lexroomLabAuthListener){
+   window.__lexroomLabAuthListener=true;
+   sb.auth.onAuthStateChange((_event,session)=>{ if(session) init(); });
+  }
+  return;
+ }
  const {data:profile}=await sb.from('studio_utenti').select('role').eq('user_id',user.id).maybeSingle();
  if(!profile||!['studio','admin'].includes(profile.role))return;
  const menu=document.querySelector('.sidebar-menu'), area=document.querySelector('.content-area');
