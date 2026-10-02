@@ -152,7 +152,7 @@
             .grid-3, .grid-2 { grid-template-columns: 1fr; gap: 12px; }
             .card, .stat-card { padding: 14px; margin-bottom: 12px; min-width: 0; }
             .recent-activities-card { padding: 0; }
-            .recent-activities-summary { padding: 15px 14px; }
+            .recent-activities-dropdown-toggle { padding: 15px 14px; }
             .form-group input, .form-group select, .form-group textarea { max-width: 100%; }
         }
         @media (max-width: 600px) {
@@ -172,11 +172,10 @@
             .btn { min-height: 40px; }
         }
         .recent-activities-card { margin-top: 0; padding: 0; overflow: hidden; }
-        .recent-activities-summary { list-style: none; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 20px; cursor:pointer; font-weight:700; color:var(--primary); }
-        .recent-activities-summary::-webkit-details-marker { display:none; }
-        .recent-activities-summary::marker { display:none; }
+        .recent-activities-dropdown-toggle { width:100%; border:0; background:transparent; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 20px; cursor:pointer; font:inherit; font-weight:700; color:var(--primary); text-align:left; }
+        .recent-activities-dropdown-toggle:hover { background:rgba(0,0,0,.03); }
         .recent-activities-chevron { font-size:18px; transition:transform .2s ease; }
-        .recent-activities-card[open] .recent-activities-chevron { transform:rotate(180deg); }
+        .recent-activities-dropdown-toggle[aria-expanded="true"] .recent-activities-chevron { transform:rotate(180deg); }
         .recent-activities-body { margin:0; padding:0 20px 20px; }
         .recent-activities-body table { margin-top:0; }
 </style>
@@ -228,12 +227,12 @@
                     <div class="stat-card"><span>Scadenze (7 giorni)</span><h4>4</h4></div>
                     <div class="stat-card"><span>PEC / Notifiche</span><h4>2</h4></div>
                 </div>
-                <details class="card recent-activities-card">
-                    <summary class="recent-activities-summary">
+                <div class="card recent-activities-card">
+                    <button type="button" class="recent-activities-dropdown-toggle" aria-expanded="false" aria-controls="recentActivitiesDropdown" onclick="toggleRecentActivitiesDropdown()">
                         <span>Attività Recenti dello Studio</span>
                         <span class="recent-activities-chevron" aria-hidden="true">▾</span>
-                    </summary>
-                    <div class="recent-activities-body">
+                    </button>
+                    <div id="recentActivitiesDropdown" class="recent-activities-body" hidden>
                         <div style="overflow-x:auto">
                             <table>
                                 <thead><tr><th>Timestamp</th><th>Modulo</th><th>Descrizione Attività</th><th>Stato</th></tr></thead>
@@ -243,7 +242,7 @@
                             </table>
                         </div>
                     </div>
-                </details>
+                </div>
             </div>
 
             <!-- 2. TEAM -->
@@ -1067,5 +1066,21 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 });
 </script>
-<script src="studio-dashboard.js?v=20261002-8"></script><script src="lexroom-dashboard.js?v=20261002-2"></script><script src="studio-modules.js?v=20261002-6"></script></body>
+<script src="studio-dashboard.js?v=20261002-8"></script><script src="lexroom-dashboard.js?v=20261002-2"></script><script src="studio-modules.js?v=20261002-6"></script><script>
+function toggleRecentActivitiesDropdown() {
+    const body = document.getElementById('recentActivitiesDropdown');
+    const button = document.querySelector('.recent-activities-dropdown-toggle');
+    if (!body || !button) return;
+    const willOpen = body.hidden;
+    body.hidden = !willOpen;
+    button.setAttribute('aria-expanded', String(willOpen));
+}
+document.addEventListener('DOMContentLoaded', function () {
+    const body = document.getElementById('recentActivitiesDropdown');
+    const button = document.querySelector('.recent-activities-dropdown-toggle');
+    if (body) body.hidden = true;
+    if (button) button.setAttribute('aria-expanded', 'false');
+});
+</script>
+</body>
 </html>
