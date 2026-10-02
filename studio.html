@@ -177,8 +177,8 @@
         /* Menu Attività Recenti: chiuso all'ingresso e apribile solo al clic. */
         .recent-activities-chevron { font-size:18px; transition:transform .2s ease; }
         .recent-activities-dropdown-toggle[aria-expanded="true"] .recent-activities-chevron { transform:rotate(180deg); }
-        .recent-activities-body { margin:0; padding:0 20px 20px; }
-        #recentActivitiesDropdown[hidden] { display:none !important; }
+        .recent-activities-body { margin:0; padding:0 20px 20px; display:none !important; }
+         .recent-activities-body.is-open { display:block !important; }
         .recent-activities-body table { margin-top:0; }
 </style>
 </head>
@@ -1075,25 +1075,25 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 <script src="studio-dashboard.js?v=20261002-8"></script><script src="lexroom-dashboard.js?v=20261002-2"></script><script src="studio-modules.js?v=20261002-6"></script><script>
 function toggleRecentActivitiesDropdown() {
-    const body = document.getElementById('recentActivitiesDropdown');
-    const button = document.querySelector('.recent-activities-dropdown-toggle');
-    if (!body || !button) return;
-    const willOpen = body.hidden;
-    body.hidden = !willOpen;
-    body.style.display = willOpen ? '' : 'none';
-    button.setAttribute('aria-expanded', String(willOpen));
-}
-function closeRecentActivitiesDropdown() {
-    const body = document.getElementById('recentActivitiesDropdown');
-    const button = document.querySelector('.recent-activities-dropdown-toggle');
-    if (body) {
-        body.hidden = true;
-        body.style.display = 'none';
-    }
-    if (button) button.setAttribute('aria-expanded', 'false');
-}
-document.addEventListener('DOMContentLoaded', closeRecentActivitiesDropdown);
-window.addEventListener('pageshow', closeRecentActivitiesDropdown);
+      const body = document.getElementById('recentActivitiesDropdown');
+      const button = document.querySelector('.recent-activities-dropdown-toggle');
+      if (!body || !button) return;
+      const willOpen = !body.classList.contains('is-open');
+      body.classList.toggle('is-open', willOpen);
+      body.hidden = !willOpen;
+      button.setAttribute('aria-expanded', String(willOpen));
+  }
+  function closeRecentActivitiesDropdown() {
+      const body = document.getElementById('recentActivitiesDropdown');
+      const button = document.querySelector('.recent-activities-dropdown-toggle');
+      if (body) {
+          body.classList.remove('is-open');
+          body.hidden = true;
+      }
+      if (button) button.setAttribute('aria-expanded', 'false');
+  }
+  document.addEventListener('DOMContentLoaded', closeRecentActivitiesDropdown);
+  window.addEventListener('pageshow', closeRecentActivitiesDropdown);
 </script>
 </body>
 </html>
