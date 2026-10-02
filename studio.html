@@ -1081,12 +1081,14 @@ function toggleRecentActivitiesDropdown() {
     body.hidden = !willOpen;
     button.setAttribute('aria-expanded', String(willOpen));
 }
-document.addEventListener('DOMContentLoaded', function () {
+function closeRecentActivitiesDropdown() {
     const body = document.getElementById('recentActivitiesDropdown');
     const button = document.querySelector('.recent-activities-dropdown-toggle');
     if (body) body.hidden = true;
     if (button) button.setAttribute('aria-expanded', 'false');
-});
+}
+document.addEventListener('DOMContentLoaded', closeRecentActivitiesDropdown);
+window.addEventListener('pageshow', closeRecentActivitiesDropdown);
 </script>
 </body>
 </html>
