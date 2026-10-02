@@ -32,7 +32,7 @@ jobs:
           # direttamente sul progetto Supabase Studio Legale Silella.
           cat > _site/config.js <<EOF
           window.STUDIO_SUPABASE_URL = 'https://dscinvstqizfxwrovsbb.supabase.co';
-          window.STUDIO_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_aVF8u7kXdbznCYQakC3NqQ_fJQkBZQ9';
+          window.STUDIO_SUPABASE_PUBLISHABLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzY2ludnN0cWl6Znh3cm92c2JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4Njk5MzQsImV4cCI6MjEwNjQ0NTkzNH0.sNcJG2VFGH3BLykctpo0GERWD2NQId2dSfAL7U_Vi-E';
           EOF
 
       - name: Configure Pages
