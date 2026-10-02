@@ -1,6 +1,6 @@
 (() => {
   const getClient = () => window.STUDIO_SUPABASE_CLIENT || (window.STUDIO_SUPABASE_CLIENT =
-    window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY));
+    window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}));
   const esc = v => String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const fmt = v => v ? new Date(v).toLocaleString('it-IT') : '—';
   const day = v => v ? new Date(v).toLocaleDateString('it-IT') : '—';
