@@ -49,25 +49,27 @@
         aside.collapsed { width: 70px; }
         
         /* HEADER DELLA SIDEBAR (LOGO GRANDE) */
-        .sidebar-header { 
-            height: 150px; 
-            padding: 12px 14px; 
-            display: flex; 
-            align-items: center; 
+        .sidebar-header {
+            height: 220px;
+            padding: 8px 10px;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            width: 100%; 
-            border-bottom: 1px solid var(--glass-border); 
-            overflow: hidden; 
+            width: 100%;
+            border-bottom: 1px solid var(--glass-border);
+            overflow: hidden;
             background: rgba(0, 0, 0, 0.15);
         }
-        .sidebar-header img { 
-            width: 100%; 
-            height: 135px; 
-            display: block; 
-            object-fit: contain; 
+        .sidebar-header img {
+            width: 100%;
+            height: 205px;
+            max-width: 100%;
+            display: block;
+            object-fit: contain;
+            object-position: center;
         }
-        aside.collapsed .sidebar-header img { 
-            max-height: 58px; 
+        aside.collapsed .sidebar-header img {
+            max-height: 58px;
         }
 
         .sidebar-menu { flex: 1; overflow-y: auto; padding: 15px 0; }
