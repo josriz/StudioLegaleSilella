@@ -284,7 +284,7 @@ async function enterPortal(){
     $('loginErr').className='err';
   }
 }
-sb.auth.onAuthStateChange(async(_event,session)=>{if(session&&!currentUser){currentUser=session.user;try{await enterPortal()}catch(e){console.error(e)}}});
+sb.auth.onAuthStateChange((_event,session)=>{if(!session){currentUser=null;currentClient=null;show('landing')}});
 (async()=>{show('landing');})();
 </script>
 </body>
