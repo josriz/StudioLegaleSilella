@@ -959,8 +959,13 @@
             outputBox.value = data.text || data.draft?.content || "La funzione IA non ha restituito testo.";
         }
 
-        function signAndSendDocument() {
-            alert("✅ Atto firmato digitalmente (FEQ) con certificato dello Studio Silella e trasmesso via PEC con successo!");
+        async function signAndSendDocument() {
+            const output = document.getElementById('aiOutputResult');
+            if (!output || !output.value.trim()) {
+                alert("Genera prima una bozza.");
+                return;
+            }
+            alert("La firma FEQ e l'invio PEC non sono collegati a un provider reale in questo progetto. La bozza resta disponibile per la revisione professionale; nessuna firma o PEC è stata eseguita.");
         }
     </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js?v=20261002-3"></script><script src="studio-dashboard.js?v=20261001-4"></script><script src="lexroom-dashboard.js?v=20261002-2"></script><script src="studio-modules.js?v=20261002-4"></script></body>
