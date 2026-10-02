@@ -212,7 +212,7 @@
       button.textContent = 'Accedi';
 
       if (error) {
-        errorBox.textContent = 'Accesso non riuscito. Verifica email e password.';
+        errorBox.textContent = 'Accesso non riuscito: ' + (error?.message || error?.name || 'errore autenticazione');
         console.error(error);
         return;
       }
@@ -243,8 +243,14 @@
       await loadPractices();
     });
 
-    // Il pannello Studio non viene mostrato senza una nuova autenticazione esplicita.
-    showLogin();
+    const existingSession = await client.auth.getSession();
+    if (existingSession.data?.session?.user) {
+      studioAccessGranted = true;
+      hideLogin();
+      await loadPractices();
+    } else {
+      showLogin();
+    }
 
     client.auth.onAuthStateChange((_event, session) => {
       if (!session) {
