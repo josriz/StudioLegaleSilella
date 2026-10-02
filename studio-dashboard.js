@@ -97,6 +97,24 @@
       loginModal.style.display = 'none';
     }
 
+    async function getAuthorizedStudioUser(user) {
+      if (!user) return null;
+
+      const { data, error } = await client
+        .from('studio_utenti')
+        .select('user_id,role,full_name')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Verifica ruolo Area Studio:', error);
+        return null;
+      }
+
+      if (!data || data.role !== 'studio') return null;
+      return user;
+    }
+
     async function ensureAuth() {
       if (!studioAccessGranted) {
         showLogin();
@@ -104,7 +122,17 @@
       }
 
       const { data: { user }, error } = await client.auth.getUser();
-      if (user) return user;
+      if (user) {
+        const authorizedUser = await getAuthorizedStudioUser(user);
+        if (authorizedUser) return authorizedUser;
+
+        await client.auth.signOut();
+        studioAccessGranted = false;
+        const errorBox = document.getElementById('studioLoginError');
+        if (errorBox) errorBox.textContent = 'Questo account non è autorizzato all’Area Studio.';
+        showLogin();
+        return null;
+      }
 
       // Nessuna sessione: AuthSessionMissingError è normale al primo accesso.
       // In questo caso apriamo il login invece di trattarlo come errore applicativo.
@@ -206,7 +234,7 @@
       button.disabled = true;
       button.textContent = 'Accesso in corso…';
 
-      const { error } = await client.auth.signInWithPassword({ email, password });
+      const { data: authData, error } = await client.auth.signInWithPassword({ email, password });
 
       button.disabled = false;
       button.textContent = 'Accedi';
@@ -214,6 +242,14 @@
       if (error) {
         errorBox.textContent = 'Accesso non riuscito: ' + (error?.message || error?.name || 'errore autenticazione');
         console.error(error);
+        return;
+      }
+
+      const authorizedUser = await getAuthorizedStudioUser(authData?.user);
+      if (!authorizedUser) {
+        await client.auth.signOut();
+        studioAccessGranted = false;
+        errorBox.textContent = 'Accesso negato: questo account è abilitato come Cliente e non può entrare nell’Area Studio.';
         return;
       }
 
