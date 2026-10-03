@@ -243,16 +243,16 @@ async function uploadPersonal(){
 async function submitPractice(e){
   e.preventDefault();$('submitBtn').disabled=true;$('submitStatus').textContent='Trasmissione in corso…';
   try{
-    const {data:{session:currentSession},error:sessionError}=await sb.auth.getSession();
-    if(sessionError||!currentSession)throw Error('Sessione scaduta. Effettua nuovamente l’accesso.');
-    let session=currentSession;
-    const {data:{session:refreshedSession},error:refreshError}=await sb.auth.refreshSession();
-    if(!refreshError&&refreshedSession)session=refreshedSession;
-    if(!session?.access_token)throw Error('Sessione non disponibile. Effettua nuovamente l’accesso.');
-    const fd=new FormData();fd.append('clientName',$('clientName').value.trim());fd.append('taxId',$('taxId').value.trim());fd.append('legalArea',$('legalArea').value);fd.append('counterparty',$('counterparty').value.trim());fd.append('description',$('description').value.trim());
+    const fd=new FormData();
+    fd.append('clientName',$('clientName').value.trim());
+    fd.append('taxId',$('taxId').value.trim());
+    fd.append('legalArea',$('legalArea').value);
+    fd.append('counterparty',$('counterparty').value.trim());
+    fd.append('description',$('description').value.trim());
     for(const f of $('clientFiles').files)fd.append('files',f,f.name);
-    const res=await fetch(FN,{method:'POST',headers:{apikey:window.STUDIO_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token},body:fd});
-    const out=await res.json().catch(()=>({}));if(!res.ok||!out.ok)throw Error(out.error||'Trasmissione non riuscita');
+    const {data:out,error}=await sb.functions.invoke('studio-ricevi-pratica',{body:fd});
+    if(error)throw Error(error.message||'Trasmissione non riuscita');
+    if(!out?.ok)throw Error(out?.error||'Trasmissione non riuscita');
     $('submitStatus').textContent='Richiesta trasmessa correttamente allo Studio.';$('submitStatus').className='status ok';$('practiceForm').reset();await loadAll();setTab('home');
   }catch(err){$('submitStatus').textContent=err.message;$('submitStatus').className='err'}finally{$('submitBtn').disabled=false}
 }
