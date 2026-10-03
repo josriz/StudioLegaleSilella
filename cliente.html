@@ -25,7 +25,7 @@ button,input,select,textarea{font:inherit}.container{width:min(1160px,calc(100% 
 @media(max-width:600px){.topbar{min-height:96px;padding:10px 12px}.topbrand{gap:10px}.topbrandLogo{width:145px;height:62px}.topbrandInfo{padding-left:10px;font-size:9px;gap:2px}.topbrandInfo strong{font-size:14px}.topbrandInfo div{max-width:190px;white-space:normal}.brand img{width:205px;height:66px}.container{width:min(100% - 24px,1160px)}.navlinks a{display:none}.hero h1{font-size:44px}.cards,.steps,.grid2,.accessGrid{grid-template-columns:1fr}.topbar{padding:0 12px}.topbrand span{display:none}.portalMain{width:calc(100% - 20px)}.welcome{padding:23px;display:block}.welcome h1{font-size:28px}.doc{align-items:flex-start;flex-direction:column}.doc .actions{margin-top:0}}
 </style>
 </head>
-<body><style id="clientPageMode">#landing,#authView{display:none!important}#portalView{display:block!important}</style>
+<body>
 <div id="landing">
 <header class="hero">
   <div class="container">
@@ -449,9 +449,15 @@ async function enterPortal(){
     location.replace('./');
   }
 }
-// Accesso Cliente: nessun ingresso automatico da sessioni persistenti. Solo il login esplicito apre il portale.
-sb.auth.onAuthStateChange((_event,session)=>{if(!session){currentUser=null;currentClient=null;location.replace('./')}});
-(async()=>{await loadActivePrivacyNotice();await enterPortal();})();
+// Accesso Cliente: la pagina mostra prima l'Area Cliente pubblica. Il portale viene aperto solo dopo il login esplicito.
+sb.auth.onAuthStateChange((event,session)=>{
+  if(event==='SIGNED_OUT'){
+    currentUser=null;
+    currentClient=null;
+    show('landing');
+  }
+});
+(async()=>{await loadActivePrivacyNotice();show('landing');})();
 </script>
 </body>
 </html>
