@@ -87,7 +87,7 @@
         aside.collapsed .menu-item span { display: none; }
 
         /* MAIN CONTENT TRASPARENTE */
-        main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+        main { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
         
         /* HEADER SUPERIORE ALLINEATO A 90px DI ALTEZZA */
         header { 
@@ -103,16 +103,8 @@
         }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .toggle-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--primary); }
-        .content-area { flex: 1; overflow-y: auto; padding: 25px; }
+        .content-area { flex: 1; min-height: 0; overflow-y: auto; padding: 25px; }
 
-        /* SOLO FASCICOLI: il contenuto del fascicolo deve poter scorrere fino all'ultimo rigo */
-        #panel-matters > .card {
-            height: calc(100vh - 140px);
-            max-height: calc(100vh - 140px);
-            overflow-y: auto;
-            overflow-x: hidden;
-            box-sizing: border-box;
-        }
 
         /* PANELS */
         .panel { display: none; }
