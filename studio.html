@@ -108,18 +108,18 @@
 
         /* SCROLL INTERNO DEL DETTAGLIO FASCICOLO */
         #matterDetail {
-            height: calc(100vh - 190px);
-            min-height: 320px;
+            position: relative;
+            max-height: none;
+            overflow: visible;
+            padding-right: 8px;
+        }
+        #matterDetail > div {
             max-height: calc(100vh - 190px);
             overflow-y: auto;
             overflow-x: hidden;
-            padding-right: 8px;
-            padding-bottom: 24px;
+            padding: 16px 8px 32px 16px;
             box-sizing: border-box;
             scrollbar-width: thin;
-        }
-        #matterDetail > div {
-            padding-bottom: 24px;
         }
         #matterDetail::-webkit-scrollbar { width: 8px; }
         #matterDetail::-webkit-scrollbar-track { background: rgba(226,232,240,.45); border-radius: 8px; }
