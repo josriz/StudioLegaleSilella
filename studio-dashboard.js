@@ -56,7 +56,9 @@
     `;
 
     contentArea.appendChild(panel);
-    menu.appendChild(item);
+    const clientPortalItem = menu.querySelector('[onclick*="switchTab(\'client-portal\'"]');
+    if (clientPortalItem) clientPortalItem.insertAdjacentElement('afterend', item);
+    else menu.appendChild(item);
 
     document.getElementById('studioPracticesHelp')?.addEventListener('click',()=>window.openStudioHelp&&window.openStudioHelp('studio-pratiche'));
 
