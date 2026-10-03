@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Studio Legale Silella - Gestionale</title>
     <style>
-        body.studio-auth-pending > * { visibility: hidden !important; }
-        body.studio-auth-pending { visibility: hidden !important; }
+        body.studio-auth-pending > *:not(#studioLoginModal) { visibility: hidden !important; }
+        body.studio-auth-pending { visibility: visible !important; }
         :root {
             --primary: #1e293b;
             --secondary: #0f172a;
