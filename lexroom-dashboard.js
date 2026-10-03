@@ -16,12 +16,12 @@ const init=async()=>{
  const item=document.createElement('a');item.className='menu-item';item.href='#';item.innerHTML='🧪 <span>Lexroom LAB</span>';
  const panel=document.createElement('div');panel.id='panel-lexroom';panel.className='panel';
  panel.innerHTML=`
- <div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><h3>🧠 Lexroom AI — Laboratorio gratuito</h3><span style="font-size:11px;color:#166534;background:#dcfce7;padding:5px 8px;border-radius:10px">LAB · nessuna API AI a pagamento</span><button class="btn btn-info" id="lxRefresh">Aggiorna</button></div><p id="lxStatus" style="font-size:12px;color:#64748b;margin:8px 0"></p>
+ <div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><h3>🧠 Lexroom AI — Laboratorio gratuito</h3><span style="font-size:11px;color:#166534;background:#dcfce7;padding:5px 8px;border-radius:10px">LAB · nessuna API AI a pagamento</span><button class="btn btn-info" type="button" id="lxHelp">❓ HELP</button><button class="btn btn-info" id="lxRefresh">Aggiorna</button></div><p id="lxStatus" style="font-size:12px;color:#64748b;margin:8px 0"></p>
  <div style="overflow:auto"><table><thead><tr><th>Data</th><th>Cliente</th><th>Materia</th><th>Stato</th><th>AI</th><th>Azioni</th></tr></thead><tbody id="lxBody"></tbody></table></div></div>
  <div class="card"><h3>📚 Modelli dello Studio</h3><form id="lxModelForm"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><input id="lxTitle" placeholder="Nome modello" required><input id="lxArea" placeholder="Materia"></div><textarea id="lxContent" placeholder="Incolla qui il modello o le istruzioni dello Studio" style="width:100%;min-height:140px;margin-top:10px"></textarea><button class="btn btn-success" style="margin-top:8px">Salva modello</button></form><div id="lxModels" style="margin-top:12px"></div></div>
  <div class="card" id="lxDetail" style="display:none"><h3 id="lxDetailTitle"></h3><div id="lxDetailBody"></div></div>`;
  area.appendChild(panel);menu.appendChild(item);
- const body=panel.querySelector('#lxBody'),status=panel.querySelector('#lxStatus'),detail=panel.querySelector('#lxDetail');
+ const body=panel.querySelector('#lxBody'),status=panel.querySelector('#lxStatus'),detail=panel.querySelector('#lxDetail');\n panel.querySelector('#lxHelp')?.addEventListener('click',()=>window.openStudioHelp&&window.openStudioHelp('lexroom'));
  const fn=window.STUDIO_SUPABASE_URL+'/functions/v1/studio-lexroom';
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  async function load(){
