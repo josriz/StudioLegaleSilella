@@ -124,10 +124,13 @@ function labelStatus(s){return ({da_firmare:'Da firmare',restituito:'Restituito'
 function labelMode(s){return ({download_upload:'Scarica · firma · ricarica',online:'Firma online',qualificata:'Firma qualificata',spid:'Firma con SPID',nessuna:'Nessuna firma'}[s]||s)}
 
 async function loadActivePrivacyNotice(){
+  const today=new Date().toISOString().slice(0,10);
   const {data,error}=await sb.from('studio_privacy_informative')
     .select('id,titolo,versione,contenuto,valida_dal,valida_al')
     .eq('tipo','clienti')
     .eq('stato','attiva')
+    .or('valida_dal.is.null,valida_dal.lte.'+today)
+    .or('valida_al.is.null,valida_al.gte.'+today)
     .order('valida_dal',{ascending:false})
     .limit(1)
     .maybeSingle();
