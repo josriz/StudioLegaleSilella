@@ -393,7 +393,7 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.tab)
 $('bellBtn').onclick=async()=>{await loadNotifications();$('notifyModal').classList.remove('hidden')};$('closeNotify').onclick=()=>$('notifyModal').classList.add('hidden');$('markAllRead').onclick=markAllRead;
 async function enterPortal(){
   const {data:{session}}=await sb.auth.getSession();
-  if(!session){location.replace('./');return}
+  if(!session){openAuth('login');return}
   const {data:profile,error:roleError}=await sb.from('studio_utenti').select('role').eq('user_id',session.user.id).maybeSingle();
   if(roleError||profile?.role!=='cliente'){await sb.auth.signOut();location.replace('./');return}
   try{
