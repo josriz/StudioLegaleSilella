@@ -153,5 +153,31 @@ async function saveInformative(id){try{const row={titolo:$('piTitolo').value.tri
   if($('privacyNewProcessor'))$('privacyNewProcessor').onclick=()=>{showBox('privacyResponsabiliBox');openForm('processor')};
   if($('privacyNewDpia'))$('privacyNewDpia').onclick=()=>{showBox('privacyDpiaBox');openForm('dpia')};
   if($('privacyRefresh'))$('privacyRefresh').onclick=loadAll;
-  loadAll();
+  let privacyAuthLoading = false;
+  async function refreshPrivacyFromAuth(){
+    if(privacyAuthLoading) return;
+    privacyAuthLoading = true;
+    try{
+      const {data:{session},error}=await sb.auth.getSession();
+      if(error){
+        console.error('Verifica sessione Privacy Studio:',error);
+        msg('Accesso Studio richiesto.');
+        return;
+      }
+      if(!session){
+        msg('Accesso Studio richiesto.');
+        return;
+      }
+      await loadAll();
+    }finally{
+      privacyAuthLoading = false;
+    }
+  }
+
+  sb.auth.onAuthStateChange((_event,session)=>{
+    if(session) refreshPrivacyFromAuth();
+    else msg('Accesso Studio richiesto.');
+  });
+
+  refreshPrivacyFromAuth();
 })();
