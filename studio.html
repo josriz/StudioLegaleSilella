@@ -411,28 +411,147 @@
   }
 }
 
-/* CORREZIONE MOBILE FINALE: logo, hamburger e margini Dashboard */
+/* CORREZIONE MOBILE: logo su riga propria + menu realmente cliccabile */
 .mobile-header-logo{display:none}
 @media (max-width:600px){
-  header{height:72px;min-height:72px;padding:7px 10px;gap:8px;}
-  .header-left{display:flex;align-items:center;gap:8px;min-width:0;}
-  .mobile-header-logo{display:block;width:132px;height:44px;object-fit:contain;object-position:left center;flex:0 0 auto;}
-  .toggle-btn{order:2;width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;font-size:22px;padding:0;z-index:30;}
-  .header-left>div{display:none!important}
-  header>div:last-child{display:flex;align-items:center;gap:5px!important;min-width:0;}
-  .studio-notify-btn{width:38px;height:38px;padding:0;display:grid;place-items:center;}
-  #studioHeaderHelp{display:none;}
-  #studioHeaderLogout{height:38px;min-height:38px;padding:7px 9px;font-size:11px;}
-  .content-area{padding:10px!important;width:100%;max-width:100%;min-width:0;overflow-x:hidden;}
-  #panel-dashboard{width:100%;max-width:100%;min-width:0;}
-  #panel-dashboard>.grid-3{width:100%;max-width:100%;margin-left:0;margin-right:0;}
-  .recent-activities-card{display:block;width:100%;max-width:100%;min-width:0;margin:0 0 12px!important;padding:0!important;box-sizing:border-box;overflow:hidden;}
-  .recent-activities-dropdown-toggle{width:100%;max-width:100%;min-width:0;box-sizing:border-box;padding:15px 12px;}
-  .recent-activities-dropdown-toggle span:first-child{min-width:0;overflow-wrap:anywhere;}
-  .recent-activities-body{width:100%;max-width:100%;min-width:0;box-sizing:border-box;padding:0 10px 10px!important;overflow:hidden;}
-  .recent-activities-body>div{width:100%;max-width:100%;min-width:0;overflow-x:auto;box-sizing:border-box;-webkit-overflow-scrolling:touch;}
-}
-</style>
+  header{
+    height:126px;
+    min-height:126px;
+    padding:8px 10px 9px;
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    justify-content:flex-start;
+    gap:7px;
+    position:relative;
+    z-index:110;
+  }
+  .header-left{
+    width:100%;
+    height:72px;
+    min-height:72px;
+    flex:0 0 72px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:0;
+  }
+  .mobile-header-logo{
+    display:block;
+    width:100%;
+    height:70px;
+    max-width:100%;
+    object-fit:contain;
+    object-position:center center;
+    flex:0 0 100%;
+  }
+  .header-left > div{display:none!important}
+  .toggle-btn{
+    position:absolute;
+    left:10px;
+    bottom:9px;
+    width:42px;
+    height:38px;
+    min-width:42px;
+    padding:0;
+    display:grid;
+    place-items:center;
+    font-size:23px;
+    line-height:1;
+    border:1px solid rgba(15,23,42,.15);
+    border-radius:9px;
+    background:rgba(255,255,255,.92);
+    color:var(--primary);
+    z-index:120;
+    pointer-events:auto;
+    cursor:pointer;
+  }
+  header > div:last-child{
+    width:100%;
+    height:38px;
+    min-height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:6px!important;
+    flex:0 0 38px;
+    padding-left:52px;
+  }
+  header > div:last-child > div{display:none!important}
+  .studio-notify-btn{
+    width:38px;
+    height:38px;
+    padding:0;
+    display:grid;
+    place-items:center;
+    font-size:17px;
+    flex:0 0 38px;
+  }
+  #studioHeaderHelp{display:none!important}
+  #studioHeaderLogout{
+    height:38px;
+    min-height:38px;
+    padding:7px 11px;
+    font-size:11px;
+    white-space:nowrap;
+    flex:0 0 auto;
+  }
+  .content-area{
+    padding:10px!important;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    overflow-x:hidden;
+  }
+  #panel-dashboard{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+  #panel-dashboard>.grid-3{
+    width:100%;
+    max-width:100%;
+    margin-left:0;
+    margin-right:0;
+  }
+  .recent-activities-card{
+    display:block;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    margin:0 0 12px!important;
+    padding:0!important;
+    box-sizing:border-box;
+    overflow:hidden;
+  }
+  .recent-activities-dropdown-toggle{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    box-sizing:border-box;
+    padding:15px 12px;
+  }
+  .recent-activities-dropdown-toggle span:first-child{
+    min-width:0;
+    overflow-wrap:anywhere;
+  }
+  .recent-activities-body{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    box-sizing:border-box;
+    padding:0 10px 10px!important;
+    overflow:hidden;
+  }
+  .recent-activities-body>div{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    overflow-x:auto;
+    box-sizing:border-box;
+    -webkit-overflow-scrolling:touch;
+  }
+}</style>
 </head>
 <body>
 
@@ -470,7 +589,7 @@
         <header>
             <div class="header-left">
                 <img class="mobile-header-logo" src="Logo_Studio_Silella.jpg" alt="Studio Legale Silella" onerror="this.src='Logo_Studio_Silella.webp'">
-                <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Apri menu">☰</button>
+                <button class="toggle-btn" type="button" onclick="toggleSidebar(event)" aria-label="Apri menu">☰</button>
                 <div>
                     <div id="headerTitle" style="font-size: 13px; line-height: 1.45; color: var(--primary); font-weight: 700;">
                         <div>Viale Antonio Salandra</div>
@@ -842,7 +961,8 @@
 
     <!-- SCRIPT DI GESTIONE -->
     <script>
-        function toggleSidebar() {
+        function toggleSidebar(event) {
+            if (event) event.stopPropagation();
             const sidebar = document.getElementById('appSidebar');
             if (window.matchMedia('(max-width: 900px)').matches) {
                 sidebar.classList.toggle('mobile-open');
