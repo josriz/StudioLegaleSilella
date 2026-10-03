@@ -293,7 +293,7 @@
       if (!authorizedUser) {
         await client.auth.signOut();
         studioAccessGranted = false;
-        errorBox.textContent = 'Accesso negato: questo account è abilitato come Cliente e non può entrare nell’Area Studio.';
+        errorBox.textContent = 'Accesso negato: questo account non è autorizzato all’Area Studio.';
         return;
       }
 
