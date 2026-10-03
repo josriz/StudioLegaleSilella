@@ -71,7 +71,7 @@ function show(view){
   $(view).classList.remove('hidden');
   window.scrollTo(0,0);
 }
-function openAuth(mode='login'){show('authView');$('loginBox').classList.toggle('hidden',mode!=='login');$('registerBox').classList.toggle('hidden',mode==='login')}
+function openAuth(mode='login'){show('authView');$('authView').style.backgroundImage="url('loghi_sfondi/stanza_vetro.jpg?v=20261003')";$('authView').style.backgroundSize='cover';$('authView').style.backgroundPosition='center';$('authView').style.backgroundRepeat='no-repeat';$('loginBox').classList.toggle('hidden',mode!=='login');$('registerBox').classList.toggle('hidden',mode==='login')}
 function setTab(tab){
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   document.querySelectorAll('.tabPanel').forEach(p=>p.classList.add('hidden'));
