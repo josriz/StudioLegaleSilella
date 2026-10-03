@@ -58,7 +58,9 @@
     contentArea.appendChild(panel);
     menu.appendChild(item);
 
-    document.getElementById('studioPracticesHelp')?.addEventListener('click',()=>window.openStudioHelp&&window.openStudioHelp('studio-pratiche'));\n\n    const body = document.getElementById('studioPracticesBody');
+    document.getElementById('studioPracticesHelp')?.addEventListener('click',()=>window.openStudioHelp&&window.openStudioHelp('studio-pratiche'));
+
+    const body = document.getElementById('studioPracticesBody');
     const status = document.getElementById('studioAuthStatus');
     const loginModal = document.createElement('div');
     loginModal.id = 'studioLoginModal';
