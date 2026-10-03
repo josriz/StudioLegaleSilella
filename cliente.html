@@ -406,15 +406,16 @@ async function enterPortal(){
     location.replace('./');
   }
 }
-// Accesso Cliente: la pagina mostra prima l'Area Cliente pubblica. Il portale viene aperto solo dopo il login esplicito.
+// Area Cliente: questa pagina contiene esclusivamente il portale autenticato.
+// Se non esiste una sessione valida, si torna alla landing pubblica per il login.
 sb.auth.onAuthStateChange((event,session)=>{
   if(event==='SIGNED_OUT'){
     currentUser=null;
     currentClient=null;
-    show('landing');
+    location.replace('./');
   }
 });
-(async()=>{await loadActivePrivacyNotice();show('landing');})();
+(async()=>{await loadActivePrivacyNotice();await enterPortal();})();
 </script>
 </body>
 </html>
