@@ -124,11 +124,12 @@
 
   const boot=()=>{
     mountAll();
+    [400,1200,2500,5000].forEach(ms=>setTimeout(mountAll,ms));
     document.addEventListener('click',e=>{
       const item=e.target.closest('.menu-item');
       if(!item)return;
       const oc=item.getAttribute('onclick')||'';
-      if(/'matters'|'jurisprudence'|'ai-generator'|'archive'/.test(oc)) setTimeout(mountAll,80);
+      if(/'matters'|'jurisprudence'|'ai-generator'|'archive'/.test(oc)) [120,700,1600].forEach(ms=>setTimeout(mountAll,ms));
     });
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
