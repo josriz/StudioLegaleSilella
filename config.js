@@ -1,2 +1,17 @@
 window.STUDIO_SUPABASE_URL = 'https://dscinvstqizfxwrovsbb.supabase.co';
 window.STUDIO_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_aVF8u7kXdbznCYQakC3NqQ_fJQkBZQ9';
+
+if (window.supabase && !window.STUDIO_SUPABASE_CLIENT) {
+  window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(
+    window.STUDIO_SUPABASE_URL,
+    window.STUDIO_SUPABASE_PUBLISHABLE_KEY,
+    {
+      auth: {
+        storageKey: 'silella-studio-auth',
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    }
+  );
+}
