@@ -116,7 +116,7 @@
         return null;
       }
 
-      if (!data || data.role !== 'studio') return null;
+      if (!data || !['studio','admin'].includes(data.role)) return null;
       return user;
     }
 
@@ -298,6 +298,7 @@
       }
 
       studioAccessGranted = true;
+      document.body.classList.remove('studio-auth-pending');
       hideLogin();
       await loadPractices();
     });
@@ -307,6 +308,7 @@
     document.getElementById('studioLogout').addEventListener('click', async () => {
       await client.auth.signOut();
       studioAccessGranted = false;
+      document.body.classList.add('studio-auth-pending');
       status.textContent = 'Sessione chiusa.';
       showLogin();
       body.innerHTML = '<tr><td colspan="8">Effettua nuovamente l’accesso per visualizzare le pratiche.</td></tr>';
@@ -327,11 +329,13 @@
     // Non usiamo una sessione locale già presente per saltare il gate:
     // l'accesso viene verificato esplicitamente con email e password.
     studioAccessGranted = false;
+    document.body.classList.add('studio-auth-pending');
     showLogin();
 
     client.auth.onAuthStateChange((_event, session) => {
       if (!session) {
         studioAccessGranted = false;
+        document.body.classList.add('studio-auth-pending');
         showLogin();
       }
       if (!session && panel.classList.contains('active')) {
