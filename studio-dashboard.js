@@ -27,7 +27,7 @@
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
           <h3 style="margin:0">📥 Pratiche ricevute dal Portale Clienti</h3>
-          <div style="display:flex;gap:8px;align-items:center">
+          <div style="display:flex;gap:8px;align-items:center"><button class="btn btn-info" id="studioPracticesHelp" type="button">❓ HELP</button>
             <button class="btn btn-info" id="studioRefresh" type="button">Aggiorna</button>
             <button class="btn" id="studioLogout" type="button">Esci</button>
           </div>
@@ -58,7 +58,7 @@
     contentArea.appendChild(panel);
     menu.appendChild(item);
 
-    const body = document.getElementById('studioPracticesBody');
+    document.getElementById('studioPracticesHelp')?.addEventListener('click',()=>window.openStudioHelp&&window.openStudioHelp('studio-pratiche'));\n\n    const body = document.getElementById('studioPracticesBody');
     const status = document.getElementById('studioAuthStatus');
     const loginModal = document.createElement('div');
     loginModal.id = 'studioLoginModal';
