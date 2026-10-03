@@ -1184,7 +1184,7 @@
             }
 
             const [{ data: members, error: membersError }, { data: practices, error: practicesError }] = await Promise.all([
-                client.from('studio_utenti').select('user_id,role,full_name,created_at').order('created_at', { ascending: true }),
+                client.from('studio_utenti').select('user_id,role,full_name,created_at').in('role', ['studio','admin']).order('created_at', { ascending: true }),
                 client.from('studio_pratiche').select('id,owner_user_id')
             ]);
 
