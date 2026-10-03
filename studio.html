@@ -800,14 +800,15 @@
                 return;
             }
 
-            const [pratiche, documenti, analisi, bozze] = await Promise.all([
+            const [pratiche, documenti, analisi, bozze, portalDocs] = await Promise.all([
                 client.from('studio_pratiche').select('id,client_name,tax_id,legal_area,counterparty,description,file_names,status,client_status,client_status_note,ai_status,created_at,updated_at').order('created_at', { ascending:false }),
                 client.from('studio_documenti').select('id,pratica_id,file_name,mime_type,size_bytes,created_at').order('created_at', { ascending:false }),
                 client.from('studio_ai_analisi').select('id,pratica_id,status,provider,model,summary,created_at,completed_at').order('created_at', { ascending:false }),
-                client.from('studio_bozze').select('id,pratica_id,status,version_no,created_at,approved_at').order('created_at', { ascending:false })
+                client.from('studio_bozze').select('id,pratica_id,status,version_no,created_at,approved_at').order('created_at', { ascending:false }),
+                client.from('studio_portale_documenti').select('id,pratica_id,cliente_id,sender_user_id,recipient_user_id,file_name,storage_path,mime_type,size_bytes,direction,document_kind,status,created_at,signature_mode,parent_document_id,version,returned_at,signed_at,verified_at,notes').order('created_at', { ascending:false })
             ]);
 
-            const firstError = pratiche.error || documenti.error || analisi.error || bozze.error;
+            const firstError = pratiche.error || documenti.error || analisi.error || bozze.error || portalDocs.error;
             if(firstError) {
                 console.error(firstError);
                 statusBox.textContent = 'Errore nel caricamento dei fascicoli.';
@@ -825,6 +826,7 @@
                 documents: (documenti.data || []).filter(d => d.pratica_id === p.id),
                 analyses: (analisi.data || []).filter(a => a.pratica_id === p.id),
                 drafts: (bozze.data || []).filter(b => b.pratica_id === p.id),
+                portalDocuments: (portalDocs.data || []).filter(d => d.pratica_id === p.id),
                 events: (agendaData || []).filter(e => e.pratica_id === p.id)
             }));
 
@@ -930,7 +932,41 @@
             showMatterDetail(index);
         }
 
-        function showMatterDetail(index) {
+        async function openMatterPortalDocument(documentId) {
+            const matters=window.__studioMatters||[];
+            const doc=matters.flatMap(m=>m.portalDocuments||[]).find(d=>d.id===documentId);
+            if(!doc?.storage_path){alert('Documento senza file archiviato.');return}
+            const client=getStudioClient(); if(!client)return;
+            const {data,error}=await client.storage.from('studio-legale-documenti').download(doc.storage_path);
+            if(error){alert('Visualizzazione non disponibile: '+error.message);return}
+            const url=URL.createObjectURL(data); window.open(url,'_blank','noopener'); setTimeout(()=>URL.revokeObjectURL(url),60000);
+        }
+
+        async function sendMatterPortalDocument(index) {
+            const m=(window.__studioMatters||[])[index]; if(!m)return;
+            const client=getStudioClient(); if(!client)return;
+            const file=document.getElementById('matterPortalFile')?.files?.[0];
+            const kind=document.getElementById('matterPortalKind')?.value||'documento';
+            const mode=document.getElementById('matterPortalMode')?.value||'nessuna';
+            const out=document.getElementById('matterPortalStatus');
+            if(!file){if(out)out.textContent='Seleziona un file.';return}
+            if(file.size>10*1024*1024){if(out)out.textContent='Il file supera 10 MB.';return}
+            const {data:{user}}=await client.auth.getUser(); if(!user){if(out)out.textContent='Sessione Studio non disponibile.';return}
+            const {data:clientRow,error:clientError}=await client.from('studio_clienti').select('id,user_id').eq('id',m.client_id).maybeSingle();
+            if(clientError||!clientRow?.user_id){if(out)out.textContent='Il cliente non ha un accesso Portale attivo.';return}
+            const path='studio/'+clientRow.id+'/'+crypto.randomUUID()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+            if(out)out.textContent='Archiviazione…';
+            const up=await client.storage.from('studio-legale-documenti').upload(path,file,{contentType:file.type,upsert:false});
+            if(up.error){if(out)out.textContent='Errore upload: '+up.error.message;return}
+            const {data,error}=await client.from('studio_portale_documenti').insert({pratica_id:m.id,cliente_id:clientRow.id,sender_user_id:user.id,recipient_user_id:clientRow.user_id,file_name:file.name,storage_path:path,mime_type:file.type,size_bytes:file.size,direction:'studio_to_client',document_kind:kind,status:mode==='nessuna'?'inviato':'da_firmare',signature_mode:mode,version:1}).select().single();
+            if(error){await client.storage.from('studio-legale-documenti').remove([path]);if(out)out.textContent='Errore registrazione documento: '+error.message;return}
+            m.portalDocuments=m.portalDocuments||[];m.portalDocuments.unshift(data);
+            if(out)out.textContent='Documento archiviato e inviato al Cliente.';
+            const f=document.getElementById('matterPortalFile');if(f)f.value='';
+            showMatterDetail(index);
+        }
+
+                function showMatterDetail(index) {
             const detail = document.getElementById('matterDetail');
             const matters = window.__studioMatters || [];
             const m = matters[index];
@@ -939,6 +975,9 @@
             const documentRows = m.documents.length
                 ? m.documents.map(d => '<div style="padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px"><strong>'+escapeMatter(d.file_name || 'Documento')+'</strong><div style="font-size:12px;color:#64748b">'+escapeMatter(d.mime_type || 'tipo non indicato')+' · '+(d.size_bytes ? Math.round(d.size_bytes/1024)+' KB' : 'dimensione n/d')+'</div></div>').join('')
                 : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessun documento associato.</div>';
+            const portalDocumentRows = (m.portalDocuments||[]).length
+                ? m.portalDocuments.map(d => '<div style="padding:9px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div><strong>'+escapeMatter(d.file_name||'Documento portale')+'</strong><div style="font-size:12px;color:#64748b;margin-top:3px">'+escapeMatter(d.direction==='studio_to_client'?'Studio → Cliente':'Cliente → Studio')+' · '+escapeMatter(d.document_kind||'documento')+' · '+escapeMatter(d.status||'n/d')+' · '+escapeMatter(d.version?'v'+d.version:'')+'</div><div style="font-size:11px;color:#64748b;margin-top:3px">'+escapeMatter(d.created_at?new Date(d.created_at).toLocaleString('it-IT'):'—')+(d.verified_at?' · Verificato':'')+(d.returned_at?' · Restituito':'')+'</div></div><button class="btn btn-info" type="button" onclick="openMatterPortalDocument(\''+d.id+'\')">Visualizza</button></div></div>').join('')
+                : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessun documento portale collegato a questa pratica.</div>';
 
             const eventRows = (m.events||[]).length
                 ? m.events.map(e => '<div style="padding:10px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;margin-top:7px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div><strong>'+escapeMatter(e.title||'Attività')+'</strong><div style="font-size:12px;color:#64748b;margin-top:3px">'+escapeMatter(e.type||'altro')+' · '+escapeMatter(e.starts_at?new Date(e.starts_at).toLocaleString('it-IT'):'')+(e.location?' · '+escapeMatter(e.location):'')+'</div>'+(e.client_note?'<div style="font-size:13px;margin-top:6px;white-space:pre-wrap">'+escapeMatter(e.client_note)+'</div>':'')+'</div><span class="badge-status '+(e.client_visible?'status-sent':'')+'">'+(e.client_visible?'Visibile al Cliente':'Interno')+'</span></div><div style="margin-top:8px;display:flex;gap:7px;flex-wrap:wrap"><button class="btn btn-info" type="button" onclick="toggleClientAgendaEvent('+index+',\''+e.id+'\','+(!e.client_visible)+')">'+(e.client_visible?'Nascondi al Cliente':'Rendi visibile al Cliente')+'</button><button class="btn btn-danger" type="button" onclick="deleteClientAgendaEvent('+index+',\''+e.id+'\')">Elimina</button></div></div>').join('')
@@ -967,6 +1006,7 @@
                 '<div style="margin-top:14px;padding:12px;background:#fff;border:1px solid #e2e8f0;border-radius:9px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><strong>📅 Udienze e attività visibili al Cliente</strong></div><div>'+eventRows+'</div><div style="margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0"><strong>Aggiungi udienza / aggiornamento</strong><div class="grid-2" style="margin-top:10px"><div class="form-group"><label>Titolo *</label><input id="clientEventTitle" placeholder="Es. Udienza di comparizione"></div><div class="form-group"><label>Tipo</label><select id="clientEventType"><option value="udienza">Udienza</option><option value="scadenza">Scadenza</option><option value="deposito">Deposito</option><option value="adempimento">Adempimento</option><option value="appuntamento">Appuntamento</option><option value="altro">Altro</option></select></div><div class="form-group"><label>Data e ora *</label><input id="clientEventStarts" type="datetime-local"></div><div class="form-group"><label>Luogo</label><input id="clientEventLocation" placeholder="Es. Tribunale di Bari · Aula…"></div></div><div class="form-group"><label>Nota visibile al Cliente</label><textarea id="clientEventNote" rows="3" placeholder="Esito o informazione che vuoi pubblicare al Cliente…"></textarea></div><label style="display:flex;gap:8px;align-items:center;font-size:12px"><input id="clientEventVisible" type="checkbox" checked> Rendi subito visibile al Cliente</label><div style="margin-top:8px;display:flex;gap:10px;align-items:center"><button class="btn btn-success" id="addClientEventBtn" type="button" onclick="addClientAgendaEvent('+index+')">Salva evento</button><span id="clientEventStatus" style="font-size:12px;color:#64748b"></span></div></div></div>' +
                 '<div style="margin-top:14px"><strong>Descrizione</strong><div style="margin-top:5px;white-space:pre-wrap;font-size:13px">'+escapeMatter(m.description || 'Nessuna descrizione disponibile.')+'</div></div>' +
                 '<div style="margin-top:14px"><strong>Documenti associati ('+m.documents.length+')</strong>'+documentRows+'</div>' +
+                '<div style="margin-top:14px;padding:12px;background:#fff;border:1px solid #e2e8f0;border-radius:9px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><strong>🌐 Documenti del Portale collegati al fascicolo ('+(m.portalDocuments||[]).length+')</strong></div>'+portalDocumentRows+'<div style="margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0"><strong>Invia documento dal fascicolo</strong><div class="grid-2" style="margin-top:10px"><div class="form-group"><label>Tipo documento</label><select id="matterPortalKind"><option value="documento">Documento</option><option value="pratica">Documento del fascicolo</option><option value="documento_personale">Documento personale</option><option value="altro">Altro</option></select></div><div class="form-group"><label>Modalità</label><select id="matterPortalMode"><option value="nessuna">Solo invio</option><option value="download_upload">Da firmare e restituire</option><option value="online">Firma online (servizio esterno)</option><option value="qualificata">Firma qualificata (servizio esterno)</option><option value="spid">Firma con SPID (servizio esterno)</option></select></div></div><input id="matterPortalFile" type="file" style="margin-top:8px"><div style="margin-top:8px;display:flex;gap:10px;align-items:center"><button class="btn btn-success" type="button" onclick="sendMatterPortalDocument('+index+')">Archivia e invia al Cliente</button><span id="matterPortalStatus" style="font-size:12px;color:#64748b"></span></div></div></div>' +
                 '<div style="margin-top:14px"><strong>Analisi IA archiviate ('+m.analyses.length+')</strong>'+analysisRows+'</div>' +
                 '<div style="margin-top:14px"><strong>Bozze archiviate ('+m.drafts.length+')</strong>'+draftRows+'</div>' +
                 '</div>';
@@ -978,7 +1018,7 @@
             const btn = e.target.closest('.matter-detail-btn');
             if(btn) showMatterDetail(Number(btn.dataset.matterIndex));
         });
-        window.saveClientMatterStatus=saveClientMatterStatus; window.addClientAgendaEvent=addClientAgendaEvent; window.toggleClientAgendaEvent=toggleClientAgendaEvent; window.deleteClientAgendaEvent=deleteClientAgendaEvent;
+        window.saveClientMatterStatus=saveClientMatterStatus; window.addClientAgendaEvent=addClientAgendaEvent; window.toggleClientAgendaEvent=toggleClientAgendaEvent; window.deleteClientAgendaEvent=deleteClientAgendaEvent; window.openMatterPortalDocument=openMatterPortalDocument; window.sendMatterPortalDocument=sendMatterPortalDocument;
         document.getElementById('mattersRefresh')?.addEventListener('click', loadMatters);
         document.getElementById('mattersSearch')?.addEventListener('input', renderMatters);
         document.getElementById('mattersStatusFilter')?.addEventListener('change', renderMatters);
