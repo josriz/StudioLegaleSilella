@@ -214,7 +214,6 @@
             <a class="menu-item" onclick="switchTab('billing', this)">💶 <span>Fatturazione SDI</span></a>
             <a class="menu-item" onclick="switchTab('client-portal', this)">🌐 <span>Portale Clienti</span></a>
             <a class="menu-item" onclick="switchTab('archive', this)">🗄️ <span>Archivio & Audit</span></a>
-            <a class="menu-item" onclick="switchTab('privacy', this)">🔐 <span>Gestione Privacy</span></a>
         </div>
     </aside>
 
@@ -236,38 +235,6 @@
         </header>
 
         <div class="content-area">
-
-
-            <!-- GESTIONE PRIVACY -->
-            <div id="panel-privacy" class="panel">
-                <div class="card">
-                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-                        <div><h3 style="margin:0">🔐 Gestione Privacy</h3><div style="margin-top:5px;font-size:12px;color:#64748b">Registro operativo di trattamenti, richieste degli interessati e data breach.</div></div>
-                        <button class="btn btn-info" type="button" id="privacyRefresh">Aggiorna</button>
-                    </div>
-                    <div id="privacyStatus" style="margin-top:12px;font-size:13px;color:#475569"></div>
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:15px">
-                        <button class="btn" type="button" id="privacyTabTreatments">Registro trattamenti</button>
-                        <button class="btn" type="button" id="privacyTabRequests">Richieste interessati</button>
-                        <button class="btn" type="button" id="privacyTabBreaches">Data breach</button>
-                    </div>
-                </div>
-                <div id="privacyTreatmentBox" class="card">
-                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h3 style="margin:0">Registro dei trattamenti</h3><button class="btn btn-success" type="button" id="privacyNewTreatment">+ Nuovo trattamento</button></div>
-                    <div id="privacyTreatments" style="margin-top:12px;overflow-x:auto"></div>
-                    <div id="privacyTreatmentForm" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid #e2e8f0"></div>
-                </div>
-                <div id="privacyRequestBox" class="card" style="display:none">
-                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h3 style="margin:0">Richieste degli interessati</h3><button class="btn btn-success" type="button" id="privacyNewRequest">+ Nuova richiesta</button></div>
-                    <div id="privacyRequests" style="margin-top:12px;overflow-x:auto"></div>
-                    <div id="privacyRequestForm" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid #e2e8f0"></div>
-                </div>
-                <div id="privacyBreachBox" class="card" style="display:none">
-                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h3 style="margin:0">Registro data breach</h3><button class="btn btn-danger" type="button" id="privacyNewBreach">+ Nuovo evento</button></div>
-                    <div id="privacyBreaches" style="margin-top:12px;overflow-x:auto"></div>
-                    <div id="privacyBreachForm" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid #e2e8f0"></div>
-                </div>
-            </div>
 
             <!-- 1. DASHBOARD -->
             <div id="panel-dashboard" class="panel active">
@@ -621,8 +588,7 @@
                 'time-tracker': 'Time Tracker & Ore Lavorate',
                 'billing': 'Parcelle & Fatturazione Elettronica',
                 'client-portal': 'Portale Clienti (Extranet)',
-                'archive': 'Archivio Storico e Audit Trail',
-                'privacy': 'Gestione Privacy'
+                'archive': 'Archivio Storico e Audit Trail'
             };
             window.__studioActivePanel = panelId;
             if (window.renderStudioHelpForActive) window.renderStudioHelpForActive();
@@ -1140,7 +1106,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 });
 </script>
-<script src="studio-dashboard.js?v=20261003-1"></script><script src="studio-privacy.js?v=20261003-1"></script><script src="lexroom-dashboard.js?v=20261002-2"></script><script src="studio-modules.js?v=20261003-1"></script></script>
+<script src="studio-dashboard.js?v=20261003-1"></script><script src="lexroom-dashboard.js?v=20261002-2"></script><script src="studio-modules.js?v=20261003-1"></script></script>
 
 <div id="studioHelpModal" class="studio-help-modal" role="dialog" aria-modal="true" aria-labelledby="studioHelpTitle">
   <div class="studio-help-box">
