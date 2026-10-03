@@ -704,7 +704,7 @@
             result.innerHTML = '<strong>🔍 Verifica in corso…</strong>';
 
             const client = window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
-                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY))
+                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}))
                 : null);
 
             if(!client) {
@@ -1137,7 +1137,7 @@
 
         function getStudioClient() {
             return window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
-                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY))
+                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}))
                 : null);
         }
 
@@ -1344,7 +1344,7 @@
             outputBox.value = "Elaborazione della bozza IA in corso...";
 
             const client = window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
-                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY))
+                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}))
                 : null);
 
             if(!client) {
@@ -1398,7 +1398,7 @@
             alert("La firma FEQ e l'invio PEC non sono collegati a un provider reale in questo progetto. La bozza resta disponibile per la revisione professionale; nessuna firma o PEC è stata eseguita.");
         }
     </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.76.0"></script><script src="config.js?v=20261002-5"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.76.0"></script><script src="config.js?v=20261003-6"></script>
 <script>
 document.addEventListener('DOMContentLoaded',()=>{
   const btn=document.getElementById('studioHeaderLogout');
