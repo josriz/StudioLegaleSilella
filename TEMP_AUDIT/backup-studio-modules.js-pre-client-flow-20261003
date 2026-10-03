@@ -75,76 +75,30 @@
   }
 
   function renderClients(){
-    const rows=state.clients;
-    panel('clients','<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h3>👥 Anagrafica Clienti</h3><div style="font-size:12px;color:#64748b">Il Cliente è il contenitore principale. Da qui si gestiscono anagrafica, accesso al portale, privacy, pratiche e documenti personali.</div></div><button class="btn btn-info" id="clientsRefresh">Aggiorna</button></div>'+
-      '<div class="card" style="margin-top:14px;background:#f8fafc"><h4>Nuovo cliente</h4><form id="clientForm" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:8px;align-items:end"><input id="clName" placeholder="Nome / società" required><input id="clTax" placeholder="CF / P.IVA"><input id="clEmail" type="email" placeholder="Email"><input id="clPhone" placeholder="Telefono"><button class="btn btn-success">Salva</button></form><div id="clientStatus" style="font-size:12px;margin-top:8px"></div></div>'+
-      '<div style="overflow:auto"><table><thead><tr><th>Nome</th><th>CF/P.IVA</th><th>Email</th><th>Portale</th><th>Stato</th><th>Azioni</th></tr></thead><tbody data-module-body>'+
-      (rows.map(c=>'<tr><td><strong>'+esc(c.full_name)+'</strong></td><td>'+esc(c.tax_id||'—')+'</td><td>'+esc(c.email||'—')+'</td><td>'+(c.user_id?'<span class="badge-status status-sent">Attivo</span>':'<span class="badge-status">Non attivo</span>')+'</td><td>'+esc(c.status||'—')+'</td><td><button class="btn btn-info" data-open-client="'+c.id+'">Apri</button> <button class="btn btn-danger" data-del-client="'+c.id+'">Elimina</button></td></tr>').join('')||'<tr><td colspan="6">Nessun cliente.</td></tr>')+'</tbody></table></div></div>');
+    panel('clients','<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h3>👥 Anagrafica Clienti e Controparti</h3><div style="font-size:12px;color:#64748b">Archivio persistente Supabase</div></div><button class="btn btn-info" id="clientsRefresh">Aggiorna</button></div><div class="card" style="margin-top:14px;background:#f8fafc"><h4>Nuovo cliente/controparte</h4><form id="clientForm" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:8px;align-items:end"><input id="clName" placeholder="Nome / società" required><input id="clTax" placeholder="CF / P.IVA"><input id="clEmail" type="email" placeholder="Email"><input id="clPhone" placeholder="Telefono"><button class="btn btn-success">Salva</button></form><div id="clientStatus" style="font-size:12px;margin-top:8px"></div></div><div style="overflow:auto"><table><thead><tr><th>Nome</th><th>CF/P.IVA</th><th>Email</th><th>Stato</th><th>Azioni</th></tr></thead><tbody data-module-body>'+state.clients.map(c=>'<tr><td>'+esc(c.full_name)+'</td><td>'+esc(c.tax_id||'—')+'</td><td>'+esc(c.email||'—')+'</td><td>'+esc(c.status)+'</td><td><button class="btn btn-danger" data-del-client="'+c.id+'">Elimina</button></td></tr>').join('')||'<tr><td colspan="5">Nessun cliente.</td></tr>'+'</tbody></table></div></div>');
     document.getElementById('clientsRefresh').onclick=refreshAll;
-    document.getElementById('clientForm').onsubmit=async e=>{
-      e.preventDefault();const {error}=await getClient().from('studio_clienti').insert({full_name:clName.value.trim(),tax_id:clTax.value.trim()||null,email:clEmail.value.trim()||null,phone:clPhone.value.trim()||null,created_by:state.user.id});
-      document.getElementById('clientStatus').textContent=error?error.message:'Cliente salvato.';
-      if(!error){e.target.reset();await refreshAll()}
-    };
-    document.querySelectorAll('[data-open-client]').forEach(b=>b.onclick=()=>openClientDetail(b.dataset.openClient));
+    document.getElementById('clientForm').onsubmit=async e=>{e.preventDefault();const c=getClient();const {error}=await c.from('studio_clienti').insert({full_name:clName.value.trim(),tax_id:clTax.value.trim()||null,email:clEmail.value.trim()||null,phone:clPhone.value.trim()||null,created_by:state.user.id});document.getElementById('clientStatus').textContent=error?error.message:'Cliente salvato.';if(!error){e.target.reset();await refreshAll()}};
     document.querySelectorAll('[data-del-client]').forEach(b=>b.onclick=async()=>{
       if(!confirm('Eliminare definitivamente il cliente e i documenti del portale collegati?'))return;
-      b.disabled=true;b.textContent='Eliminazione…';
+      b.disabled=true;
+      b.textContent='Eliminazione…';
       try{
-        const c=getClient();const {data:docs,error:de}=await c.from('studio_portale_documenti').select('storage_path').eq('cliente_id',b.dataset.delClient);if(de)throw de;
-        const paths=(docs||[]).map(x=>x.storage_path).filter(Boolean);if(paths.length){const {error:se}=await c.storage.from('studio-legale-documenti').remove(paths);if(se)throw se}
-        const {error}=await c.from('studio_clienti').delete().eq('id',b.dataset.delClient);if(error)throw error;await refreshAll();
-      }catch(err){b.disabled=false;b.textContent='Elimina';alert('Eliminazione cliente non riuscita: '+(err?.message||err))}
-    });
-  }
-
-  async function openClientDetail(clientId){
-    const client=state.clients.find(x=>x.id===clientId);if(!client)return;
-    const c=getClient();
-    const [{data:practices},{data:docs},{data:consents},{data:informative}]=await Promise.all([
-      c.from('studio_pratiche').select('*').eq('client_id',client.id).order('created_at',{ascending:false}),
-      c.from('studio_portale_documenti').select('*').eq('cliente_id',client.id).order('created_at',{ascending:false}),
-      c.from('studio_privacy_consensi').select('*,studio_privacy_informative(titolo,versione)').eq('cliente_id',client.id).order('registrato_at',{ascending:false}),
-      c.from('studio_privacy_informative').select('id,titolo,versione,stato').eq('tipo','clienti').order('created_at',{ascending:false})
-    ]);
-    const m=document.createElement('div');m.className='modal';m.style.zIndex='10000';
-    const active=(informative||[]).find(x=>x.stato==='attiva');
-    m.innerHTML='<div class="modalBox" style="width:min(1050px,100%);max-height:90vh;overflow:auto"><div class="modalHead"><div><h2>'+esc(client.full_name)+'</h2><div class="status">'+esc(client.email||'')+' · '+esc(client.tax_id||'')+'</div></div><button class="iconBtn" id="closeClientDetail">✕</button></div>'+
-      '<div class="grid2" style="margin-top:16px"><div class="notice"><strong>Portale</strong><br>'+(client.user_id?'Accesso attivo':'Accesso non attivo')+'</div><div class="notice"><strong>Privacy</strong><br>'+((consents||[]).length?'Presa visione registrata':'Da completare')+(active?' · versione attiva '+esc(active.versione): ' · nessuna informativa attiva')+'</div></div>'+
-      '<div class="actions" style="margin-top:16px"><button class="btn gold" id="clientInvitePrivacy">'+(client.user_id?'Invia informativa privacy':'Invita al Portale e invia privacy')+'</button></div>'+
-      '<div class="card" style="margin-top:16px"><h3>Nuova pratica</h3><form id="clientPracticeForm"><div class="grid2"><div class="field"><label>Area legale</label><input id="cpArea" required></div><div class="field"><label>Controparte</label><input id="cpCounterparty"></div></div><div class="field"><label>Descrizione / oggetto</label><textarea id="cpDescription" required></textarea></div><div id="cpStatus" class="status"></div><button class="btn btn-success">Crea fascicolo</button></form></div>'+
-      '<div class="card" style="margin-top:16px"><h3>Pratiche del cliente</h3><div id="clientPracticeList">'+((practices||[]).map(p=>'<div class="doc"><div class="docMain"><div class="docName">'+esc(p.legal_area||'Pratica')+'</div><div class="docMeta">'+fmt(p.created_at)+' · '+esc(p.status)+' · '+esc(p.counterparty||'nessuna controparte')+'</div></div></div>').join('')||'<div class="empty">Nessuna pratica.</div>')+'</div></div>'+
-      '<div class="card" style="margin-top:16px"><h3>Documenti del portale</h3><div>'+((docs||[]).map(d=>'<div class="doc"><div class="docMain"><div class="docName">'+esc(d.file_name)+'</div><div class="docMeta">'+esc(d.direction)+' · '+esc(d.document_kind)+' · '+esc(d.status)+' · '+fmt(d.created_at)+'</div></div>'+(d.status==='restituito'?'<button class="btn btn-success" data-verify-doc="'+d.id+'">Convalida</button>':'')+'</div>').join('')||'<div class="empty">Nessun documento.</div>')+'</div></div>'+
-      '<div class="card" style="margin-top:16px"><h3>Privacy</h3><div>'+((consents||[]).map(x=>'<div class="notice" style="margin-bottom:8px">'+esc(x.tipo_azione||x.tipo||'presa visione')+' · '+esc(x.studio_privacy_informative?.versione||x.versione||'')+' · '+fmt(x.registrato_at||x.accepted_at)+'</div>').join('')||'<div class="empty">Nessuna registrazione privacy.</div>')+'</div></div></div>';
-    document.body.appendChild(m);
-    const close=()=>m.remove();m.querySelector('#closeClientDetail').onclick=close;
-    m.querySelector('#clientInvitePrivacy').onclick=async()=>{
-      const s=m.querySelector('#cpStatus');const b=m.querySelector('#clientInvitePrivacy');b.disabled=true;b.textContent='Operazione in corso…';
-      try{
-        let target=state.clients.find(x=>x.id===client.id);
-        if(!target.user_id){
-          const email=target.email||prompt('Email del cliente per l’accesso al portale:','');
-          if(!email)throw Error('Email obbligatoria per l’invito.');
-          const {data:{session}}=await c.auth.getSession();if(!session)throw Error('Sessione Studio non disponibile.');
-          const r=await fetch(window.STUDIO_SUPABASE_URL+'/functions/v1/studio-invita-cliente',{method:'POST',headers:{apikey:window.STUDIO_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'content-type':'application/json'},body:JSON.stringify({client_id:target.id,email:email.trim().toLowerCase()})});
-          const out=await r.json();if(!out.ok)throw Error(out.error||'Invito non riuscito.');
-          await loadData();target=state.clients.find(x=>x.id===client.id);
+        const c=getClient();
+        const {data:docs,error:docsError}=await c.from('studio_portale_documenti').select('storage_path').eq('cliente_id',b.dataset.delClient);
+        if(docsError)throw docsError;
+        const paths=(docs||[]).map(x=>x.storage_path).filter(Boolean);
+        if(paths.length){
+          const {error:storageError}=await c.storage.from('studio-legale-documenti').remove(paths);
+          if(storageError)throw storageError;
         }
-        const {data:infos,error:ie}=await c.from('studio_privacy_informative').select('id').eq('tipo','clienti').eq('stato','attiva').order('valida_dal',{ascending:false}).limit(1).maybeSingle();if(ie)throw ie;if(!infos)throw Error('Nessuna informativa privacy attiva.');
-        const {data:out,error}=await c.functions.invoke('studio-privacy-portal',{body:{action:'send',informative_id:infos.id,client_id:target.id}});if(error)throw error;if(!out?.ok)throw Error(out?.error||'Invio informativa non riuscito.');
-        b.textContent='Informativa inviata';s.textContent='Informativa inviata al cliente e disponibile nel Portale.';await loadData();
-      }catch(e){b.disabled=false;b.textContent='Invia informativa privacy';s.textContent='Errore: '+(e?.message||e)}
-    };
-    m.querySelector('#clientPracticeForm').onsubmit=async e=>{
-      e.preventDefault();const s=m.querySelector('#cpStatus');s.textContent='Creazione fascicolo…';
-      const row={client_id:client.id,client_name:client.full_name,tax_id:client.tax_id||'N/D',legal_area:m.querySelector('#cpArea').value.trim(),counterparty:m.querySelector('#cpCounterparty').value.trim()||null,description:m.querySelector('#cpDescription').value.trim(),status:'nuova',intake_source:'studio',owner_user_id:state.user.id,client_user_id:client.user_id||null,ai_status:'non_avviata'};
-      const {data:p,error}=await c.from('studio_pratiche').insert(row).select().single();if(error){s.textContent='Errore: '+error.message;return}
-      await c.from('studio_audit').insert({pratica_id:p.id,actor_user_id:state.user.id,event_type:'pratica_creata_studio',details:{cliente_id:client.id}});
-      s.textContent='Fascicolo creato correttamente.';e.target.reset();await loadData();close();
-    };
-    m.querySelectorAll('[data-verify-doc]').forEach(b=>b.onclick=async()=>{
-      b.disabled=true;b.textContent='Convalida…';const {error}=await c.from('studio_portale_documenti').update({status:'verificato',verified_at:new Date().toISOString()}).eq('id',b.dataset.verifyDoc);if(error){b.disabled=false;b.textContent='Convalida';alert(error.message);return}
-      await c.from('studio_audit').insert({pratica_id:docs.find(d=>d.id===b.dataset.verifyDoc)?.pratica_id||null,actor_user_id:state.user.id,event_type:'documento_portale_verificato',details:{documento_id:b.dataset.verifyDoc}});b.textContent='Convalidato';await loadData();
+        const {error}=await c.from('studio_clienti').delete().eq('id',b.dataset.delClient);
+        if(error)throw error;
+        await refreshAll();
+      }catch(err){
+        b.disabled=false;
+        b.textContent='Elimina';
+        alert('Eliminazione cliente non riuscita: '+(err?.message||err));
+      }
     });
   }
 
