@@ -66,19 +66,24 @@
     const status = document.getElementById('studioAuthStatus');
     const loginModal = document.createElement('div');
     loginModal.id = 'studioLoginModal';
-    loginModal.style.cssText = 'display:flex;position:fixed;inset:0;background:#ffffff;z-index:9999;align-items:center;justify-content:center;padding:20px;';
+    loginModal.className = 'studio-login-overlay';
     loginModal.innerHTML = `
-      <div style="width:min(420px,100%);background:#fff;border-radius:14px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.25)">
-        <h2 style="margin:0 0 6px">Accesso Studio Legale Silella</h2>
-        <p style="margin:0 0 18px;color:#64748b;font-size:14px">Accedi per visualizzare le pratiche ricevute dai clienti.</p>
+      <div class="studio-login-card">
+        <div class="studio-login-logo-wrap">
+          <img class="studio-login-logo" src="Logo_Studio_Silella.jpg" alt="Studio Legale Silella" onerror="this.src='Logo_Studio_Silella.webp'">
+        </div>
+        <div class="studio-login-kicker">AREA RISERVATA</div>
+        <h2>Accesso Studio</h2>
+        <p class="studio-login-subtitle">Accedi all'area professionale dello Studio Legale Silella.</p>
         <form id="studioLoginForm">
-          <label style="display:block;margin-bottom:6px;font-weight:600">Email</label>
-          <input id="studioLoginEmail" type="email" autocomplete="username" required style="width:100%;box-sizing:border-box;margin-bottom:14px;padding:10px;border:1px solid #cbd5e1;border-radius:8px">
-          <label style="display:block;margin-bottom:6px;font-weight:600">Password</label>
-          <input id="studioLoginPassword" type="password" autocomplete="current-password" required style="width:100%;box-sizing:border-box;margin-bottom:8px;padding:10px;border:1px solid #cbd5e1;border-radius:8px">
-          <div id="studioLoginError" style="min-height:20px;color:#b91c1c;font-size:13px;margin-bottom:10px"></div>
-          <button id="studioLoginSubmit" type="submit" class="btn btn-info" style="width:100%">Accedi</button>
+          <label for="studioLoginEmail">Email</label>
+          <input id="studioLoginEmail" type="email" autocomplete="username" required placeholder="La tua email">
+          <label for="studioLoginPassword">Password</label>
+          <input id="studioLoginPassword" type="password" autocomplete="current-password" required placeholder="La tua password">
+          <div id="studioLoginError" class="studio-login-error"></div>
+          <button id="studioLoginSubmit" type="submit" class="studio-login-submit">Accedi all'Area Studio</button>
         </form>
+        <div class="studio-login-footer">Accesso riservato ai professionisti autorizzati</div>
       </div>
     `;
     document.body.appendChild(loginModal);
