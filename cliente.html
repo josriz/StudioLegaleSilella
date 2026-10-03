@@ -316,7 +316,7 @@ async function returnSigned(id){
 }
 async function saveProfile(e){
   e.preventDefault();$('profileSave').disabled=true;$('profileStatus').textContent='Salvataggio…';
-  const upd={full_name:$('pName').value.trim(),tax_id:$('pTax').value.trim()||null,phone:$('pPhone').value.trim()||null,birth_date:$('pBirthDate').value||null,birth_place:$('pBirthPlace').value.trim()||null,address:$('pAddress').value.trim()||null,postal_code:$('pPostal').value.trim()||null,city:$('pCity').value.trim()||null,province:$('pProvince').value.trim()||null,country:$('pCountry').value.trim()||null,pec:$('pPec').value.trim()||null,iban:$('pIban').value.trim()||null,notes:$('pVat').value.trim()?('P.IVA: '+$('pVat').value.trim()):null,updated_at:new Date().toISOString()};
+  const upd={full_name:$('pName').value.trim(),tax_id:$('pTax').value.trim()||null,phone:$('pPhone').value.trim()||null,birth_date:$('pBirthDate').value||null,birth_place:$('pBirthPlace').value.trim()||null,address:$('pAddress').value.trim()||null,postal_code:$('pPostal').value.trim()||null,city:$('pCity').value.trim()||null,province:$('pProvince').value.trim()||null,country:$('pCountry').value.trim()||null,pec:$('pPec').value.trim()||null,iban:$('pIban').value.trim()||null,vat_number:$('pVat').value.trim()||null,updated_at:new Date().toISOString()};
   const {error}=await sb.from('studio_clienti').update(upd).eq('user_id',currentUser.id);
   $('profileSave').disabled=false;$('profileStatus').textContent=error?'Errore: '+error.message:'Dati salvati correttamente.';$('profileStatus').className=error?'err':'status ok';if(!error)await loadClient();
 }
