@@ -106,6 +106,14 @@
         .content-area { flex: 1 1 auto; min-height: 0; min-width: 0; overflow-y: auto; overflow-x: hidden; padding: 25px; box-sizing: border-box; }
 
 
+        /* IL DETTAGLIO FASCICOLO DEVE SCORRERE CON L'AREA CONTENUTI */
+        #panel-matters {
+            min-height: 0;
+        }
+        #panel-matters > .card {
+            min-height: 0;
+        }
+
         /* PANELS */
         .panel { display: none; }
         .panel.active { display: block; }
