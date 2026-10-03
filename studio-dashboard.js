@@ -182,7 +182,7 @@
             '<td style="min-width:260px">' + esc(p.description) + '</td>' +
             '<td>' + esc(p.file_names || 'Nessuno') + '</td>' +
             '<td><span class="badge-status status-sent">' + esc(p.status) + '</span></td>' +
-            '<td><button class="btn btn-info studio-open" type="button" data-id="' + esc(p.id) + '">Apri pratica</button></td>' +
+            '<td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-info studio-open" type="button" data-id="' + esc(p.id) + '">Apri pratica</button><button class="btn btn-danger studio-delete" type="button" data-id="' + esc(p.id) + '">Elimina</button></div></td>' +
             '</tr>'
           ).join('')
         : '<tr><td colspan="8">Nessuna pratica ricevuta.</td></tr>';
@@ -190,8 +190,47 @@
 
     body.addEventListener('click', async (e) => {
       const btn = e.target.closest('.studio-open');
-      if (!btn) return;
-      await openPractice(btn.dataset.id);
+      if (btn) {
+        await openPractice(btn.dataset.id);
+        return;
+      }
+      const del = e.target.closest('.studio-delete');
+      if (!del) return;
+      const practiceId = del.dataset.id;
+      if (!confirm('Eliminare definitivamente questa pratica e tutti i dati collegati?')) return;
+      del.disabled = true;
+      del.textContent = 'Eliminazione…';
+      try {
+        const { data: docs, error: docsError } = await client
+          .from('studio_documenti')
+          .select('storage_path')
+          .eq('pratica_id', practiceId);
+        if (docsError) throw docsError;
+        const { data: portalDocs, error: portalDocsError } = await client
+          .from('studio_portale_documenti')
+          .select('storage_path')
+          .eq('pratica_id', practiceId);
+        if (portalDocsError) throw portalDocsError;
+        const paths = [...(docs || []), ...(portalDocs || [])]
+          .map(x => x.storage_path)
+          .filter(Boolean);
+        if (paths.length) {
+          const { error: storageError } = await client.storage
+            .from('studio-legale-documenti')
+            .remove(paths);
+          if (storageError) throw storageError;
+        }
+        const { error: deleteError } = await client
+          .from('studio_pratiche')
+          .delete()
+          .eq('id', practiceId);
+        if (deleteError) throw deleteError;
+        await loadPractices();
+      } catch (err) {
+        del.disabled = false;
+        del.textContent = 'Elimina';
+        alert('Eliminazione pratica non riuscita: ' + (err?.message || err));
+      }
     });
 
     async function openPractice(practiceId) {
