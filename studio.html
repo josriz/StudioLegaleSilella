@@ -221,6 +221,7 @@
 .studio-help-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;border-bottom:1px solid #e2e8f0;padding-bottom:12px;margin-bottom:16px}
 .studio-help-head h2{margin:0;font-size:22px}.studio-help-close{border:0;background:#e2e8f0;border-radius:8px;padding:7px 11px;cursor:pointer;font-weight:700}
 .studio-help-box h3{margin:18px 0 7px;font-size:15px}.studio-help-box p{margin:0 0 8px;line-height:1.55;font-size:14px}.studio-help-box ol,.studio-help-box ul{margin:7px 0 10px 22px}.studio-help-box li{margin:5px 0;line-height:1.5;font-size:14px}.studio-help-note{padding:11px 13px;background:#f8fafc;border-left:4px solid #d97706;border-radius:6px;margin-top:12px;font-size:13px;line-height:1.5}
+#teamAddModal.open{display:grid}
 </style>
 </head>
 <body>
@@ -368,13 +369,48 @@
                             <h3 style="margin:0">⚖️ Gestione Professionisti & Team Silella</h3>
                             <div id="teamStatus" style="margin-top:5px;font-size:12px;color:#64748b">Caricamento dati reali dello Studio…</div>
                         </div>
-                        <button class="btn btn-info" type="button" id="teamRefresh">Aggiorna</button>
+                        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                            <button class="btn btn-success" type="button" id="teamAdd">➕ Aggiungi professionista</button>
+                            <button class="btn btn-info" type="button" id="teamRefresh">Aggiorna</button>
+                        </div>
                     </div>
                     <div style="overflow-x:auto;margin-top:14px">
                         <table>
                             <thead><tr><th>Professionista</th><th>Ruolo</th><th>Fascicoli assegnati</th><th>Contatto</th><th>Stato</th></tr></thead>
                             <tbody id="teamTableBody"><tr><td colspan="5">Caricamento…</td></tr></tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="teamAddModal" class="studio-help-modal" role="dialog" aria-modal="true" aria-labelledby="teamAddTitle">
+                <div class="studio-help-box" style="max-width:560px">
+                    <div class="studio-help-head">
+                        <div>
+                            <h2 id="teamAddTitle">Aggiungi professionista</h2>
+                            <p style="margin:5px 0 0;color:#64748b;font-size:13px">Questa sezione riguarda esclusivamente i professionisti dello Studio. I Clienti restano nella Rubrica Clienti.</p>
+                        </div>
+                        <button type="button" class="studio-help-close" id="teamAddClose">Chiudi</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome e cognome *</label>
+                        <input id="teamAddName" type="text" placeholder="Es. Avv. Mario Rossi">
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input id="teamAddEmail" type="email" placeholder="nome@studio.it">
+                    </div>
+                    <div class="form-group">
+                        <label>Ruolo</label>
+                        <select id="teamAddRole">
+                            <option value="studio">Professionista Studio</option>
+                            <option value="admin">Amministratore Studio</option>
+                        </select>
+                    </div>
+                    <div id="teamAddStatus" style="font-size:13px;color:#64748b;margin-bottom:10px"></div>
+                    <div style="display:flex;justify-content:flex-end;gap:8px">
+                        <button class="btn" type="button" id="teamAddCancel">Annulla</button>
+                        <button class="btn btn-success" type="button" id="teamAddSubmit">Invia invito</button>
                     </div>
                 </div>
             </div>
@@ -1256,19 +1292,22 @@
             const { data: { user }, error: authError } = await client.auth.getUser();
             if(authError || !user) {
                 status.textContent = 'Accesso richiesto.';
-                body.innerHTML = '<tr><td colspan="5">Effettua l’accesso per visualizzare il Team.</td></tr>';
+                body.innerHTML = '<tr><td colspan="5">Effettua l’accesso per visualizzare i professionisti.</td></tr>';
                 return;
             }
 
             const [{ data: members, error: membersError }, { data: practices, error: practicesError }] = await Promise.all([
-                client.from('studio_utenti').select('user_id,role,full_name,created_at').in('role', ['studio','admin']).order('created_at', { ascending: true }),
+                client.from('studio_utenti')
+                    .select('user_id,role,full_name,created_at')
+                    .in('role', ['studio','admin'])
+                    .order('created_at', { ascending: true }),
                 client.from('studio_pratiche').select('id,owner_user_id')
             ]);
 
             if(membersError || practicesError) {
                 console.error(membersError || practicesError);
-                status.textContent = 'Errore nel caricamento dei dati del Team.';
-                body.innerHTML = '<tr><td colspan="5">Impossibile caricare il Team.</td></tr>';
+                status.textContent = 'Errore nel caricamento dei professionisti.';
+                body.innerHTML = '<tr><td colspan="5">Impossibile caricare i professionisti dello Studio.</td></tr>';
                 return;
             }
 
@@ -1277,10 +1316,13 @@
                 if(p.owner_user_id) counts[p.owner_user_id] = (counts[p.owner_user_id] || 0) + 1;
             });
 
-            const rows = (members || []).map(member => {
+            // Protezione esplicita: in questa tabella entrano esclusivamente ruoli Studio/Admin.
+            const professionals = (members || []).filter(member => ['studio','admin'].includes(member.role));
+
+            const rows = professionals.map(member => {
                 const isCurrent = member.user_id === user.id;
                 const name = escapeTeam(member.full_name || (isCurrent ? (user.email || 'Utente autenticato') : 'Professionista'));
-                const role = escapeTeam(member.role || '—');
+                const role = escapeTeam(member.role === 'admin' ? 'Amministratore' : 'Professionista');
                 const count = counts[member.user_id] || 0;
                 const contact = isCurrent ? escapeTeam(user.email || '—') : '—';
                 return '<tr>' +
@@ -1293,8 +1335,8 @@
             });
 
             body.innerHTML = rows.length ? rows.join('') : '<tr><td colspan="5">Nessun professionista presente.</td></tr>';
-            status.textContent = (members || []).length + ' professionista/i presenti · dati reali Supabase';
-            window.__studioTeam = members || [];
+            status.textContent = professionals.length + ' professionista/i dello Studio · i Clienti sono gestiti esclusivamente nella Rubrica Clienti';
+            window.__studioTeam = professionals;
         }
 
         function escapeTeam(value) {
@@ -1303,7 +1345,71 @@
             }[ch]));
         }
 
+        function openTeamAddModal() {
+            const modal=document.getElementById('teamAddModal');
+            if(!modal)return;
+            ['teamAddName','teamAddEmail'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+            const status=document.getElementById('teamAddStatus');
+            if(status)status.textContent='';
+            modal.classList.add('open');
+        }
+
+        function closeTeamAddModal() {
+            document.getElementById('teamAddModal')?.classList.remove('open');
+        }
+
+        async function inviteStudioProfessional() {
+            const name=document.getElementById('teamAddName')?.value.trim();
+            const email=document.getElementById('teamAddEmail')?.value.trim().toLowerCase();
+            const role=document.getElementById('teamAddRole')?.value||'studio';
+            const status=document.getElementById('teamAddStatus');
+            const submit=document.getElementById('teamAddSubmit');
+            const client=getStudioClient();
+
+            if(!name || !email){
+                if(status)status.textContent='Nome e email sono obbligatori.';
+                return;
+            }
+            if(!client){
+                if(status)status.textContent='Servizio Supabase non disponibile.';
+                return;
+            }
+
+            submit.disabled=true;
+            submit.textContent='Invio…';
+            if(status)status.textContent='Invio invito al professionista…';
+            try{
+                const {data:{session},error:sessionError}=await client.auth.getSession();
+                if(sessionError || !session?.access_token){
+                    if(status)status.textContent='Sessione Studio non disponibile. Effettua nuovamente l’accesso.';
+                    return;
+                }
+                const {data,error}=await client.functions.invoke('studio-invita-professionista',{
+                    body:{email,full_name:name,role}
+                });
+                if(error || !data?.ok){
+                    const message=data?.error||error?.message||'Impossibile inviare l’invito.';
+                    if(status)status.textContent=message;
+                    return;
+                }
+                if(status)status.textContent='Invito inviato correttamente. Il professionista comparirà nel Team dopo la registrazione/attivazione.';
+                await loadTeam();
+                setTimeout(closeTeamAddModal,900);
+            }catch(e){
+                console.error('Invito professionista:',e);
+                if(status)status.textContent=e?.message||'Errore durante l’invio dell’invito.';
+            }finally{
+                submit.disabled=false;
+                submit.textContent='Invia invito';
+            }
+        }
+
         document.getElementById('teamRefresh')?.addEventListener('click', loadTeam);
+        document.getElementById('teamAdd')?.addEventListener('click', openTeamAddModal);
+        document.getElementById('teamAddClose')?.addEventListener('click', closeTeamAddModal);
+        document.getElementById('teamAddCancel')?.addEventListener('click', closeTeamAddModal);
+        document.getElementById('teamAddSubmit')?.addEventListener('click', inviteStudioProfessional);
+        document.getElementById('teamAddModal')?.addEventListener('click',e=>{if(e.target.id==='teamAddModal')closeTeamAddModal();});
         const teamMenuItem = Array.from(document.querySelectorAll('.menu-item')).find(m => (m.getAttribute('onclick') || '').includes("'team'"));
         teamMenuItem?.addEventListener('click', () => setTimeout(loadTeam, 0));
         if (document.readyState === 'loading') {
