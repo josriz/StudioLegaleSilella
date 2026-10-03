@@ -226,7 +226,6 @@
           .eq('id', practiceId);
         if (deleteError) throw deleteError;
         await loadPractices();
-        if (window.refreshStudioModules) await window.refreshStudioModules();
       } catch (err) {
         del.disabled = false;
         del.textContent = 'Elimina';
