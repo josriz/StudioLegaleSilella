@@ -807,49 +807,82 @@
                 return;
             }
 
-            const [pratiche, documenti, analisi, bozze, portalDocs, comunicazioni, pct, tempi, fatture, notifiche, audit, membri] = await Promise.all([
-                client.from('studio_pratiche').select('id,client_name,tax_id,legal_area,counterparty,description,file_names,status,client_status,client_status_note,ai_status,created_at,updated_at,owner_user_id,client_id,client_user_id').order('created_at', { ascending:false }),
-                client.from('studio_documenti').select('id,pratica_id,file_name,mime_type,size_bytes,created_at').order('created_at', { ascending:false }),
-                client.from('studio_ai_analisi').select('id,pratica_id,status,provider,model,summary,created_at,completed_at').order('created_at', { ascending:false }),
-                client.from('studio_bozze').select('id,pratica_id,status,version_no,created_at,approved_at').order('created_at', { ascending:false }),
-                client.from('studio_portale_documenti').select('id,pratica_id,cliente_id,sender_user_id,recipient_user_id,file_name,storage_path,mime_type,size_bytes,direction,document_kind,status,created_at,signature_mode,parent_document_id,version,returned_at,signed_at,verified_at,notes').order('created_at', { ascending:false }),
-                client.from('studio_comunicazioni').select('id,pratica_id,channel,recipient,subject,status,created_at,sent_at').order('created_at',{ascending:false}),
-                client.from('studio_pct_depositi').select('id,pratica_id,type,recipient,subject,file_names,status,external_id,submitted_at,received_at,notes,created_at').order('created_at',{ascending:false}),
-                client.from('studio_time_entries').select('id,pratica_id,user_id,started_at,ended_at,duration_seconds,description,billable,created_at').order('created_at',{ascending:false}),
-                client.from('studio_fatture').select('id,pratica_id,cliente_id,invoice_number,issue_date,due_date,description,total,status,sdi_status,external_id,notes,created_at').order('created_at',{ascending:false}),
-                client.from('studio_notifiche').select('id,pratica_id,recipient_user_id,tipo,titolo,messaggio,documento_id,letta_at,created_at').order('created_at',{ascending:false}),
-                client.from('studio_audit').select('id,pratica_id,actor_user_id,event_type,details,created_at').order('created_at',{ascending:false}),
-                client.from('studio_utenti').select('user_id,role,full_name').in('role',['studio','admin'])
-            ]);
+            // Il caricamento del registro fascicoli dipende solo dalla tabella principale.
+            // I moduli collegati sono caricati in modo indipendente: un errore in un
+            // modulo secondario non deve rendere inutilizzabile l'intero registro.
+            const queries = {
+                pratiche: client.from('studio_pratiche').select('id,client_name,tax_id,legal_area,counterparty,description,file_names,status,client_status,client_status_note,ai_status,created_at,updated_at,owner_user_id,client_id,client_user_id').order('created_at', { ascending:false }),
+                documenti: client.from('studio_documenti').select('id,pratica_id,file_name,mime_type,size_bytes,created_at').order('created_at', { ascending:false }),
+                analisi: client.from('studio_ai_analisi').select('id,pratica_id,status,provider,model,summary,created_at,completed_at').order('created_at', { ascending:false }),
+                bozze: client.from('studio_bozze').select('id,pratica_id,status,version_no,created_at,approved_at').order('created_at', { ascending:false }),
+                portalDocs: client.from('studio_portale_documenti').select('id,pratica_id,cliente_id,sender_user_id,recipient_user_id,file_name,storage_path,mime_type,size_bytes,direction,document_kind,status,created_at,signature_mode,parent_document_id,version,returned_at,signed_at,verified_at,notes').order('created_at', { ascending:false }),
+                comunicazioni: client.from('studio_comunicazioni').select('id,pratica_id,channel,recipient,subject,status,created_at,sent_at').order('created_at',{ascending:false}),
+                pct: client.from('studio_pct_depositi').select('id,pratica_id,type,recipient,subject,file_names,status,external_id,submitted_at,received_at,notes,created_at').order('created_at',{ascending:false}),
+                tempi: client.from('studio_time_entries').select('id,pratica_id,user_id,started_at,ended_at,duration_seconds,description,billable,created_at').order('created_at',{ascending:false}),
+                fatture: client.from('studio_fatture').select('id,pratica_id,cliente_id,invoice_number,issue_date,due_date,description,total,status,sdi_status,external_id,notes,created_at').order('created_at',{ascending:false}),
+                notifiche: client.from('studio_notifiche').select('id,pratica_id,recipient_user_id,tipo,titolo,messaggio,documento_id,letta_at,created_at').order('created_at',{ascending:false}),
+                audit: client.from('studio_audit').select('id,pratica_id,actor_user_id,event_type,details,created_at').order('created_at',{ascending:false}),
+                membri: client.from('studio_utenti').select('user_id,role,full_name').in('role',['studio','admin'])
+            };
 
-            const firstError = pratiche.error || documenti.error || analisi.error || bozze.error || portalDocs.error || comunicazioni.error || pct.error || tempi.error || fatture.error || notifiche.error || audit.error || membri.error;
-            if(firstError) {
-                console.error(firstError);
+            const names = Object.keys(queries);
+            const results = await Promise.all(names.map(name => queries[name]));
+            const byName = Object.fromEntries(results.map((result,index) => [names[index], result]));
+
+            if(byName.pratiche.error) {
+                console.error('[Fascicoli] studio_pratiche:', byName.pratiche.error);
                 statusBox.textContent = 'Errore nel caricamento dei fascicoli.';
                 body.innerHTML = '<tr><td colspan="7">Impossibile caricare i dati reali dello Studio.</td></tr>';
                 return;
             }
 
-            const practiceIds=(pratiche.data||[]).map(p=>p.id).filter(Boolean);
+            // I dati secondari restano opzionali per la lista; l'errore viene tracciato
+            // senza bloccare la visualizzazione dei fascicoli reali.
+            const secondaryData = {};
+            names.filter(name => name !== 'pratiche').forEach(name => {
+                if(byName[name].error) {
+                    console.error('[Fascicoli] '+name+':', byName[name].error);
+                    secondaryData[name] = [];
+                } else {
+                    secondaryData[name] = byName[name].data || [];
+                }
+            });
+
+            const practiceIds=(byName.pratiche.data||[]).map(p=>p.id).filter(Boolean);
             const {data:agendaData,error:agendaError}=practiceIds.length
                 ? await client.from('studio_agenda').select('id,pratica_id,title,type,starts_at,due_at,location,notes,client_note,client_visible,status,created_at,updated_at').in('pratica_id',practiceIds).order('starts_at',{ascending:true})
                 : {data:[],error:null};
-            if(agendaError) console.error(agendaError);
-            const matters = (pratiche.data || []).map(p => ({
+            if(agendaError) console.error('[Fascicoli] agenda:', agendaError);
+
+            const matters = (byName.pratiche.data || []).map(p => ({
                 ...p,
-                documents: (documenti.data || []).filter(d => d.pratica_id === p.id),
-                analyses: (analisi.data || []).filter(a => a.pratica_id === p.id),
-                drafts: (bozze.data || []).filter(b => b.pratica_id === p.id),
-                portalDocuments: (portalDocs.data || []).filter(d => d.pratica_id === p.id),
-                communications: (comunicazioni.data || []).filter(x => x.pratica_id === p.id),
-                pct: (pct.data || []).filter(x => x.pratica_id === p.id),
-                timeEntries: (tempi.data || []).filter(x => x.pratica_id === p.id),
-                invoices: (fatture.data || []).filter(x => x.pratica_id === p.id),
-                notifications: (notifiche.data || []).filter(x => x.pratica_id === p.id),
-                audit: (audit.data || []).filter(x => x.pratica_id === p.id),
-                owner: (membri.data || []).find(u => u.user_id === p.owner_user_id) || null,
+                documents: secondaryData.documenti || [],
+                analyses: secondaryData.analisi || [],
+                drafts: secondaryData.bozze || [],
+                portalDocuments: secondaryData.portalDocs || [],
+                communications: secondaryData.comunicazioni || [],
+                pct: secondaryData.pct || [],
+                timeEntries: secondaryData.tempi || [],
+                invoices: secondaryData.fatture || [],
+                notifications: secondaryData.notifiche || [],
+                audit: secondaryData.audit || [],
+                owner: (secondaryData.membri || []).find(u => u.user_id === p.owner_user_id) || null,
                 events: (agendaData || []).filter(e => e.pratica_id === p.id)
             }));
+
+            // I dati secondari sono globali: qui li restringiamo correttamente al fascicolo.
+            matters.forEach(m => {
+                m.documents = m.documents.filter(x => x.pratica_id === m.id);
+                m.analyses = m.analyses.filter(x => x.pratica_id === m.id);
+                m.drafts = m.drafts.filter(x => x.pratica_id === m.id);
+                m.portalDocuments = m.portalDocuments.filter(x => x.pratica_id === m.id);
+                m.communications = m.communications.filter(x => x.pratica_id === m.id);
+                m.pct = m.pct.filter(x => x.pratica_id === m.id);
+                m.timeEntries = m.timeEntries.filter(x => x.pratica_id === m.id);
+                m.invoices = m.invoices.filter(x => x.pratica_id === m.id);
+                m.notifications = m.notifications.filter(x => x.pratica_id === m.id);
+                m.audit = m.audit.filter(x => x.pratica_id === m.id);
+            });
 
             window.__studioMatters = matters;
             const filter = document.getElementById('mattersStatusFilter');
@@ -859,6 +892,10 @@
                 filter.innerHTML = '<option value="">Tutti gli stati</option>' + states.map(s => '<option value="'+escapeMatter(s)+'">'+escapeMatter(s)+'</option>').join('');
                 if(states.includes(currentFilter)) filter.value = currentFilter;
             }
+            const secondaryErrors = names.filter(name => name !== 'pratiche' && byName[name].error).length + (agendaError ? 1 : 0);
+            statusBox.textContent = secondaryErrors
+                ? 'Dati reali · fascicoli caricati · '+secondaryErrors+' modulo/i collegato/i non disponibile/i'
+                : 'Dati reali · tutti i moduli collegati caricati';
             renderMatters();
         }
 
