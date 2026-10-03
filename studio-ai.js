@@ -41,14 +41,30 @@
   }
 
   async function mountMatters() {
-    const p=document.getElementById('panel-matters');
-    if(!p || document.getElementById('freeAiMatter')) return;
+    const panel=document.getElementById('panel-matters');
+    if(!panel) return;
+
+    const detail=document.getElementById('matterDetail');
+    const detailOpen=detail && getComputedStyle(detail).display !== 'none';
+    const target=detailOpen ? detail : panel;
+
+    const existing=document.getElementById('freeAiMatter');
+    if(existing && existing.parentElement !== target) existing.remove();
+    if(document.getElementById('freeAiMatter')) return;
+
     const html='<div class="form-group" style="margin-top:10px"><label>Fascicolo da analizzare</label><select id="freeAiMatterSelect" style="width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:6px"></select></div>'+
       '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-info" id="freeAiMatterRun">Analizza fascicolo con AI</button><button class="btn" id="freeAiMatterClear">Pulisci</button></div>'+
       '<div id="freeAiMatterResult" style="display:none;margin-top:12px;padding:12px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;white-space:pre-wrap;font-size:13px;line-height:1.5"></div>';
-    p.insertAdjacentHTML('beforeend',card('🧠 Assistente AI per Fascicoli',html,'freeAiMatter'));
-    const sel=document.getElementById('freeAiMatterSelect'), list=await practices();
+
+    target.insertAdjacentHTML('beforeend',card('🧠 Assistente AI per Fascicoli',html,'freeAiMatter'));
+
+    const sel=document.getElementById('freeAiMatterSelect');
+    const list=await practices();
+    if(!sel) return;
     sel.innerHTML='<option value="">— seleziona fascicolo —</option>'+list.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.client_name)+' · '+esc(x.legal_area||'')+' · '+esc(x.counterparty||'')+'</option>').join('');
+
+    const currentMatter=detailOpen ? (window.__studioMatters||[]).find(m=>m && sel && m.id===sel.value) : null;
+
     document.getElementById('freeAiMatterRun').onclick=async()=>{
       if(!sel.value)return alert('Seleziona un fascicolo.');
       const box=document.getElementById('freeAiMatterResult'); box.style.display='block'; box.textContent='Analisi AI in corso…';
@@ -56,8 +72,9 @@
       box.textContent=out.ok?(out.text||'Nessun testo restituito.'):(out.error||'Analisi non disponibile.');
     };
     document.getElementById('freeAiMatterClear').onclick=()=>{document.getElementById('freeAiMatterResult').style.display='none';};
-  }
 
+    if(currentMatter && sel) sel.value=currentMatter.id;
+  }
   async function mountRag() {
     const p=document.getElementById('panel-jurisprudence');
     if(!p || document.getElementById('freeAiRag')) return;
@@ -130,6 +147,7 @@
       if(!item)return;
       const oc=item.getAttribute('onclick')||'';
       if(/'matters'|'jurisprudence'|'ai-generator'|'archive'/.test(oc)) [120,700,1600].forEach(ms=>setTimeout(mountAll,ms));
+      if(item.classList.contains('matter-detail-btn')) [250,800].forEach(ms=>setTimeout(mountMatters,ms));
     });
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
