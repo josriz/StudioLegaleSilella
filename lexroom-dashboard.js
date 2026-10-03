@@ -21,7 +21,8 @@ const init=async()=>{
  <div class="card"><h3>📚 Modelli dello Studio</h3><form id="lxModelForm"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><input id="lxTitle" placeholder="Nome modello" required><input id="lxArea" placeholder="Materia"></div><textarea id="lxContent" placeholder="Incolla qui il modello o le istruzioni dello Studio" style="width:100%;min-height:140px;margin-top:10px"></textarea><button class="btn btn-success" style="margin-top:8px">Salva modello</button></form><div id="lxModels" style="margin-top:12px"></div></div>
  <div class="card" id="lxDetail" style="display:none"><h3 id="lxDetailTitle"></h3><div id="lxDetailBody"></div></div>`;
  area.appendChild(panel);menu.appendChild(item);
- const body=panel.querySelector('#lxBody'),status=panel.querySelector('#lxStatus'),detail=panel.querySelector('#lxDetail');\n panel.querySelector('#lxHelp')?.addEventListener('click',()=>window.openStudioHelp&&window.openStudioHelp('lexroom'));
+ const body=panel.querySelector('#lxBody'),status=panel.querySelector('#lxStatus'),detail=panel.querySelector('#lxDetail');
+ panel.querySelector('#lxHelp')?.addEventListener('click',()=>window.openStudioHelp&&window.openStudioHelp('lexroom'));
  const fn=window.STUDIO_SUPABASE_URL+'/functions/v1/studio-lexroom';
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  async function load(){
