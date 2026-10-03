@@ -182,8 +182,6 @@
         .recent-activities-body table { margin-top:0; }
 
 /* HELP OPERATIVO PER MENU STUDIO */
-.studio-help-trigger{margin-left:auto;padding:8px 12px;border:1px solid rgba(15,23,42,.18);border-radius:8px;background:#fff;color:#0f172a;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.studio-help-trigger:hover{background:#f8fafc}
 .studio-help-modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(7,15,31,.62);z-index:1000;padding:18px}
 .studio-help-modal.open{display:grid}
 .studio-help-box{width:min(900px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,.3);padding:24px;color:#0f172a}
@@ -232,7 +230,7 @@
                     </div>
                 </div>
             </div>
-            <div style="display:flex;align-items:center;gap:12px"><button id="studioNotifyBtn" class="studio-notify-btn" title="Notifiche">🔔<span id="studioNotifyCount" class="studio-notify-count" style="display:none">0</span></button><div style="font-size: 13px; font-weight: 600; color: #1e293b;">Area Riservata - Avv. Titolare Silella</div><button id="studioHeaderLogout" class="btn" type="button">Esci</button></div>
+            <div style="display:flex;align-items:center;gap:12px"><button id="studioNotifyBtn" class="studio-notify-btn" title="Notifiche">🔔<span id="studioNotifyCount" class="studio-notify-count" style="display:none">0</span></button><button id="studioHeaderHelp" class="btn" type="button" title="Guida operativa">HELP</button><div style="font-size: 13px; font-weight: 600; color: #1e293b;">Area Riservata - Avv. Titolare Silella</div><button id="studioHeaderLogout" class="btn" type="button">Esci</button></div>
         </header>
 
         <div class="content-area">
@@ -597,16 +595,9 @@
             lexroom:{title:'Lexroom LAB',intro:'È il laboratorio IA gratuito dello Studio per analizzare pratiche, preparare bozze e lavorare sui modelli interni, senza API IA a pagamento.',steps:['Apri Lexroom LAB dal menu laterale.','Controlla l’elenco delle pratiche disponibili.','Per una pratica premi Analisi LAB per avviare l’analisi oppure Bozza LAB per preparare una bozza.','Leggi il risultato restituito e verifica i dati della pratica e il testo prodotto.','Per usare un modello interno, inserisci nome, materia e contenuto e premi Salva modello.','Usa Aggiorna per ricaricare pratiche e risultati.','Se viene proposta la preparazione di una comunicazione LAB, ricorda che il sistema prepara l’operazione ma non invia una email reale.'],studio:'Il LAB è gratuito e non deve essere presentato come un servizio professionale autonomo. Ogni analisi o bozza IA deve essere verificata dal professionista prima dell’uso.',client:'Il Cliente non utilizza direttamente il LAB. I risultati destinati al Cliente devono essere verificati e inviati dallo Studio tramite un canale realmente attivo.'}
         };
         function renderStudioHelp(panelId){
-            const panel=document.getElementById('panel-'+panelId), data=STUDIO_HELP[panelId];
-            if(!panel||!data)return;
-            panel.querySelectorAll('.studio-help-trigger').forEach(b=>b.remove());
-            const host=panel.querySelector('.card')||panel;
-            let head=host.querySelector('h3');
-            if(!head){head=document.createElement('h3');head.textContent=data.title;host.prepend(head);}
-            const btn=document.createElement('button');btn.type='button';btn.className='studio-help-trigger';btn.textContent='❓ HELP';btn.title='Guida operativa di questa sezione';
-            head.parentElement.style.display='flex';head.parentElement.style.alignItems='center';head.parentElement.style.gap='10px';head.parentElement.style.flexWrap='wrap';
-            head.parentElement.appendChild(btn);
-            btn.onclick=()=>openStudioHelp(panelId);
+            const data=STUDIO_HELP[panelId];
+            const headerBtn=document.getElementById('studioHeaderHelp');
+            if(headerBtn) headerBtn.title=data ? 'Guida operativa: '+data.title : 'Guida operativa';
         }
         function openStudioHelp(panelId){
             const data=STUDIO_HELP[panelId], box=document.getElementById('studioHelpContent'), modal=document.getElementById('studioHelpModal'), title=document.getElementById('studioHelpTitle');
@@ -620,6 +611,10 @@
             if(active)renderStudioHelp(active.id.replace(/^panel-/,''));
         };
         document.addEventListener('DOMContentLoaded',()=>{
+            document.getElementById('studioHeaderHelp')?.addEventListener('click',()=>{
+                const active=document.querySelector('.panel.active');
+                openStudioHelp(active?.id?.replace(/^panel-/,'')||'manual');
+            });
             document.getElementById('studioHelpClose')?.addEventListener('click',()=>document.getElementById('studioHelpModal')?.classList.remove('open'));
             document.getElementById('studioHelpModal')?.addEventListener('click',e=>{if(e.target.id==='studioHelpModal')e.currentTarget.classList.remove('open')});
         });
