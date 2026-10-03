@@ -849,7 +849,7 @@
                 analisi: client.from('studio_ai_analisi').select('id,pratica_id,status,provider,model,summary,created_at,completed_at').order('created_at', { ascending:false }),
                 bozze: client.from('studio_bozze').select('id,pratica_id,status,version_no,created_at,approved_at').order('created_at', { ascending:false }),
                 portalDocs: client.from('studio_portale_documenti').select('id,pratica_id,cliente_id,sender_user_id,recipient_user_id,file_name,storage_path,mime_type,size_bytes,direction,document_kind,status,created_at,signature_mode,parent_document_id,version,returned_at,signed_at,verified_at,notes').order('created_at', { ascending:false }),
-                comunicazioni: client.from('studio_comunicazioni').select('id,pratica_id,channel,recipient,subject,status,created_at,sent_at').order('created_at',{ascending:false}),
+                comunicazioni: client.from('studio_comunicazioni').select('id,pratica_id,channel,recipient,subject,status,sent_at').order('sent_at',{ascending:false}),
                 pct: client.from('studio_pct_depositi').select('id,pratica_id,type,recipient,subject,file_names,status,external_id,submitted_at,received_at,notes,created_at').order('created_at',{ascending:false}),
                 tempi: client.from('studio_time_entries').select('id,pratica_id,user_id,started_at,ended_at,duration_seconds,description,billable,created_at').order('created_at',{ascending:false}),
                 fatture: client.from('studio_fatture').select('id,pratica_id,cliente_id,invoice_number,issue_date,due_date,description,total,status,sdi_status,external_id,notes,created_at').order('created_at',{ascending:false}),
