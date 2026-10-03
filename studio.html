@@ -105,6 +105,20 @@
         .toggle-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--primary); }
         .content-area { flex: 1; overflow-y: auto; padding: 25px; }
 
+
+        /* SCROLL INTERNO DEL DETTAGLIO FASCICOLO */
+        #matterDetail {
+            max-height: calc(100vh - 190px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 6px;
+            scrollbar-width: thin;
+        }
+        #matterDetail::-webkit-scrollbar { width: 8px; }
+        #matterDetail::-webkit-scrollbar-track { background: rgba(226,232,240,.45); border-radius: 8px; }
+        #matterDetail::-webkit-scrollbar-thumb { background: rgba(100,116,139,.55); border-radius: 8px; }
+        #matterDetail::-webkit-scrollbar-thumb:hover { background: rgba(71,85,105,.75); }
+
         /* PANELS */
         .panel { display: none; }
         .panel.active { display: block; }
