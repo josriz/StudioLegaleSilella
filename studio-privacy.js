@@ -100,7 +100,7 @@
     const {error}=await q;if(error){alert(error.message);return}$('privacyRequestForm').style.display='none';await loadAll();
   }
   async function saveBreach(id){
-    const row={titolo:$('pbTitolo').value.trim(),rilevato_at:$('pbRilevato').value?new Date($('pbRilevato').value).toISOString():new Date().toISOString(),descrizione:$('pbDescrizione').value.trim(),categorie_dati:$('pbDati').value.trim(),interessati_coinvolti:$('pbInteressati').value.trim(),azioni_intrapprese:$('pbAzioni').value.trim(),rischio:$('pbRischio').value,stato:$('pbStato').value,notifica_garante:$('pbGarante').checked,notifica_interessati:$('pbInteressati').checked,updated_at:new Date().toISOString()};
+    const row={titolo:$('pbTitolo').value.trim(),rilevato_at:$('pbRilevato').value?new Date($('pbRilevato').value).toISOString():new Date().toISOString(),descrizione:$('pbDescrizione').value.trim(),categorie_dati:$('pbDati').value.trim(),interessati_coinvolti:$('pbInteressati').value.trim(),azioni_intrapprese:$('pbAzioni').value.trim(),rischio:$('pbRischio').value,stato:$('pbStato').value,notifica_garante:$('pbGarante').checked,notifica_interessati:$('pbNotificaInteressati').checked,updated_at:new Date().toISOString()};
     if(!row.titolo){alert('Inserisci il titolo dell’evento.');return}
     const q=id?sb.from('studio_privacy_breach').update(row).eq('id',id):sb.from('studio_privacy_breach').insert({...row,created_by:user.id});
     const {error}=await q;if(error){alert(error.message);return}$('privacyBreachForm').style.display='none';await loadAll();
