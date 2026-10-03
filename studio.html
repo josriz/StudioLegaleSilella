@@ -1044,18 +1044,43 @@
             const detail=document.getElementById('clientDetail'), clients=window.__studioClients||[], cl=clients[index];
             if(!detail||!cl)return;
             const client=getStudioClient(), esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-            let docs=[];
-            if(client&&cl.id){
-                const r=await client.from('studio_portale_documenti').select('id,pratica_id,cliente_id,file_name,mime_type,size_bytes,direction,document_kind,status,created_at').eq('cliente_id',cl.id).order('created_at',{ascending:false});
-                docs=r.data||[];
-                if(r.error)console.error(r.error);
-            }
-            const fields=[['Nome e cognome',cl.full_name],['Codice fiscale',cl.tax_id],['Email',cl.email],['Telefono',cl.phone],['Data di nascita',cl.birth_date],['Luogo di nascita',cl.birth_place],['Indirizzo',cl.address],['CAP',cl.postal_code],['Città',cl.city],['Provincia',cl.province],['PEC',cl.pec],['IBAN',cl.iban],['Stato',cl.status]];
-            const anag=fields.map(([l,v])=>'<div><strong>'+esc(l)+'</strong><br>'+esc(v||'—')+'</div>').join('');
-            const docHtml=docs.length?docs.map(d=>'<div style="padding:9px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px;font-size:13px"><strong>'+esc(d.file_name||'Documento')+'</strong><div style="font-size:12px;color:#64748b;margin-top:3px">'+esc(d.document_kind||'documento')+' · '+esc(d.direction||'n/d')+' · '+esc(d.status||'n/d')+(d.pratica_id?' · Pratica: '+esc(d.pratica_id):'')+(d.size_bytes?' · '+Math.round(d.size_bytes/1024)+' KB':'')+'</div></div>').join(''):'<div style="font-size:13px;color:#64748b;margin-top:6px">Nessun documento collegato a questo cliente.</div>';
-            const prHtml=cl.practices.length?cl.practices.map(p=>'<div style="padding:9px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;font-size:13px"><strong>'+esc(p.id)+'</strong> · '+esc(p.status||'n/d')+'<div style="font-size:12px;color:#64748b;margin-top:3px">'+esc(p.client_name||cl.full_name||'')+' · '+esc(p.tax_id||cl.tax_id||'CF non indicato')+' · '+esc(p.created_at?new Date(p.created_at).toLocaleString('it-IT'):'')+'</div></div>').join(''):'<div style="font-size:13px;color:#64748b;margin-top:6px">Nessuna pratica associata.</div>';
             detail.style.display='block';
-            detail.innerHTML='<div style="padding:16px;background:rgba(248,250,252,.95);border:1px solid #e2e8f0;border-radius:10px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h4 style="margin:0">👤 '+esc(cl.full_name||'Cliente')+'</h4><button class="btn" type="button" id="closeClientDetail">Chiudi</button></div><div style="margin-top:14px"><strong>Anagrafica completa</strong><div style="margin-top:8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;font-size:13px">'+anag+'</div></div><div style="margin-top:14px"><strong>Documenti del cliente ('+docs.length+')</strong>'+docHtml+'</div><div style="margin-top:14px"><strong>Pratiche associate ('+cl.practices.length+')</strong><div style="margin-top:8px;display:grid;gap:6px">'+prHtml+'</div></div></div>';
+            detail.innerHTML='<div style="padding:16px;background:rgba(248,250,252,.95);border:1px solid #e2e8f0;border-radius:10px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h4 style="margin:0">👤 '+esc(cl.full_name||'Cliente')+'</h4><button class="btn" type="button" id="closeClientDetail">Chiudi</button></div><div style="margin-top:14px;color:#64748b;font-size:13px">Caricamento fascicolo cliente…</div></div>';
+            document.getElementById('closeClientDetail').onclick=()=>detail.style.display='none';
+            if(!client||!cl.id)return;
+
+            const [{data:docs,error:docsError},{data:consensi,error:consensiError}] = await Promise.all([
+                client.from('studio_portale_documenti').select('id,pratica_id,cliente_id,file_name,mime_type,size_bytes,direction,document_kind,status,created_at,signature_mode,parent_document_id,version,returned_at,signed_at,verified_at,notes').eq('cliente_id',cl.id).order('created_at',{ascending:false}),
+                client.from('studio_privacy_consensi').select('id,informativa_id,tipo_azione,finalita,esito,fonte,evidenza,registrato_at').eq('cliente_id',cl.id).order('registrato_at',{ascending:false})
+            ]);
+            if(docsError)console.error(docsError);
+            if(consensiError)console.error(consensiError);
+
+            const fields=[
+                ['Nome e cognome',cl.full_name],['Codice fiscale',cl.tax_id],['Email',cl.email],['Telefono',cl.phone],
+                ['Data di nascita',cl.birth_date],['Luogo di nascita',cl.birth_place],['Indirizzo',cl.address],
+                ['CAP',cl.postal_code],['Comune',cl.city],['Provincia',cl.province],['Stato',cl.country||cl.status],
+                ['PEC',cl.pec],['P.IVA',cl.vat_number],['IBAN',cl.iban]
+            ];
+            const anag=fields.map(([l,v])=>'<div><strong>'+esc(l)+'</strong><br>'+esc(v||'—')+'</div>').join('');
+
+            const labelDocKind=k=>({
+                carta_identita:'Carta d’identità',tessera_sanitaria:'Tessera sanitaria / codice fiscale',
+                documento_personale:'Documento personale',pratica:'Documento del fascicolo',
+                privacy_informativa:'Informativa privacy',altro:'Documento'
+            }[k]||k||'Documento');
+            const labelDirection=d=>({client_to_studio:'Cliente → Studio',studio_to_client:'Studio → Cliente'}[d]||d||'—');
+            const groupOrder=['pratica','carta_identita','tessera_sanitaria','documento_personale','privacy_informativa','altro'];
+            const groups=groupOrder.map(kind=>[kind,(docs||[]).filter(d=>d.document_kind===kind)]).filter(([,items])=>items.length);
+            const unknown=(docs||[]).filter(d=>!groupOrder.includes(d.document_kind));
+            if(unknown.length)groups.push(['altro',unknown]);
+            const docsHtml=groups.length?groups.map(([kind,items])=>'<div style="margin-top:12px"><strong>'+esc(labelDocKind(kind))+' ('+items.length+')</strong>'+items.map(d=>'<div style="padding:9px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px;font-size:13px"><strong>'+esc(d.file_name||'Documento')+'</strong><div style="font-size:12px;color:#64748b;margin-top:3px">'+esc(labelDirection(d.direction))+' · '+esc(d.status||'n/d')+(d.pratica_id?' · Fascicolo: '+esc(d.pratica_id):'')+(d.size_bytes?' · '+Math.round(d.size_bytes/1024)+' KB':'')+'</div><div style="font-size:11px;color:#64748b;margin-top:3px">Inserito: '+esc(d.created_at?new Date(d.created_at).toLocaleString('it-IT'):'—')+(d.returned_at?' · Restituito: '+esc(new Date(d.returned_at).toLocaleString('it-IT')):'')+(d.verified_at?' · Verificato: '+esc(new Date(d.verified_at).toLocaleString('it-IT')):'')+'</div></div>').join('')+'</div>').join(''):'<div style="font-size:13px;color:#64748b;margin-top:6px">Nessun documento collegato a questo cliente.</div>';
+
+            const consentHtml=consensi?.length?consensi.map(x=>'<div style="padding:9px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px;font-size:13px"><strong>'+esc(x.tipo_azione||'Consenso')+'</strong><div style="font-size:12px;color:#64748b;margin-top:3px">'+esc(x.esito||'—')+' · '+esc(x.fonte||'—')+' · '+esc(x.registrato_at?new Date(x.registrato_at).toLocaleString('it-IT'):'—')+'</div><div style="font-size:12px;color:#64748b;margin-top:3px">'+esc(x.finalita||'')+(x.evidenza?' · '+esc(x.evidenza):'')+'</div></div>').join(''):'<div style="font-size:13px;color:#64748b;margin-top:6px">Nessuna registrazione privacy presente per questo cliente.</div>';
+
+            const prHtml=cl.practices.length?cl.practices.map(p=>'<div style="padding:10px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;font-size:13px"><strong>Fascicolo '+esc(p.id)+'</strong> · '+esc(p.status||'n/d')+'<div style="font-size:12px;color:#64748b;margin-top:3px">'+esc(p.client_name||cl.full_name||'')+' · '+esc(p.tax_id||cl.tax_id||'CF non indicato')+' · '+esc(p.created_at?new Date(p.created_at).toLocaleString('it-IT'):'')+'</div></div>').join(''):'<div style="font-size:13px;color:#64748b;margin-top:6px">Nessuna pratica associata.</div>';
+
+            detail.innerHTML='<div style="padding:16px;background:rgba(248,250,252,.95);border:1px solid #e2e8f0;border-radius:10px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h4 style="margin:0">👤 '+esc(cl.full_name||'Cliente')+'</h4><button class="btn" type="button" id="closeClientDetail">Chiudi</button></div><div style="margin-top:14px"><strong>Anagrafica completa</strong><div style="margin-top:8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;font-size:13px">'+anag+'</div></div><div style="margin-top:14px"><strong>Documenti ricevuti/inviati ('+(docs||[]).length+')</strong>'+docsHtml+'</div><div style="margin-top:14px"><strong>Privacy e prese visione ('+(consensi||[]).length+')</strong>'+consentHtml+'</div><div style="margin-top:14px"><strong>Pratiche associate ('+cl.practices.length+')</strong><div style="margin-top:8px;display:grid;gap:6px">'+prHtml+'</div></div></div>';
             document.getElementById('closeClientDetail').onclick=()=>detail.style.display='none';
         }
 
