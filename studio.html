@@ -106,26 +106,6 @@
         .content-area { flex: 1; overflow-y: auto; padding: 25px; }
 
 
-        /* SCROLL INTERNO DEL DETTAGLIO FASCICOLO */
-        #matterDetail {
-            position: relative;
-            max-height: none;
-            overflow: visible;
-            padding-right: 8px;
-        }
-        #matterDetail > div {
-            max-height: calc(100vh - 190px);
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 16px 8px 32px 16px;
-            box-sizing: border-box;
-            scrollbar-width: thin;
-        }
-        #matterDetail::-webkit-scrollbar { width: 8px; }
-        #matterDetail::-webkit-scrollbar-track { background: rgba(226,232,240,.45); border-radius: 8px; }
-        #matterDetail::-webkit-scrollbar-thumb { background: rgba(100,116,139,.55); border-radius: 8px; }
-        #matterDetail::-webkit-scrollbar-thumb:hover { background: rgba(71,85,105,.75); }
-
         /* PANELS */
         .panel { display: none; }
         .panel.active { display: block; }
