@@ -410,6 +410,28 @@
     overflow:auto;
   }
 }
+
+/* CORREZIONE MOBILE FINALE: logo, hamburger e margini Dashboard */
+.mobile-header-logo{display:none}
+@media (max-width:600px){
+  header{height:72px;min-height:72px;padding:7px 10px;gap:8px;}
+  .header-left{display:flex;align-items:center;gap:8px;min-width:0;}
+  .mobile-header-logo{display:block;width:132px;height:44px;object-fit:contain;object-position:left center;flex:0 0 auto;}
+  .toggle-btn{order:2;width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;font-size:22px;padding:0;z-index:30;}
+  .header-left>div{display:none!important}
+  header>div:last-child{display:flex;align-items:center;gap:5px!important;min-width:0;}
+  .studio-notify-btn{width:38px;height:38px;padding:0;display:grid;place-items:center;}
+  #studioHeaderHelp{display:none;}
+  #studioHeaderLogout{height:38px;min-height:38px;padding:7px 9px;font-size:11px;}
+  .content-area{padding:10px!important;width:100%;max-width:100%;min-width:0;overflow-x:hidden;}
+  #panel-dashboard{width:100%;max-width:100%;min-width:0;}
+  #panel-dashboard>.grid-3{width:100%;max-width:100%;margin-left:0;margin-right:0;}
+  .recent-activities-card{display:block;width:100%;max-width:100%;min-width:0;margin:0 0 12px!important;padding:0!important;box-sizing:border-box;overflow:hidden;}
+  .recent-activities-dropdown-toggle{width:100%;max-width:100%;min-width:0;box-sizing:border-box;padding:15px 12px;}
+  .recent-activities-dropdown-toggle span:first-child{min-width:0;overflow-wrap:anywhere;}
+  .recent-activities-body{width:100%;max-width:100%;min-width:0;box-sizing:border-box;padding:0 10px 10px!important;overflow:hidden;}
+  .recent-activities-body>div{width:100%;max-width:100%;min-width:0;overflow-x:auto;box-sizing:border-box;-webkit-overflow-scrolling:touch;}
+}
 </style>
 </head>
 <body>
@@ -447,7 +469,8 @@
     <main>
         <header>
             <div class="header-left">
-                <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+                <img class="mobile-header-logo" src="Logo_Studio_Silella.jpg" alt="Studio Legale Silella" onerror="this.src='Logo_Studio_Silella.webp'">
+                <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Apri menu">☰</button>
                 <div>
                     <div id="headerTitle" style="font-size: 13px; line-height: 1.45; color: var(--primary); font-weight: 700;">
                         <div>Viale Antonio Salandra</div>
