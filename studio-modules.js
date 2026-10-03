@@ -78,7 +78,28 @@
     panel('clients','<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h3>👥 Anagrafica Clienti e Controparti</h3><div style="font-size:12px;color:#64748b">Archivio persistente Supabase</div></div><button class="btn btn-info" id="clientsRefresh">Aggiorna</button></div><div class="card" style="margin-top:14px;background:#f8fafc"><h4>Nuovo cliente/controparte</h4><form id="clientForm" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:8px;align-items:end"><input id="clName" placeholder="Nome / società" required><input id="clTax" placeholder="CF / P.IVA"><input id="clEmail" type="email" placeholder="Email"><input id="clPhone" placeholder="Telefono"><button class="btn btn-success">Salva</button></form><div id="clientStatus" style="font-size:12px;margin-top:8px"></div></div><div style="overflow:auto"><table><thead><tr><th>Nome</th><th>CF/P.IVA</th><th>Email</th><th>Stato</th><th>Azioni</th></tr></thead><tbody data-module-body>'+state.clients.map(c=>'<tr><td>'+esc(c.full_name)+'</td><td>'+esc(c.tax_id||'—')+'</td><td>'+esc(c.email||'—')+'</td><td>'+esc(c.status)+'</td><td><button class="btn btn-danger" data-del-client="'+c.id+'">Elimina</button></td></tr>').join('')||'<tr><td colspan="5">Nessun cliente.</td></tr>'+'</tbody></table></div></div>');
     document.getElementById('clientsRefresh').onclick=refreshAll;
     document.getElementById('clientForm').onsubmit=async e=>{e.preventDefault();const c=getClient();const {error}=await c.from('studio_clienti').insert({full_name:clName.value.trim(),tax_id:clTax.value.trim()||null,email:clEmail.value.trim()||null,phone:clPhone.value.trim()||null,created_by:state.user.id});document.getElementById('clientStatus').textContent=error?error.message:'Cliente salvato.';if(!error){e.target.reset();await refreshAll()}};
-    document.querySelectorAll('[data-del-client]').forEach(b=>b.onclick=async()=>{if(!confirm('Eliminare il cliente?'))return;const {error}=await getClient().from('studio_clienti').delete().eq('id',b.dataset.delClient);if(error)alert(error.message);else refreshAll()});
+    document.querySelectorAll('[data-del-client]').forEach(b=>b.onclick=async()=>{
+      if(!confirm('Eliminare definitivamente il cliente e i documenti del portale collegati?'))return;
+      b.disabled=true;
+      b.textContent='Eliminazione…';
+      try{
+        const c=getClient();
+        const {data:docs,error:docsError}=await c.from('studio_portale_documenti').select('storage_path').eq('cliente_id',b.dataset.delClient);
+        if(docsError)throw docsError;
+        const paths=(docs||[]).map(x=>x.storage_path).filter(Boolean);
+        if(paths.length){
+          const {error:storageError}=await c.storage.from('studio-legale-documenti').remove(paths);
+          if(storageError)throw storageError;
+        }
+        const {error}=await c.from('studio_clienti').delete().eq('id',b.dataset.delClient);
+        if(error)throw error;
+        await refreshAll();
+      }catch(err){
+        b.disabled=false;
+        b.textContent='Elimina';
+        alert('Eliminazione cliente non riuscita: '+(err?.message||err));
+      }
+    });
   }
 
   function renderAgenda(){
