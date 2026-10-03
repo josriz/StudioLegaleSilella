@@ -26,48 +26,6 @@ button,input,select,textarea{font:inherit}.container{width:min(1160px,calc(100% 
 </style>
 </head>
 <body>
-<div id="landing">
-<header class="hero">
-  <div class="container">
-    <nav class="nav">
-      <div class="brand"><img src="Logo_Studio_Silella.jpg" alt="Logo Studio Silella" onerror="this.src='Logo_Studio_Silella.webp'"><div class="brandContact"><div><b>Studio legale Silella</b></div><div><b>Indirizzo:</b> <a href="https://www.google.com/maps/place//data=!4m2!3m1!1s0x1347e92071d0a127:0xdb64afce79c3e7c5?sa=X&amp;ved=1t:8290&amp;ictx=111" target="_blank" rel="noopener">Viale Antonio Salandra, 10/C, 70124 Bari BA</a></div><div><b>Telefono:</b> <a href="tel:+390809146254">080 914 6254</a></div><div><b>Email:</b> <a href="mailto:studiosilella@gmail.com">studiosilella@gmail.com</a></div></div></div>
-      <div class="navlinks"><a href="#come-funziona">Come funziona</a><a href="#sicurezza">Sicurezza</a></div>
-    </nav>
-        <div class="heroGrid">
-      <div>
-        <div class="portalTag">Portale digitale · Studio Legale Silella</div>
-        <h1>Un accesso unico per <em>Studio e Clienti.</em></h1>
-        <p class="heroLead">Un ambiente professionale e riservato per gestire il rapporto con lo Studio: lo Staff accede alla propria area operativa, il Cliente al proprio spazio personale per documenti, pratiche e comunicazioni.</p>
-        <div class="accessGrid">
-          <div class="accessCard"><div style="display:flex;align-items:center;gap:15px"><div class="accessIcon">⚖</div><div><h3>Area Studio</h3><p>Gestione clienti, pratiche, documenti e comunicazioni.</p></div></div><a class="btn light" href="studio.html">Accedi</a></div>
-          <div class="accessCard"><div style="display:flex;align-items:center;gap:15px"><div class="accessIcon">♙</div><div><h3>Area Cliente</h3><p>Il tuo spazio personale per documenti, richieste e notifiche.</p></div></div><button class="btn gold" id="openLoginHero">Accedi</button></div>
-        </div>
-        <div class="actions"><button class="btn outline" id="openRegister">Sono un nuovo cliente</button></div>
-      </div>
-      <div class="heroSide"><div class="heroCard">
-        <div class="mini">Un ambiente professionale</div><h3>Ordine, riservatezza e semplicità.</h3>
-        <div class="feature"><span>01</span><div><b>Area Studio</b><small>Uno spazio operativo dedicato alla gestione professionale.</small></div></div>
-        <div class="feature"><span>02</span><div><b>Area Cliente</b><small>Documenti, pratiche e comunicazioni sempre nel tuo spazio.</small></div></div>
-        <div class="feature"><span>03</span><div><b>Accesso riservato</b><small>Ogni utente entra nella propria area in base alle autorizzazioni.</small></div></div>
-      </div>
-    </div>
-  </div>
-</header>
-<section class="section"><div class="container"><div class="eyebrow" style="color:#8a6a2e">Un unico punto di accesso</div><h2>Il tuo rapporto con lo Studio, più ordinato.</h2><p class="sectionLead">Il portale è pensato per ridurre email disperse, allegati difficili da ritrovare e passaggi inutili. Ogni documento rimane collegato al cliente e, quando previsto, alla relativa pratica.</p><div class="cards">
-<div class="infoCard"><div class="icon">▣</div><h3>Documenti personali</h3><p>Carica carta d'identità, tessera sanitaria e gli altri documenti richiesti. Saranno archiviati nel tuo spazio personale.</p></div>
-<div class="infoCard"><div class="icon">↔</div><h3>Scambio con lo Studio</h3><p>Ricevi documenti dallo Studio e invia i tuoi senza dover scegliere cartelle o percorsi tecnici.</p></div>
-<div class="infoCard"><div class="icon">✓</div><h3>Firma e restituzione</h3><p>Quando un documento richiede una firma, puoi scaricarlo, firmarlo e ricaricarlo. Il portale conserva il flusso e le versioni.</p></div>
-</div></div></section>
-<section class="section" id="come-funziona" style="background:#fff"><div class="container"><div class="eyebrow" style="color:#8a6a2e">Come funziona</div><h2>Quattro passaggi, tutto sotto controllo.</h2><div class="steps">
-<div class="step"><div class="num">01</div><h3>Accedi</h3><p>Entra con il tuo account personale e visualizza solo ciò che ti riguarda.</p></div>
-<div class="step"><div class="num">02</div><h3>Ricevi</h3><p>Lo Studio ti invia documenti e richieste. La campanella ti avvisa.</p></div>
-<div class="step"><div class="num">03</div><h3>Invia</h3><p>Carica documenti personali o della pratica direttamente dal portale.</p></div>
-<div class="step"><div class="num">04</div><h3>Firma</h3><p>Scarica, firma e restituisci il documento oppure utilizza una procedura di firma online quando disponibile.</p></div>
-</div></div></section>
-<section class="section" id="sicurezza"><div class="container"><div class="infoCard" style="max-width:900px;margin:auto"><div class="eyebrow" style="color:#8a6a2e">Riservatezza</div><h2>Un ambiente personale e protetto.</h2><p class="sectionLead">L'accesso è autenticato e i documenti sono conservati in un'area privata. Le autorizzazioni vengono applicate anche lato database e archivio, non soltanto nell'interfaccia.</p></div></div></section>
-<footer class="footer"><div class="container footerInner"><div>© Studio Legale Silella · Portale Clienti</div><div><a href="#" onclick="openLegal('privacy');return false">Privacy</a><a href="#" onclick="openLegal('cookie');return false">Cookie</a><a href="#" onclick="openLegal('terms');return false">Termini</a></div></div></footer>
-</div>
-
 <div id="authView" class="authWrap hidden">
 <div class="authCard">
   <div class="authIntro"><img src="Logo_Studio_Silella.jpg" alt=""><h1>Benvenuto nel tuo spazio.</h1><p>Accedi al portale dello Studio Legale Silella per gestire pratiche, documenti e comunicazioni in modo ordinato e riservato.</p><button class="btn outline" id="backLanding">Torna alla pagina iniziale</button></div>
@@ -109,7 +67,7 @@ let currentUser=null, currentClient=null, portalDocs=[], notifications=[], pract
 let activePrivacyNotice=null;
 
 function show(view){
-  ['landing','authView','portalView'].forEach(id=>$(id).classList.add('hidden'));
+  ['authView','portalView'].forEach(id=>$(id).classList.add('hidden'));
   $(view).classList.remove('hidden');
   window.scrollTo(0,0);
 }
@@ -424,7 +382,7 @@ window.openLegal=openLegal;window.closeLegal=closeLegal;window.downloadDoc=downl
 
 $('clientHelpBtn').onclick=openClientHelp;$('closeClientHelp').onclick=closeClientHelp;
 $('clientHelpModal').addEventListener('click',e=>{if(e.target.id==='clientHelpModal')closeClientHelp()});
-$('openLoginHero').onclick=()=>openAuth('login');$('openRegister').onclick=()=>openAuth('register');$('backLanding').onclick=()=>show('landing');$('showRegister').onclick=()=>openAuth('register');$('showLogin').onclick=()=>openAuth('login');
+$('backLanding').onclick=()=>location.replace('./');$('showRegister').onclick=()=>openAuth('register');$('showLogin').onclick=()=>openAuth('login');
 $('loginForm').onsubmit=async e=>{e.preventDefault();$('loginErr').textContent='';$('loginBtn').disabled=true;const {data:authData,error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});$('loginBtn').disabled=false;if(error){$('loginErr').textContent=error.message;return}const {data:profile,error:roleError}=await sb.from('studio_utenti').select('role').eq('user_id',authData.user.id).maybeSingle();if(roleError){await sb.auth.signOut();$('loginErr').textContent='Impossibile verificare il tipo di account.';return}if(profile?.role!=='cliente'){await sb.auth.signOut();$('loginErr').textContent='Questo account è abilitato all’Area Studio e non può entrare nell’Area Cliente.';return}await enterPortal()};
 $('signupForm').onsubmit=async e=>{e.preventDefault();$('signupErr').textContent='';$('signupBtn').disabled=true;try{if(!activePrivacyNotice)throw Error('L’informativa privacy vigente non è ancora stata pubblicata dallo Studio. Registrazione non disponibile.');const {data,error}=await sb.auth.signUp({email:$('signupEmail').value.trim(),password:$('signupPassword').value,options:{data:{full_name:$('signupName').value.trim()}}});if(error)throw error;if(data.session){localStorage.setItem('studio_portal_consents_v1',JSON.stringify({privacy:!!$('privacyConsent').checked,terms:!!$('termsConsent').checked}));await bootstrap();await saveNewName($('signupName').value.trim());await enterPortal()}else{localStorage.setItem('studio_portal_consents_v1',JSON.stringify({privacy:!!$('privacyConsent').checked,terms:!!$('termsConsent').checked}));$('signupErr').className='err ok';$('signupErr').textContent='Account creato. Controlla la posta, conferma l’email e poi accedi.'}}catch(err){$('signupErr').textContent=err.message}finally{$('signupBtn').disabled=false}};
 async function saveNewName(name){if(currentUser)await sb.from('studio_clienti').update({full_name:name}).eq('user_id',currentUser.id)}
