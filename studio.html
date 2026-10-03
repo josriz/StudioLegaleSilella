@@ -370,7 +370,7 @@
                             <div id="teamStatus" style="margin-top:5px;font-size:12px;color:#64748b">Caricamento dati reali dello Studio…</div>
                         </div>
                         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-                            <button class="btn btn-success" type="button" id="teamAdd">➕ Aggiungi professionista</button>
+                            <button class="btn btn-success" type="button" id="teamAdd" title="Inserisci un nuovo professionista dello Studio">➕ Aggiungi professionista</button>
                             <button class="btn btn-info" type="button" id="teamRefresh">Aggiorna</button>
                         </div>
                     </div>
@@ -1296,16 +1296,17 @@
                 return;
             }
 
-            const [{ data: members, error: membersError }, { data: practices, error: practicesError }] = await Promise.all([
+            const [{ data: members, error: membersError }, { data: practices, error: practicesError }, { data: clients, error: clientsError }] = await Promise.all([
                 client.from('studio_utenti')
                     .select('user_id,role,full_name,created_at')
                     .in('role', ['studio','admin'])
                     .order('created_at', { ascending: true }),
-                client.from('studio_pratiche').select('id,owner_user_id')
+                client.from('studio_pratiche').select('id,owner_user_id'),
+                client.from('studio_clienti').select('user_id')
             ]);
 
-            if(membersError || practicesError) {
-                console.error(membersError || practicesError);
+            if(membersError || practicesError || clientsError) {
+                console.error(membersError || practicesError || clientsError);
                 status.textContent = 'Errore nel caricamento dei professionisti.';
                 body.innerHTML = '<tr><td colspan="5">Impossibile caricare i professionisti dello Studio.</td></tr>';
                 return;
@@ -1316,8 +1317,12 @@
                 if(p.owner_user_id) counts[p.owner_user_id] = (counts[p.owner_user_id] || 0) + 1;
             });
 
-            // Protezione esplicita: in questa tabella entrano esclusivamente ruoli Studio/Admin.
-            const professionals = (members || []).filter(member => ['studio','admin'].includes(member.role));
+            // Regola definitiva del Team: solo professionisti. Un utente presente nella Rubrica Clienti
+            // non può comparire qui, anche se per errore avesse un ruolo Studio/Admin.
+            const clientIds = new Set((clients || []).map(c => c.user_id).filter(Boolean));
+            const professionals = (members || []).filter(member =>
+                ['studio','admin'].includes(member.role) && !clientIds.has(member.user_id)
+            );
 
             const rows = professionals.map(member => {
                 const isCurrent = member.user_id === user.id;
