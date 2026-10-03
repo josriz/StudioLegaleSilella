@@ -225,8 +225,10 @@ async function loadClient(){
   $('pPostal').value=data?.postal_code||'';
   $('pCity').value=data?.city||'';
   $('pProvince').value=data?.province||'';
+  $('pCountry').value=data?.country||'';
   $('pPec').value=data?.pec||'';
   $('pIban').value=data?.iban||'';
+  $('pVat').value=data?.vat_number||'';
 }
 async function recordPendingConsents(){
   const pendingRaw=localStorage.getItem('studio_portal_consents_v1');
