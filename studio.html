@@ -109,7 +109,19 @@
         /* Fascicoli: il contenitore reale dello scroll resta .content-area.
            Il pannello non crea un secondo viewport e il dettaglio resta nel flusso normale. */
         #panel-matters { min-height: max-content; overflow: visible; }
-        #panel-matters > .card { min-height: max-content; overflow: visible; }
+        /* Fascicoli: pannello autonomo con barra di scorrimento visibile */
+        #panel-matters { margin-top: -12px; }
+        #panel-matters > .card {
+            min-height: 0;
+            max-height: calc(100vh - 108px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 16px;
+            scrollbar-width: auto;
+        }
+        #panel-matters > .card::-webkit-scrollbar { width: 10px; }
+        #panel-matters > .card::-webkit-scrollbar-track { background: rgba(226,232,240,.7); border-radius: 8px; }
+        #panel-matters > .card::-webkit-scrollbar-thumb { background: rgba(100,116,139,.65); border-radius: 8px; }
         #matterListArea.is-hidden { display:none !important; }
         .matter-detail-compact { font-size:12px; line-height:1.25; }
         .matter-detail-compact .form-group { margin-bottom:6px; }
