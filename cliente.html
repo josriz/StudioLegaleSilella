@@ -213,7 +213,7 @@ async function recordPendingConsents(){
 async function loadAll(){
   await loadClient();
   await recordPendingConsents();
-  const [d,n,p]=await Promise.all([
+  const [d,n,p,pc]=await Promise.all([
     sb.from('studio_portale_documenti').select('*').or('recipient_user_id.eq.'+currentUser.id+',sender_user_id.eq.'+currentUser.id).order('created_at',{ascending:false}),
     sb.from('studio_notifiche').select('*').eq('recipient_user_id',currentUser.id).order('created_at',{ascending:false}).limit(50),
     sb.from('studio_pratiche').select('id,created_at,client_name,legal_area,counterparty,status,ai_status,file_names').eq('client_user_id',currentUser.id).order('created_at',{ascending:false}),
@@ -222,9 +222,7 @@ async function loadAll(){
   if(d.error) console.error(d.error); else portalDocs=d.data||[];
   if(n.error) console.error(n.error); else notifications=n.data||[];
   if(p.error) console.error(p.error); else practices=p.data||[];
-  privacyConsents=(arguments[0]?.data)||[];
-  const consentResult=await sb.from('studio_consensi_portale').select('id,tipo,versione,accettato,accepted_at,informativa_id').eq('user_id',currentUser.id).order('accepted_at',{ascending:false});
-  if(!consentResult.error) privacyConsents=consentResult.data||[];
+  if(pc.error) console.error(pc.error); else privacyConsents=pc.data||[];
   renderAll();
 }
 function renderAll(){
