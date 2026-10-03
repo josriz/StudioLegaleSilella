@@ -661,10 +661,11 @@
             display:flex;
             justify-content:center;
             align-items:center;
-            margin:0 auto 18px;
+            margin:0 0 18px;
             padding:8px 18px;
-            width:min(330px,90%);
+            width:100%;
             min-height:82px;
+            box-sizing:border-box;
             border:1px solid rgba(255,255,255,.42);
             border-radius:18px;
             background:rgba(255,255,255,.12);
@@ -673,8 +674,8 @@
         .studio-login-logo{
             display:block;
             width:100%;
-            max-width:285px;
-            height:72px;
+            max-width:none;
+            height:82px;
             object-fit:contain;
             filter:drop-shadow(0 5px 12px rgba(0,0,0,.22));
         }
