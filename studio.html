@@ -82,6 +82,8 @@
         .sidebar-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.28); border-radius: 2px; }
         .menu-item { padding: 12px 20px; display: flex; align-items: center; gap: 15px; color: #f8fafc; cursor: pointer; text-decoration: none; transition: 0.2s; font-size: 14px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
         .menu-item:hover, .menu-item.active { background-color: rgba(255, 255, 255, 0.25); color: #fff; border-left: 4px solid var(--accent); }
+        .menu-section-title { padding: 12px 20px 6px; color: rgba(255,255,255,0.62); font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; pointer-events: none; }
+        aside.collapsed .menu-section-title { font-size: 0; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.15); }
         aside.collapsed .menu-item span { display: none; }
 
         /* MAIN CONTENT TRASPARENTE */
@@ -198,10 +200,15 @@
             <img src="Logo_Studio_Silella.jpg" alt="Logo Studio Silella" onerror="this.src='Logo_Studio_Silella.webp'">
         </div>
         <div class="sidebar-menu">
+            <div class="menu-section-title">Studio</div>
             <a class="menu-item active" onclick="switchTab('dashboard', this)">📊 <span>Dashboard</span></a>
-            <a class="menu-item" onclick="switchTab('team', this)">⚖️ <span>Team & Professionisti</span></a>
-            <a class="menu-item" onclick="switchTab('conflict', this)">🛡️ <span>Conflict Check</span></a>
+            <div class="menu-section-title">Professionisti e Team</div>
+            <a class="menu-item" onclick="switchTab('team', this)">⚖️ <span>Professionisti & Team</span></a>
+            <div class="menu-section-title">Clienti</div>
             <a class="menu-item" onclick="switchTab('clients', this)">👥 <span>Anagrafica Clienti</span></a>
+            <a class="menu-item" onclick="switchTab('client-portal', this)">🌐 <span>Portale Clienti</span></a>
+            <div class="menu-section-title">Gestione pratiche e attività</div>
+            <a class="menu-item" onclick="switchTab('conflict', this)">🛡️ <span>Conflict Check</span></a>
             <a class="menu-item" onclick="switchTab('matters', this)">📁 <span>Fascicoli & Contenzioso</span></a>
             <a class="menu-item" onclick="switchTab('jurisprudence', this)">🔍 <span>Ricerca RAG</span></a>
             <a class="menu-item" onclick="switchTab('ai-generator', this)">✨ <span>Redazione IA & Firma</span></a>
@@ -210,10 +217,10 @@
             <a class="menu-item" onclick="switchTab('pct-deposit', this)">🏛 <span>Deposito PCT</span></a>
             <a class="menu-item" onclick="switchTab('time-tracker', this)">⏱️ <span>Time Tracker</span></a>
             <a class="menu-item" onclick="switchTab('billing', this)">💶 <span>Fatturazione SDI</span></a>
-            <a class="menu-item" onclick="switchTab('client-portal', this)">🌐 <span>Portale Clienti</span></a>
+            <div class="menu-section-title">Controllo e conformità</div>
             <a class="menu-item" onclick="switchTab('archive', this)">🗄️ <span>Archivio & Audit</span></a>
             <a class="menu-item" onclick="switchTab('privacy', this)">🔐 <span>Gestione Privacy</span></a>
-        </div>
+        </div>        </div>
     </aside>
 
     <!-- MAIN CONTAINER -->
