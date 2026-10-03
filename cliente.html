@@ -157,13 +157,41 @@ async function loadActivePrivacyNotice(){
   $('privacyClientView')?.addEventListener('click',showPrivacyNotice);
 }
 
+function repairPrivacyMojibake(value){
+  const s=String(value??'');
+  if(!/[ÃÂâð]/.test(s)) return s;
+
+  const cp1252={
+    0x20ac:0x80,0x201a:0x82,0x192:0x83,0x201e:0x84,0x2026:0x85,0x2020:0x86,
+    0x2021:0x87,0x2c6:0x88,0x2030:0x89,0x160:0x8a,0x2039:0x8b,0x152:0x8c,
+    0x17d:0x8e,0x2018:0x91,0x2019:0x92,0x201c:0x93,0x201d:0x94,0x2022:0x95,
+    0x2013:0x96,0x2014:0x97,0x2dc:0x98,0x2122:0x99,0x161:0x9a,0x203a:0x9b,
+    0x153:0x9c,0x17e:0x9e,0x178:0x9f
+  };
+  const bytes=[];
+  for(const ch of s){
+    const code=ch.codePointAt(0);
+    if(code<=0xff) bytes.push(code);
+    else if(cp1252[code]!==undefined) bytes.push(cp1252[code]);
+    else return s;
+  }
+  try{
+    const repaired=new TextDecoder('utf-8',{fatal:true}).decode(new Uint8Array(bytes));
+    return repaired;
+  }catch(_){
+    return s;
+  }
+}
+
 function showPrivacyNotice(){
   if(!activePrivacyNotice){alert('L’informativa privacy vigente non è ancora disponibile.');return;}
   $('privacyNoticeModal')?.remove();
   const m=document.createElement('div');
   m.id='privacyNoticeModal';
   m.className='modal';
-  m.innerHTML='<div class="modalBox" style="max-width:900px"><div class="modalHead"><div><h2 style="margin:0">'+esc(activePrivacyNotice.titolo)+'</h2><div class="status">Versione '+esc(activePrivacyNotice.versione)+(activePrivacyNotice.valida_dal?' · valida dal '+esc(fmtDate(activePrivacyNotice.valida_dal)):'')+'</div></div><button class="iconBtn" type="button" id="closePrivacyNotice">✕</button></div><div style="margin-top:16px;white-space:pre-wrap;line-height:1.7;max-height:65vh;overflow:auto">'+esc(activePrivacyNotice.contenuto)+'</div></div>';
+  const titolo=repairPrivacyMojibake(activePrivacyNotice.titolo);
+  const contenuto=repairPrivacyMojibake(activePrivacyNotice.contenuto);
+  m.innerHTML='<div class="modalBox" style="max-width:900px"><div class="modalHead"><div><h2 style="margin:0">'+esc(titolo)+'</h2><div class="status">Versione '+esc(activePrivacyNotice.versione)+(activePrivacyNotice.valida_dal?' · valida dal '+esc(fmtDate(activePrivacyNotice.valida_dal)):'')+'</div></div><button class="iconBtn" type="button" id="closePrivacyNotice">✕</button></div><div style="margin-top:16px;white-space:pre-wrap;line-height:1.7;max-height:65vh;overflow:auto">'+esc(contenuto)+'</div></div>';
   document.body.appendChild(m);
   $('closePrivacyNotice').onclick=()=>m.remove();
 }
