@@ -122,7 +122,7 @@
     document.getElementById('archiveRefresh').onclick=refreshAll;
   }
 
-  function renderAll(){renderDashboard();renderTeam();renderClients();renderAgenda();renderPec();renderPct();renderTimer();renderBilling();renderPortal();renderArchive();renderStudioNotifications();bindStudioNotifications();}
+  function renderAll(){renderDashboard();renderTeam();renderClients();renderAgenda();renderPec();renderPct();renderTimer();renderBilling();renderPortal();renderArchive();renderStudioNotifications();bindStudioNotifications();if(window.renderStudioHelpForActive)window.renderStudioHelpForActive();}
   function init(){['dashboard','team','clients','agenda','pec-client','pct-deposit','time-tracker','billing','client-portal','archive'].forEach(id=>bindMenu(id,refreshAll));refreshAll();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
