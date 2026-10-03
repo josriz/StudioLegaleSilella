@@ -1,0 +1,1 @@
+// Source deployed to Supabase Edge Function studio-privacy-portal. The deployed function handles generation and portal flow for privacy documents.
