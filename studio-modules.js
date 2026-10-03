@@ -36,7 +36,14 @@
   const practiceOptions=()=>'<option value="">— seleziona —</option>'+state.practices.map(p=>'<option value="'+p.id+'">'+esc(p.client_name)+' · '+esc(p.legal_area||'')+'</option>').join('');
   const isAdmin=()=>state.profile && ['studio','admin'].includes(state.profile.role);
 
-  async function refreshAll(){try{await loadData();renderAll()}catch(e){console.error(e);renderError(e.message)}}
+  let studioAuthReady=false;
+  async function refreshAll(){
+    if(!studioAuthReady){
+      renderError('Accesso Studio richiesto.');
+      return;
+    }
+    try{await loadData();renderAll()}catch(e){console.error(e);renderError(e.message)}
+  }
   function renderError(msg){['dashboard','team','clients','agenda','pec-client','pct-deposit','time-tracker','billing','client-portal','archive'].forEach(id=>{const p=document.getElementById('panel-'+id);if(p){const b=p.querySelector('[data-module-body]');if(b)b.innerHTML='<div style="padding:14px;color:#b91c1c">'+esc(msg)+'</div>'}})}
   function bindMenu(id,fn){document.querySelectorAll('.menu-item').forEach(m=>{if((m.getAttribute('onclick')||'').includes("'"+id+"'"))m.addEventListener('click',()=>setTimeout(fn,0))})}
 
@@ -123,6 +130,19 @@
   }
 
   function renderAll(){renderDashboard();renderTeam();renderClients();renderAgenda();renderPec();renderPct();renderTimer();renderBilling();renderPortal();renderArchive();renderStudioNotifications();bindStudioNotifications();if(window.renderStudioHelpForActive)window.renderStudioHelpForActive();}
-  function init(){['dashboard','team','clients','agenda','pec-client','pct-deposit','time-tracker','billing','client-portal','archive'].forEach(id=>bindMenu(id,refreshAll));refreshAll();}
+  function init(){
+    ['dashboard','team','clients','agenda','pec-client','pct-deposit','time-tracker','billing','client-portal','archive'].forEach(id=>bindMenu(id,refreshAll));
+    const c=getClient();
+    if(c)c.auth.onAuthStateChange((event,session)=>{
+      if(event==='SIGNED_IN'&&session){
+        studioAuthReady=true;
+        refreshAll();
+      }else if(event==='SIGNED_OUT'){
+        studioAuthReady=false;
+        renderError('Accesso Studio richiesto.');
+      }
+    });
+    renderError('Accesso Studio richiesto.');
+  }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
