@@ -770,7 +770,7 @@
             result.innerHTML = '<div class="card"><strong>🔎 Ricerca in corso…</strong></div>';
 
             const client = window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
-                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY))
+                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}))
                 : null);
             if(!client) {
                 result.innerHTML = '<div class="card"><strong style="color:#b91c1c;">⚠️ Servizio di ricerca non disponibile.</strong></div>';
