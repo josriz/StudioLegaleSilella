@@ -223,7 +223,17 @@ Deno.serve(async (req) => {
         });
         if (consentError) return response({ ok: false, error: consentError.message }, 400);
       }
-
+      const {data:client}=await admin.from("studio_clienti").select("full_name").eq("id",original.cliente_id).maybeSingle();
+      const {data:studioUsers}=await admin.from("studio_utenti").select("user_id").in("role",["studio","admin"]);
+      if(studioUsers?.length){
+        await admin.from("studio_notifiche").insert(studioUsers.map((u:any)=>({
+          recipient_user_id:u.user_id,
+          tipo:"privacy_restituita",
+          titolo:"Informativa privacy restituita",
+          messaggio:"Il cliente "+(client?.full_name||"ha restituito")+" il documento privacy firmato.",
+          documento_id:returned.id
+        })));
+      }
       return response({ ok: true, privacy_consent_recorded: true });
     }
 
