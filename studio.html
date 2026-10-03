@@ -1407,11 +1407,11 @@ document.addEventListener('DOMContentLoaded',()=>{
     btn.disabled=true;
     btn.textContent='Uscita…';
     try{
-      const client=window.supabase.createClient(
+      const client=window.STUDIO_SUPABASE_CLIENT || (window.STUDIO_SUPABASE_CLIENT=window.supabase.createClient(
         window.STUDIO_SUPABASE_URL,
         window.STUDIO_SUPABASE_PUBLISHABLE_KEY,
         {auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
-      );
+      ));
       await client.auth.signOut();
     }catch(e){console.error('Logout Studio:',e);}
     window.location.href='index.html';
