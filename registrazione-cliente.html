@@ -75,7 +75,7 @@ async function loadPrivacy(){
 $('signupForm').onsubmit=async e=>{
   e.preventDefault();$('signupErr').textContent='';$('signupBtn').disabled=true;
   try{
-    const name=$('signupName').value.trim(),email=$('signupEmail').value.trim(),password=$('signupPassword').value;
+    const name=$('signupName').value.trim(),email=$('signupEmail').value.trim(),password=$('signupPassword').value;\n    const customerType=$('customerType').value,taxId=$('signupTaxId').value.trim().toUpperCase(),vat=$('signupVat').value.trim().toUpperCase(),description=$('requestDescription').value.trim();
     if(!activePrivacyNotice)throw Error('L’informativa privacy vigente non è disponibile. Registrazione non disponibile.');
     if(password.length<8)throw Error('La password deve contenere almeno 8 caratteri.');
     const {data,error}=await sb.auth.signUp({email,password,options:{data:{full_name:name}}});
