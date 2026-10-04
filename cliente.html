@@ -102,13 +102,30 @@ async function loadPrivacy(){
   if(el)el.textContent=activePrivacyNotice?'Informativa privacy vigente disponibile.':'Informativa privacy vigente non disponibile: registrazione temporaneamente sospesa.';
 }
 function openAuth(mode='login'){
-  $('loginBox').classList.toggle('hidden',mode!=='login');
-  $('registerBox').classList.toggle('hidden',mode==='login');
+  const loginBox=$('loginBox'),registerBox=$('registerBox');
+  if(!loginBox||!registerBox)return;
+  if(mode==='register'){
+    loginBox.style.display='none';
+    registerBox.classList.remove('hidden');
+    registerBox.style.display='block';
+  }else{
+    registerBox.style.display='none';
+    registerBox.classList.add('hidden');
+    loginBox.style.display='block';
+  }
   $('loginErr').textContent='';
   $('signupErr').textContent='';
 }
-$('showRegister').onclick=()=>openAuth('register');
-$('showLogin').onclick=()=>openAuth('login');
+$('showRegister').addEventListener('click',e=>{
+  e.preventDefault();
+  e.stopPropagation();
+  openAuth('register');
+});
+$('showLogin').addEventListener('click',e=>{
+  e.preventDefault();
+  e.stopPropagation();
+  openAuth('login');
+});
 $('forgotBtn').onclick=async()=>{
   const email=$('loginEmail').value.trim();
   if(!email){$('loginErr').textContent='Inserisci prima l’email.';return}
