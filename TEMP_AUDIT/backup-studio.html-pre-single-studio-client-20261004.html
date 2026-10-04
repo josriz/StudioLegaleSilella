@@ -1,0 +1,2118 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Legale Silella - Gestionale</title>
+    <style>
+        body.studio-auth-pending > *:not(#studioLoginModal) { visibility: hidden !important; }
+        body.studio-auth-pending { visibility: visible !important; }
+        :root {
+            --primary: #1e293b;
+            --secondary: #0f172a;
+            --accent: #d97706;
+            --success: #16a34a;
+            --warning: #ca8a04;
+            --danger: #dc2626;
+            --glass-sidebar: rgba(15, 23, 42, 0.25);
+            --glass-card: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-main: #0f172a;
+            --border: rgba(255, 255, 255, 0.6);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        /* SFONDO PRINCIPALE: STUDIO LEGALE ANTICO VISIBILE E CRISTALLINO */
+        body { 
+            color: var(--text-main); 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+            background: linear-gradient(rgba(15, 23, 42, 0.3), rgba(15, 23, 42, 0.45)), 
+                        url('loghi_sfondi/stanza4_vetro.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        /* SIDEBAR - VETRO TRASPARENTISSIMO */
+        aside { 
+            width: 280px; 
+            background: var(--glass-sidebar); 
+            backdrop-filter: blur(5px); 
+            -webkit-backdrop-filter: blur(5px); 
+            border-right: 1px solid var(--glass-border); 
+            color: #fff; 
+            display: flex; 
+            flex-direction: column; 
+            transition: width 0.3s ease; 
+            z-index: 10; 
+            box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.2);
+        }
+        aside.collapsed { width: 70px; }
+        
+        /* HEADER DELLA SIDEBAR (LOGO GRANDE) */
+        .sidebar-header {
+            height: 90px;
+            padding: 8px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            border-bottom: 1px solid var(--glass-border);
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.15);
+        }
+        .sidebar-header img {
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            display: block;
+            object-fit: contain;
+            object-position: center;
+            transform: scale(1.5) scaleY(0.75);
+        }
+        aside.collapsed .sidebar-header img {
+            max-height: 58px;
+            transform: scale(1);
+        }
+
+        .sidebar-menu { flex: 1; overflow-y: auto; padding: 15px 0; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.28) transparent; }
+        .sidebar-menu::-webkit-scrollbar { width: 2px; }
+        .sidebar-menu::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.28); border-radius: 2px; }
+        .menu-item { padding: 12px 20px; display: flex; align-items: center; gap: 15px; color: #f8fafc; cursor: pointer; text-decoration: none; transition: 0.2s; font-size: 14px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+        .menu-item:hover, .menu-item.active { background-color: rgba(255, 255, 255, 0.25); color: #fff; border-left: 4px solid var(--accent); }
+        .menu-section-title { padding: 12px 20px 6px; color: rgba(255,255,255,0.62); font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; pointer-events: none; }
+        aside.collapsed .menu-section-title { font-size: 0; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.15); }
+        aside.collapsed .menu-item span { display: none; }
+
+        /* MAIN CONTENT TRASPARENTE */
+        main { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+        
+        /* HEADER SUPERIORE ALLINEATO A 90px DI ALTEZZA */
+        header { 
+            height: 90px; 
+            background: rgba(255, 255, 255, 0.75); 
+            backdrop-filter: blur(8px); 
+            border-bottom: 1px solid var(--glass-border); 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 0 25px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04); 
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .toggle-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--primary); }
+        .content-area { flex: 1 1 0; min-height: 0; min-width: 0; overflow-y: auto; overflow-x: hidden; padding: 25px; }
+
+
+        /* FASCICOLI: pannello portato in alto con scroll interno sempre disponibile */
+        #panel-matters {
+            margin-top: -25px;
+            overflow: visible;
+        }
+        #panel-matters > .card {
+            height: calc(100vh - 120px);
+            min-height: 0;
+            max-height: none;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            padding: 16px;
+            scrollbar-width: auto;
+        }
+        #panel-matters > .card::-webkit-scrollbar { width: 12px; }
+        #panel-matters > .card::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 8px; }
+        #panel-matters > .card::-webkit-scrollbar-thumb { background: #64748b; border-radius: 8px; border: 2px solid #e2e8f0; }
+        #matterListArea.is-hidden { display:none !important; }
+        .matter-detail-compact { font-size:12px; line-height:1.25; }
+        .matter-detail-compact .form-group { margin-bottom:6px; }
+        .matter-detail-compact .form-group label { margin-bottom:2px; font-size:11px; }
+        .matter-detail-compact .form-group input,
+        .matter-detail-compact .form-group select,
+        .matter-detail-compact .form-group textarea { padding:6px; font-size:12px; }
+        .matter-detail-compact .grid-2 { gap:7px; }
+        .matter-detail-compact .btn { padding:7px 10px; font-size:12px; }
+        .matter-detail-compact .matter-compact-section { padding:8px !important; }
+        .matter-detail-compact .matter-compact-row { padding:6px !important; margin-top:4px !important; }
+        .matter-detail-compact .matter-compact-sub { margin-top:5px !important; }
+
+        /* PANELS */
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        /* CARDS & GRIDS CON VETRO TRASPARENTE */
+        .card { background: var(--glass-card); border: 1px solid var(--glass-border); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .stat-card { background: var(--glass-card); border: 1px solid var(--glass-border); border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08); backdrop-filter: blur(6px); }
+        .stat-card span { font-size: 13px; color: #334155; font-weight: 600; }
+        .stat-card h4 { font-size: 28px; color: var(--primary); margin-top: 5px; }
+
+        /* TABLES */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(203, 213, 225, 0.6); }
+        th { background-color: rgba(255, 255, 255, 0.8); color: var(--primary); font-weight: 600; }
+
+        /* FORMS & BUTTONS */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; color: var(--primary); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--glass-border); border-radius: 6px; font-size: 13px; background: rgba(255, 255, 255, 0.95); }
+        .btn { padding: 10px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-success { background-color: var(--success); color: #fff; }
+        .btn-warning { background-color: var(--warning); color: #fff; }
+        .btn-info { background-color: #0284c7; color: #fff; }
+        .btn-danger { background-color: var(--danger); color: #fff; }
+        .badge-status { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .status-sent { background: rgba(220, 252, 231, 0.95); color: #166534; }
+        .signature-box { border: 1px dashed var(--accent); padding: 12px; border-radius: 8px; background: rgba(255, 251, 235, 0.9); }
+     .studio-notify-btn{position:relative;border:1px solid rgba(15,23,42,.15);background:rgba(255,255,255,.75);border-radius:10px;padding:9px 12px;cursor:pointer;font-size:18px}.studio-notify-count{position:absolute;top:-6px;right:-6px;background:#b42318;color:#fff;border-radius:20px;font-size:10px;padding:2px 6px}.studio-notify-modal{position:fixed;inset:0;background:rgba(7,15,31,.58);display:none;place-items:center;padding:20px;z-index:100}.studio-notify-box{width:min(560px,100%);max-height:80vh;overflow:auto;background:#fff;border-radius:16px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.25)}.studio-notify-row{padding:12px;border-bottom:1px solid #e5e7eb}.studio-notify-row.unread{background:#f7fbff}.studio-notify-row strong{display:block;color:#0f172a}.studio-notify-row small{color:#64748b}
+        
+        /* LOGO MOBILE: invisibile su PC, attivo solo su smartphone */
+        .mobile-header-logo { display:none; }
+
+        /* RESPONSIVE STUDIO
+           Desktop/PC: layout originale invariato.
+           Tablet: sidebar in overlay e griglie adattate.
+           Smartphone: header dedicato, logo centrato e contenuti fluidi.
+        */
+        @media (max-width: 900px) {
+            body {
+                height:100dvh;
+                min-height:100vh;
+                overflow:hidden;
+            }
+
+            aside {
+                position:fixed;
+                top:0;
+                left:-280px;
+                width:280px;
+                height:100dvh;
+                max-height:100dvh;
+                z-index:100;
+                transition:left .25s ease;
+            }
+            aside.mobile-open { left:0; }
+            aside.collapsed { width:280px; }
+
+            main {
+                width:100%;
+                min-width:0;
+                flex:1 1 100%;
+            }
+
+            header {
+                height:72px;
+                min-height:72px;
+                padding:8px 12px;
+                gap:10px;
+                flex-wrap:nowrap;
+            }
+
+            .header-left {
+                min-width:0;
+                flex:1 1 auto;
+                gap:10px;
+            }
+
+            .header-left > div { min-width:0; }
+
+            #headerTitle {
+                white-space:nowrap;
+                overflow:hidden;
+                text-overflow:ellipsis;
+                max-width:calc(100vw - 115px);
+            }
+
+            .header-left span {
+                display:block;
+                white-space:nowrap;
+                overflow:hidden;
+                text-overflow:ellipsis;
+                max-width:calc(100vw - 115px);
+            }
+
+            header > div:last-child {
+                width:auto;
+                min-width:0;
+                flex:0 0 auto;
+                justify-content:flex-end;
+                gap:7px !important;
+                flex-wrap:nowrap;
+            }
+
+            header > div:last-child > div {
+                font-size:11px !important;
+                max-width:48vw;
+                white-space:nowrap;
+                overflow:hidden;
+                text-overflow:ellipsis;
+            }
+
+            .content-area {
+                min-width:0;
+                padding:12px;
+                overflow-x:hidden;
+            }
+
+            .grid-3,
+            .grid-2 {
+                grid-template-columns:minmax(0,1fr);
+                gap:12px;
+            }
+
+            .card,
+            .stat-card {
+                padding:14px;
+                margin-bottom:12px;
+                min-width:0;
+            }
+
+            .recent-activities-card { padding:0; }
+            .recent-activities-dropdown-toggle { padding:15px 14px; }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                max-width:100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            html,
+            body {
+                width:100%;
+                max-width:100%;
+                overflow:hidden;
+            }
+
+            body {
+                min-height:100dvh;
+                height:100dvh;
+            }
+
+            aside {
+                width:min(86vw,320px);
+                left:calc(-1 * min(86vw,320px));
+                box-shadow:12px 0 32px rgba(0,0,0,.28);
+            }
+
+            aside.collapsed { width:min(86vw,320px); }
+            aside.mobile-open { left:0; }
+
+            .sidebar-header {
+                height:76px;
+                padding:8px 18px;
+            }
+
+            .sidebar-menu {
+                padding:10px 0 18px;
+            }
+
+            .menu-section-title {
+                padding:11px 18px 6px;
+                font-size:9px;
+            }
+
+            .menu-item {
+                min-height:46px;
+                padding:11px 18px;
+                gap:12px;
+                font-size:13px;
+            }
+
+            main {
+                width:100%;
+                min-width:0;
+                height:100dvh;
+            }
+
+            /* Header mobile: logo grande, centrato, vetro, senza alterare il desktop. */
+            header {
+                height:148px;
+                min-height:148px;
+                padding:6px 10px 9px;
+                display:flex;
+                flex-direction:column;
+                align-items:stretch;
+                justify-content:flex-start;
+                gap:7px;
+                position:relative;
+                z-index:110;
+                background:rgba(255,255,255,.24);
+                backdrop-filter:blur(18px) saturate(150%);
+                -webkit-backdrop-filter:blur(18px) saturate(150%);
+                border-bottom:1px solid rgba(255,255,255,.65);
+                box-shadow:0 8px 30px rgba(15,23,42,.12);
+            }
+
+            .header-left {
+                width:100%;
+                height:98px;
+                min-height:98px;
+                flex:0 0 98px;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                gap:0;
+                position:relative;
+            }
+
+            .mobile-header-logo {
+                display:block;
+                width:min(360px,82vw);
+                height:92px;
+                max-width:100%;
+                object-fit:contain;
+                object-position:center center;
+                flex:0 0 auto;
+                margin:0 auto;
+            }
+
+            .header-left > div { display:none !important; }
+
+            .toggle-btn {
+                position:absolute;
+                left:10px;
+                bottom:9px;
+                width:42px;
+                height:38px;
+                min-width:42px;
+                padding:0;
+                display:grid;
+                place-items:center;
+                font-size:23px;
+                line-height:1;
+                border:1px solid rgba(255,255,255,.75);
+                border-radius:9px;
+                background:rgba(255,255,255,.30);
+                color:var(--primary);
+                z-index:120;
+                pointer-events:auto;
+                cursor:pointer;
+                backdrop-filter:blur(10px);
+                -webkit-backdrop-filter:blur(10px);
+            }
+
+            header > div:last-child {
+                width:100%;
+                height:38px;
+                min-height:38px;
+                display:flex;
+                align-items:center;
+                justify-content:flex-end;
+                gap:6px !important;
+                flex:0 0 38px;
+                padding-left:52px;
+            }
+
+            header > div:last-child > div {
+                display:none !important;
+            }
+
+            .studio-notify-btn {
+                width:38px;
+                height:38px;
+                padding:0;
+                display:grid;
+                place-items:center;
+                font-size:17px;
+                flex:0 0 38px;
+                background:rgba(255,255,255,.30);
+                backdrop-filter:blur(10px);
+                -webkit-backdrop-filter:blur(10px);
+            }
+
+            #studioHeaderHelp { display:none !important; }
+
+            #studioHeaderLogout {
+                height:38px;
+                min-height:38px;
+                padding:7px 11px;
+                font-size:11px;
+                white-space:nowrap;
+                flex:0 0 auto;
+                background:rgba(255,255,255,.30);
+                backdrop-filter:blur(10px);
+                -webkit-backdrop-filter:blur(10px);
+            }
+
+            .content-area {
+                width:100%;
+                min-width:0;
+                padding:10px !important;
+                overflow-x:hidden;
+                overflow-y:auto;
+                -webkit-overflow-scrolling:touch;
+            }
+
+            .panel {
+                width:100%;
+                min-width:0;
+            }
+
+            .card,
+            .stat-card {
+                width:100%;
+                max-width:100%;
+                min-width:0;
+                padding:12px;
+                margin-bottom:10px;
+                overflow:hidden;
+            }
+
+            .grid-2,
+            .grid-3 {
+                display:grid;
+                grid-template-columns:minmax(0,1fr);
+                gap:10px;
+            }
+
+            .card h2,
+            .card h3,
+            .card h4 {
+                overflow-wrap:anywhere;
+            }
+
+            .card > div[style*="display:flex"],
+            .card > div[style*="display: flex"] {
+                flex-wrap:wrap;
+            }
+
+            .btn {
+                min-height:40px;
+                max-width:100%;
+                white-space:normal;
+                line-height:1.2;
+            }
+
+            .form-group {
+                min-width:0;
+                margin-bottom:12px;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                width:100%;
+                max-width:100%;
+                min-width:0;
+                font-size:14px;
+            }
+
+            table {
+                min-width:520px;
+                font-size:12px;
+            }
+
+            th,
+            td {
+                padding:9px 8px;
+            }
+
+            .content-area table { max-width:none; }
+
+            .content-area [style*="overflow-x:auto"] {
+                max-width:100%;
+                -webkit-overflow-scrolling:touch;
+            }
+
+            #panel-matters {
+                margin-top:0;
+                overflow:visible;
+                width:100%;
+            }
+
+            #panel-matters > .card {
+                height:auto;
+                min-height:0;
+                max-height:none;
+                overflow:visible;
+                padding:12px;
+            }
+
+            .matter-detail-compact {
+                width:100%;
+                min-width:0;
+                overflow-wrap:anywhere;
+            }
+
+            .matter-detail-compact .grid-2 {
+                grid-template-columns:minmax(0,1fr);
+            }
+
+            .studio-notify-modal,
+            .studio-help-modal {
+                padding:10px;
+                align-items:stretch;
+            }
+
+            .studio-notify-box,
+            .studio-help-box {
+                width:100%;
+                max-width:100%;
+                max-height:calc(100dvh - 20px);
+                border-radius:12px;
+                padding:15px;
+                overflow:auto;
+            }
+
+            .studio-help-head {
+                position:sticky;
+                top:-15px;
+                background:#fff;
+                z-index:2;
+                padding-top:2px;
+            }
+
+            .studio-help-head h2 { font-size:19px; }
+            .studio-help-box h3 { font-size:15px; }
+
+            #teamAddModal {
+                padding:10px;
+            }
+
+            #teamAddModal > div {
+                width:100% !important;
+                max-width:100% !important;
+                max-height:calc(100dvh - 20px);
+                overflow:auto;
+            }
+
+            .recent-activities-card {
+                display:block;
+                width:100%;
+                max-width:100%;
+                min-width:0;
+                margin:0 0 12px !important;
+                padding:0 !important;
+                box-sizing:border-box;
+                overflow:hidden;
+            }
+
+            .recent-activities-dropdown-toggle {
+                width:100%;
+                max-width:100%;
+                min-width:0;
+                box-sizing:border-box;
+                padding:15px 12px;
+            }
+
+            .recent-activities-dropdown-toggle span:first-child {
+                min-width:0;
+                overflow-wrap:anywhere;
+            }
+
+            .recent-activities-body {
+                width:100%;
+                max-width:100%;
+                min-width:0;
+                box-sizing:border-box;
+                padding:0 10px 10px !important;
+                overflow:hidden;
+            }
+
+            .recent-activities-body > div {
+                width:100%;
+                max-width:100%;
+                min-width:0;
+                overflow-x:auto;
+                box-sizing:border-box;
+                -webkit-overflow-scrolling:touch;
+            }
+        }
+
+/* HELP OPERATIVO PER MENU STUDIO */
+.studio-help-modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(7,15,31,.62);z-index:1000;padding:18px}
+.studio-help-modal.open{display:grid}
+.studio-help-box{width:min(900px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,.3);padding:24px;color:#0f172a}
+.studio-help-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;border-bottom:1px solid #e2e8f0;padding-bottom:12px;margin-bottom:16px}
+.studio-help-head h2{margin:0;font-size:22px}.studio-help-close{border:0;background:#e2e8f0;border-radius:8px;padding:7px 11px;cursor:pointer;font-weight:700}
+.studio-help-box h3{margin:18px 0 7px;font-size:15px}.studio-help-box p{margin:0 0 8px;line-height:1.55;font-size:14px}.studio-help-box ol,.studio-help-box ul{margin:7px 0 10px 22px}.studio-help-box li{margin:5px 0;line-height:1.5;font-size:14px}.studio-help-note{padding:11px 13px;background:#f8fafc;border-left:4px solid #d97706;border-radius:6px;margin-top:12px;font-size:13px;line-height:1.5}
+#teamAddModal.open{display:grid}
+
+        /* ACCESSO AREA STUDIO — LAYOUT GLASS */
+        .studio-login-overlay{
+            display:flex;
+            position:fixed;
+            inset:0;
+            z-index:9999;
+            align-items:center;
+            justify-content:center;
+            padding:24px;
+            overflow:auto;
+            background:
+                linear-gradient(135deg,rgba(8,18,36,.62),rgba(15,23,42,.34)),
+                url('loghi_sfondi/stanza_vetro.jpg') center center/cover no-repeat;
+        }
+        .studio-login-card{
+            width:min(440px,100%);
+            padding:30px 32px 24px;
+            border:1px solid rgba(255,255,255,.58);
+            border-radius:24px;
+            background:linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.10));
+            box-shadow:0 28px 80px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.55);
+            backdrop-filter:blur(22px) saturate(145%);
+            -webkit-backdrop-filter:blur(22px) saturate(145%);
+            color:#fff;
+        }
+        .studio-login-logo-wrap{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            margin:0 0 18px;
+            padding:0;
+            width:100%;
+            height:96px;
+            box-sizing:border-box;
+            border:1px solid rgba(255,255,255,.42);
+            border-radius:18px;
+            background:rgba(255,255,255,.12);
+            box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 10px 30px rgba(0,0,0,.12);
+            overflow:hidden;
+        }
+        .studio-login-logo{
+            display:block;
+            width:100%;
+            height:100%;
+            max-width:none;
+            max-height:none;
+            object-fit:fill;
+            object-position:center;
+            filter:drop-shadow(0 5px 12px rgba(0,0,0,.22));
+        }
+        .studio-login-kicker{
+            text-align:center;
+            font-size:10px;
+            font-weight:800;
+            letter-spacing:.22em;
+            color:rgba(255,255,255,.78);
+            margin-bottom:6px;
+        }
+        .studio-login-card h2{
+            margin:0;
+            text-align:center;
+            font-size:28px;
+            letter-spacing:.01em;
+            color:#fff;
+            text-shadow:0 2px 12px rgba(0,0,0,.28);
+        }
+        .studio-login-subtitle{
+            margin:7px 0 22px;
+            text-align:center;
+            color:rgba(255,255,255,.84);
+            font-size:13px;
+            line-height:1.5;
+        }
+        .studio-login-card form{display:grid;gap:7px}
+        .studio-login-card label{
+            color:rgba(255,255,255,.92);
+            font-size:12px;
+            font-weight:700;
+            margin-top:4px;
+        }
+        .studio-login-card input{
+            width:100%;
+            box-sizing:border-box;
+            margin:0 0 6px;
+            padding:12px 14px;
+            border:1px solid rgba(255,255,255,.48);
+            border-radius:12px;
+            outline:none;
+            background:rgba(255,255,255,.82);
+            color:#0f172a;
+            font-size:14px;
+            box-shadow:inset 0 1px 3px rgba(15,23,42,.08),0 5px 18px rgba(0,0,0,.08);
+            transition:border-color .2s,box-shadow .2s,background .2s;
+        }
+        .studio-login-card input::placeholder{color:#64748b}
+        .studio-login-card input:focus{
+            background:rgba(255,255,255,.96);
+            border-color:rgba(255,255,255,.92);
+            box-shadow:0 0 0 3px rgba(255,255,255,.16),0 8px 24px rgba(0,0,0,.12);
+        }
+        .studio-login-error{
+            min-height:20px;
+            color:#ffe4e6;
+            font-size:12px;
+            line-height:1.4;
+            margin:1px 0 3px;
+            text-shadow:0 1px 3px rgba(0,0,0,.25);
+        }
+        .studio-login-submit{
+            width:100%;
+            margin-top:3px;
+            padding:12px 16px;
+            border:1px solid rgba(255,255,255,.58);
+            border-radius:12px;
+            cursor:pointer;
+            color:#fff;
+            font-size:13px;
+            font-weight:800;
+            letter-spacing:.01em;
+            background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.16));
+            box-shadow:0 10px 28px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.42);
+            backdrop-filter:blur(10px);
+            -webkit-backdrop-filter:blur(10px);
+            transition:transform .2s,background .2s,box-shadow .2s;
+        }
+        .studio-login-submit:hover{
+            transform:translateY(-1px);
+            background:linear-gradient(135deg,rgba(255,255,255,.46),rgba(255,255,255,.22));
+            box-shadow:0 14px 32px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.52);
+        }
+        .studio-login-submit:disabled{opacity:.65;cursor:wait;transform:none}
+        .studio-login-footer{
+            margin-top:18px;
+            padding-top:13px;
+            border-top:1px solid rgba(255,255,255,.22);
+            text-align:center;
+            color:rgba(255,255,255,.68);
+            font-size:10px;
+            letter-spacing:.03em;
+        }
+        @media(max-width:600px){
+            .studio-login-overlay{padding:14px}
+            .studio-login-card{padding:22px 18px 18px;border-radius:20px}
+            .studio-login-logo-wrap{width:100%;min-height:72px;margin-bottom:14px}
+            .studio-login-logo{height:62px}
+            .studio-login-card h2{font-size:24px}
+            .studio-login-subtitle{margin-bottom:18px}
+        }
+
+</style>
+</head>
+<body class="studio-auth-pending">
+
+    <!-- SIDEBAR -->
+    <aside id="appSidebar">
+        <div class="sidebar-header">
+            <img src="Logo_Studio_Silella.jpg" alt="Logo Studio Silella" onerror="this.src='Logo_Studio_Silella.webp'">
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-section-title">Studio</div>
+            <a class="menu-item active" onclick="switchTab('dashboard', this)">📊 <span>Dashboard</span></a>
+            <div class="menu-section-title">Professionisti e Team</div>
+            <a class="menu-item" onclick="switchTab('team', this)">⚖️ <span>Professionisti & Team</span></a>
+            <div class="menu-section-title">Clienti</div>
+            <a class="menu-item" onclick="switchTab('clients', this)">👥 <span>Anagrafica Clienti</span></a>
+            <a class="menu-item" onclick="switchTab('client-portal', this)">🌐 <span>Portale Clienti</span></a>
+            <div class="menu-section-title">Gestione pratiche e attività</div>
+            <a class="menu-item" onclick="switchTab('conflict', this)">🛡️ <span>Conflict Check</span></a>
+            <a class="menu-item" onclick="switchTab('matters', this)">📁 <span>Fascicoli & Contenzioso</span></a>
+            <a class="menu-item" onclick="switchTab('jurisprudence', this)">🔍 <span>Ricerca RAG</span></a>
+            <a class="menu-item" onclick="switchTab('ai-generator', this)">✨ <span>Redazione IA & Firma</span></a>
+            <a class="menu-item" onclick="switchTab('agenda', this)">📅 <span>Agenda & Scadenze</span></a>
+            <a class="menu-item" onclick="switchTab('pec-client', this)">✉️ <span>Client PEC</span></a>
+            <a class="menu-item" onclick="switchTab('pct-deposit', this)">🏛 <span>Deposito PCT</span></a>
+            <a class="menu-item" onclick="switchTab('time-tracker', this)">⏱️ <span>Time Tracker</span></a>
+            <a class="menu-item" onclick="switchTab('billing', this)">💶 <span>Fatturazione SDI</span></a>
+            <div class="menu-section-title">Controllo e conformità</div>
+            <a class="menu-item" onclick="switchTab('archive', this)">🗄️ <span>Archivio & Audit</span></a>
+            <a class="menu-item" onclick="switchTab('privacy', this)">🔐 <span>Gestione Privacy</span></a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTAINER -->
+    <main>
+        <header>
+            <div class="header-left">
+                <img class="mobile-header-logo" src="Logo_Studio_Silella.jpg" alt="Studio Legale Silella" onerror="this.src='Logo_Studio_Silella.webp'">
+                <button class="toggle-btn" type="button" onclick="toggleSidebar(event)" aria-label="Apri menu">☰</button>
+                <div>
+                    <div id="headerTitle" style="font-size: 13px; line-height: 1.45; color: var(--primary); font-weight: 700;">
+                        <div>Viale Antonio Salandra</div>
+                        <div>70124 Bari (BA)</div>
+                        <div>EMAIL: <a href="mailto:studiolegalesilella@gmail.com">studiolegalesilella@gmail.com</a></div>
+                        <div>Tel. +39 080 914 6254</div>
+                    </div>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px"><button id="studioNotifyBtn" class="studio-notify-btn" title="Notifiche">🔔<span id="studioNotifyCount" class="studio-notify-count" style="display:none">0</span></button><button id="studioHeaderHelp" class="btn" type="button" title="Guida operativa">HELP</button><div style="font-size: 13px; font-weight: 600; color: #1e293b;">Area Riservata - Avv. Titolare Silella</div><button id="studioHeaderLogout" class="btn" type="button">Esci</button></div>
+        </header>
+
+        <div class="content-area">
+
+
+            <!-- GESTIONE PRIVACY -->
+            <div id="panel-privacy" class="panel">
+                <div class="card">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+                        <div><h3 style="margin:0">🔐 Gestione Privacy</h3><div style="margin-top:5px;font-size:12px;color:#64748b">Registro trattamenti, informative, consensi, responsabili, diritti, DPIA e data breach. Le informative attive per i clienti vengono mostrate nel Portale Clienti e la presa visione viene registrata.</div></div>
+                        <button class="btn btn-info" type="button" id="privacyRefresh">Aggiorna</button>
+                    </div>
+                    <div id="privacyStatus" style="margin-top:8px;font-size:13px;color:#475569"></div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:15px">
+                        <button class="btn" type="button" id="privacyTabTreatments">Trattamenti</button>
+                        <button class="btn" type="button" id="privacyTabInformative">Informative</button>
+                        <button class="btn" type="button" id="privacyTabConsensi">Consensi / prese visione</button>
+                        <button class="btn" type="button" id="privacyTabResponsabili">Responsabili</button>
+                        <button class="btn" type="button" id="privacyTabRequests">Diritti interessati</button>
+                        <button class="btn" type="button" id="privacyTabDpia">DPIA / rischio</button>
+                        <button class="btn" type="button" id="privacyTabBreaches">Data breach</button>
+                    </div>
+                </div>
+                <div id="privacyTreatmentBox" class="card">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h3 style="margin:0">Registro dei trattamenti</h3><button class="btn btn-success" type="button" id="privacyNewTreatment">+ Nuovo trattamento</button></div>
+                    <div id="privacyTreatments" style="margin-top:8px;overflow-x:auto"></div>
+                    <div id="privacyTreatmentForm" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid #e2e8f0"></div>
+                </div>
+                <div id="privacyInformativeBox" class="card" style="display:none">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h3 style="margin:0">Informative Privacy</h3><button class="btn btn-success" type="button" id="privacyNewInformative">+ Nuova informativa</button></div>
+                    <div style="margin:8px 0;font-size:12px;color:#64748b">Gestisce testo, versione, validità e stato. Il contenuto definitivo va personalizzato.</div>
+                    <div id="privacyInformatives" style="margin-top:8px;overflow-x:auto"></div>
+                    <div id="privacyInformativeForm" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid #e2e8f0"></div>
+                </div>
+                <div id="privacyConsensiBox" class="card" style="display:none">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h3 style="margin:0">Consensi e prese visione</h3><button class="btn btn-success" type="button" id="privacyNewConsent">+ Nuova registrazione</button></div>
+                    <div style="margin:8px 0;font-size:12px;color:#64748b">Collega cliente, informativa/versione, azione, fonte ed evidenza.</div>
+                    <div id="privacyConsensi" style="margin-top:8px;overflow-x:auto"></div>
+                    <div id="privacyConsentForm" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid #e2e8f0"></div>
+                </div>
+                <div id="privacyResponsabiliBox" class="card" style="display:none">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h3 style="margin:0">Responsabili del trattamento</h3><button class="btn btn-success" type="button" id="privacyNewProcessor">+ Nuovo responsabile</button></div>
+                    <div style="margin:8px 0;font-size:12px;color:#64748b">Censisce fornitori, servizi, nomina/contratto, scadenze e sub-responsabili.</div>
+                    <div id="privacyResponsabili" style="margin-top:8px;overflow-x:auto"></div>
+                    <div id="privacyProcessorForm" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid #e2e8f0"></div>
+                </div>
+                <div id="privacyRequestBox" class="card" style="display:none">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h3 style="margin:0">Richieste degli interessati</h3><button class="btn btn-success" type="button" id="privacyNewRequest">+ Nuova richiesta</button></div>
+                    <div style="margin:8px 0;font-size:12px;color:#64748b">Traccia identità, scadenze, risposta, proroghe ed evidenze.</div>
+                    <div id="privacyRequests" style="margin-top:8px;overflow-x:auto"></div>
+                    <div id="privacyRequestForm" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid #e2e8f0"></div>
+                </div>
+                <div id="privacyDpiaBox" class="card" style="display:none">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h3 style="margin:0">DPIA / Valutazione del rischio</h3><button class="btn btn-success" type="button" id="privacyNewDpia">+ Nuova valutazione</button></div>
+                    <div style="margin:8px 0;font-size:12px;color:#64748b">Documenta necessità, rischi, misure, rischio residuo e riesami quando la valutazione d'impatto è applicabile.</div>
+                    <div id="privacyDpia" style="margin-top:8px;overflow-x:auto"></div>
+                    <div id="privacyDpiaForm" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid #e2e8f0"></div>
+                </div>
+                <div id="privacyBreachBox" class="card" style="display:none">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h3 style="margin:0">Registro data breach</h3><button class="btn btn-danger" type="button" id="privacyNewBreach">+ Nuovo evento</button></div>
+                    <div style="margin:8px 0;font-size:12px;color:#64748b">Documenta valutazione, decisione sulle notifiche, riferimenti, misure e chiusura.</div>
+                    <div id="privacyBreaches" style="margin-top:8px;overflow-x:auto"></div>
+                    <div id="privacyBreachForm" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid #e2e8f0"></div>
+                </div>
+            </div>
+
+            <!-- 1. DASHBOARD -->
+            <div id="panel-dashboard" class="panel active">
+                <div class="grid-3" style="margin-bottom: 20px;">
+                    <div class="stat-card"><span>Fascicoli Attivi</span><h4>38</h4></div>
+                    <div class="stat-card"><span>Scadenze (7 giorni)</span><h4>4</h4></div>
+                    <div class="stat-card"><span>PEC / Notifiche</span><h4>2</h4></div>
+                </div>
+                <details class="card recent-activities-card">
+                    <summary class="recent-activities-dropdown-toggle">
+                        <span>Attività Recenti dello Studio</span>
+                        <span class="recent-activities-chevron" aria-hidden="true">▾</span>
+                    </summary>
+                    <div id="recentActivitiesDropdown" class="recent-activities-body">
+                        <div style="overflow-x:auto">
+                            <table>
+                                <thead><tr><th>Timestamp</th><th>Modulo</th><th>Descrizione Attività</th><th>Stato</th></tr></thead>
+                                <tbody>
+                                    <tr><td>29/09/2026 11:30</td><td>Deposito PCT</td><td>#SL-402 - Deposito telematico Tribunale di Bari</td><td><span class="badge-status status-sent">Completato</span></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. TEAM -->
+            <div id="panel-team" class="panel">
+                <div class="card">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+                        <div>
+                            <h3 style="margin:0">⚖️ Gestione Professionisti & Team Silella</h3>
+                            <div id="teamStatus" style="margin-top:5px;font-size:12px;color:#64748b">Caricamento dati reali dello Studio…</div>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                            <button class="btn btn-success" type="button" id="teamAdd" title="Inserisci un nuovo professionista dello Studio">➕ Aggiungi professionista</button>
+                            <button class="btn btn-info" type="button" id="teamRefresh">Aggiorna</button>
+                        </div>
+                    </div>
+                    <div style="overflow-x:auto;margin-top:14px">
+                        <table>
+                            <thead><tr><th>Professionista</th><th>Ruolo</th><th>Fascicoli assegnati</th><th>Contatto</th><th>Stato</th></tr></thead>
+                            <tbody id="teamTableBody"><tr><td colspan="5">Caricamento…</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="teamAddModal" class="studio-help-modal" role="dialog" aria-modal="true" aria-labelledby="teamAddTitle">
+                <div class="studio-help-box" style="max-width:560px">
+                    <div class="studio-help-head">
+                        <div>
+                            <h2 id="teamAddTitle">Aggiungi professionista</h2>
+                            <p style="margin:5px 0 0;color:#64748b;font-size:13px">Questa sezione riguarda esclusivamente i professionisti dello Studio. I Clienti restano nella Rubrica Clienti.</p>
+                        </div>
+                        <button type="button" class="studio-help-close" id="teamAddClose">Chiudi</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome e cognome *</label>
+                        <input id="teamAddName" type="text" placeholder="Es. Avv. Mario Rossi">
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input id="teamAddEmail" type="email" placeholder="nome@studio.it">
+                    </div>
+                    <div class="form-group">
+                        <label>Ruolo</label>
+                        <select id="teamAddRole">
+                            <option value="studio">Professionista Studio</option>
+                            <option value="admin">Amministratore Studio</option>
+                        </select>
+                    </div>
+                    <div id="teamAddStatus" style="font-size:13px;color:#64748b;margin-bottom:10px"></div>
+                    <div style="display:flex;justify-content:flex-end;gap:8px">
+                        <button class="btn" type="button" id="teamAddCancel">Annulla</button>
+                        <button class="btn btn-success" type="button" id="teamAddSubmit">Invia invito</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. CONFLICT CHECK -->
+            <div id="panel-conflict" class="panel">
+                <div class="card">
+                    <h3>🛡️ Verifica Conflitto di Interessi (Conflict Check)</h3>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Nome / Denominazione Controparte:</label>
+                            <input type="text" id="conflictQuery" placeholder="Inserisci nome o ragione sociale...">
+                        </div>
+                        <div class="form-group">
+                            <label>Codice Fiscale / P.IVA:</label>
+                            <input type="text" id="conflictTaxId" placeholder="Opzionale">
+                        </div>
+                    </div>
+                    <button class="btn btn-warning" onclick="runConflictCheck()">Esegui Verifica Incrociata 🔍</button>
+                    <div id="conflictResult" style="margin-top:15px;display:none;padding:12px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;"></div>
+                </div>
+            </div>
+
+            <!-- 4. ANAGRAFICA -->
+            <div id="panel-clients" class="panel">
+                <div class="card">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+                        <div>
+                            <h3 style="margin:0">👥 Anagrafica Clienti e Controparti</h3>
+                            <div id="clientsStatus" style="margin-top:5px;font-size:12px;color:#64748b">Caricamento dati reali dello Studio…</div>
+                        </div>
+                        <button class="btn btn-info" type="button" id="clientsRefresh">Aggiorna</button>
+                    </div>
+                    <div style="overflow-x:auto;margin-top:14px">
+                        <table>
+                            <thead><tr><th>Nome / Società</th><th>CF / P.IVA</th><th>Fascicoli</th><th>Ultima pratica</th><th>Stato</th><th>Dettaglio</th></tr></thead>
+                            <tbody id="clientsTableBody"><tr><td colspan="6">Caricamento…</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div id="clientDetail" style="display:none;margin-top:16px"></div>
+                </div>
+            </div>
+
+            <!-- 5. FASCICOLI -->
+            <div id="panel-matters" class="panel">
+                <div class="card">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+                        <div>
+                            <h3 style="margin:0">📁 Fascicoli & Contenzioso</h3>
+                            <div id="mattersStatus" style="margin-top:5px;font-size:12px;color:#64748b">Caricamento dati reali dello Studio…</div>
+                        </div>
+                        <button class="btn btn-info" type="button" id="mattersRefresh">Aggiorna</button>
+                    </div>
+                    <div id="matterListArea">
+                        <div class="grid-2" style="margin-top:8px">
+                            <div class="form-group" style="margin-bottom:0">
+                                <label for="mattersSearch">Cerca fascicolo</label>
+                                <input type="text" id="mattersSearch" placeholder="Cliente, CF/P.IVA, materia, controparte…">
+                            </div>
+                            <div class="form-group" style="margin-bottom:0">
+                                <label for="mattersStatusFilter">Stato</label>
+                                <select id="mattersStatusFilter">
+                                    <option value="">Tutti gli stati</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="overflow-x:auto;margin-top:14px">
+                            <table>
+                                <thead><tr><th>Fascicolo</th><th>Cliente</th><th>Materia / Controparte</th><th>Stato</th><th>IA</th><th>Documenti</th><th>Dettaglio</th></tr></thead>
+                                <tbody id="mattersTableBody"><tr><td colspan="7">Caricamento…</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="matterDetail" class="matter-detail-compact" style="display:none;margin-top:12px"></div>
+                </div>
+            </div>
+
+            <!-- 6. RAG -->
+            <div id="panel-jurisprudence" class="panel">
+                <div class="card">
+                    <h3>🔍 Ricerca RAG & Conoscenza dello Studio</h3>
+                    <div class="form-group">
+                        <label>Quesito / Parola chiave:</label>
+                        <input type="text" id="ragQuery" placeholder="Es. condominio, revoca amministratore, risarcimento...">
+                    </div>
+                    <button class="btn btn-info" onclick="runRagSearch()">Cerca nei dati dello Studio 🔎</button>
+                    <div id="ragResults" style="margin-top:15px;display:none;"></div>
+                </div>
+            </div>
+
+            <!-- 7. REDAZIONE IA -->
+            <div id="panel-ai-generator" class="panel">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>✨ Assistente IA - Redazione Atti Silella</h3>
+                        <div class="form-group">
+                            <label>Istruzioni Redazione:</label>
+                            <textarea id="caseDescription">Redigi comparsa di costituzione e risposta per giudizio civile dinanzi al Tribunale di Bari.</textarea>
+                        </div>
+                        <button class="btn btn-success" onclick="generateAILetter()">Genera Bozza con IA 🚀</button>
+                    </div>
+                    <div class="card">
+                        <h3>✍ Firma Digitale & Invio PEC</h3>
+                        <div class="form-group">
+                            <label>Testo Bozza:</label>
+                            <textarea id="aiOutputResult" style="height:90px;" placeholder="Genera prima la bozza con l'IA..."></textarea>
+                        </div>
+                        <div class="signature-box">
+                            <h4>🔐 Firma Elettronica Qualificata (FEQ)</h4>
+                            <div class="form-group" style="margin-bottom: 6px;">
+                                <label style="font-size:10px;">Provider:</label>
+                                <select id="signingProvider" style="padding:5px; font-size:11px;">
+                                    <option>ArubaPEC Remote Sign</option>
+                                    <option>InfoCert OTP</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 6px;">
+                                <label style="font-size:10px;">PIN / OTP:</label>
+                                <input type="password" id="otpPin" value="" style="padding:5px; font-size:11px;">
+                            </div>
+                            <div style="margin-top:8px;padding:9px;border:1px solid #fde68a;border-radius:8px;background:#fffbeb;color:#92400e;font-size:11px;line-height:1.45;"><strong>LAB gratuito:</strong> firma digitale e invio PEC reali non sono collegati. Questa funzione resta disattivata e non invia comunicazioni.</div>
+                            <button class="btn btn-warning" type="button" disabled style="width:100%; padding:6px; font-size:11px; opacity:.55; cursor:not-allowed;">Firma e Invia via PEC — NON ATTIVO IN LAB</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. AGENDA -->
+            <div id="panel-agenda" class="panel">
+                <div class="card">
+                    <h3>Agenda Legale & Scadenzario</h3>
+                    <table>
+                        <thead><tr><th>Scadenza</th><th>Fascicolo</th><th>Incombente</th><th>Assegnato a</th></tr></thead>
+                        <tbody><tr><td>06/10/2026</td><td>#SL-402</td><td>Udienza di comparizione Trib. Bari</td><td>Avv. Titolare Silella</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 9. PEC -->
+            <div id="panel-pec-client" class="panel">
+                <div class="card">
+                    <h3>✉ Client PEC Studio Silella (studiolegalesilella@gmail.com)</h3>
+                    <table>
+                        <thead><tr><th>Ricezione</th><th>Mittente</th><th>Oggetto</th><th>Fascicolo</th></tr></thead>
+                        <tbody><tr><td>29/09/2026 11:32</td><td>tribunale.bari@giustiziacert.it</td><td>DEPOSITO ACCETTATO - #SL-402</td><td><span style="color:var(--success); font-weight:600;">#SL-402 (Collegato)</span></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 10. PCT -->
+            <div id="panel-pct-deposit" class="panel">
+                <div class="card">
+                    <h3>Busta Telematica & Deposito PCT</h3>
+                    <div class="form-group">
+                        <label>Ufficio Giudiziario:</label>
+                        <input type="text" value="Tribunale Ordinario di Bari - Sezione Civile">
+                    </div>
+                    <button class="btn btn-success" onclick="alert('Busta telematica generata e trasmessa al Ministero della Giustizia tramite Polisweb.')">Invia Busta Telematica al PCT 🏛️</button>
+                </div>
+            </div>
+
+            <!-- 11. TIME TRACKER -->
+            <div id="panel-time-tracker" class="panel">
+                <div class="card">
+                    <h3>⏱ Rilevazione Ore e Attività (Time Tracking)</h3>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Fascicolo:</label>
+                            <select><option>#SL-402 - De Nicolò c/ Condominio</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Professionista:</label>
+                            <select><option>Avv. Titolare Silella</option><option>Avv. Collaboratore Senior</option></select>
+                        </div>
+                    </div>
+                    <div style="margin: 12px 0; font-family:'Playfair Display'; font-size: 26px; font-weight: 700; color: var(--primary);" id="stopwatchDisplay">00:00:00</div>
+                    <button class="btn btn-success" onclick="startTimer()">Avvia Cronometro 🟢</button>
+                    <button class="btn btn-danger" onclick="stopTimer()">Ferma & Salva Ore ⏹</button>
+                </div>
+            </div>
+
+            <!-- 12. FATTURAZIONE -->
+            <div id="panel-billing" class="panel">
+                <div class="card">
+                    <h3>Parcelle & Fatturazione Elettronica SDI</h3>
+                    <table>
+                        <thead><tr><th>N. Fattura</th><th>Cliente</th><th>Importo</th><th>Stato SDI</th></tr></thead>
+                        <tbody><tr><td>FT 14/2026</td><td>Giuseppe De Nicolò</td><td>€ 950,00</td><td><span class="badge-status status-sent">Trasmessa / Accettata</span></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 13. PORTALE CLIENTI -->
+            <div id="panel-client-portal" class="panel">
+                <div class="card">
+                    <h3>🌐 Portale Clienti (Extranet Studio Silella)</h3>
+                    <table>
+                        <thead><tr><th>Cliente</th><th>Ultimo Accesso</th><th>File Condivisi</th><th>Stato</th></tr></thead>
+                        <tbody><tr><td>Giuseppe De Nicolò</td><td>28/09/2026 18:30</td><td>2 documenti</td><td><span class="badge-status status-sent">Attivo</span></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 14. ARCHIVIO -->
+            <div id="panel-archive" class="panel">
+                <div class="card">
+                    <h3>Archivio Storico e Audit Trail</h3>
+                    <table>
+                        <thead><tr><th>Timestamp</th><th>Operazione</th><th>Utente</th><th>Dettagli</th></tr></thead>
+                        <tbody id="archiveTableBody">
+                            <tr><td>29/09/2026 11:30</td><td>Firma & Invio PEC</td><td>Avv. Titolare Silella</td><td>Certificato Aruba ID #8841</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- SCRIPT DI GESTIONE -->
+    <script>
+        function toggleSidebar(event) {
+            if (event) event.stopPropagation();
+            const sidebar = document.getElementById('appSidebar');
+            if (window.matchMedia('(max-width: 900px)').matches) {
+                sidebar.classList.toggle('mobile-open');
+                return;
+            }
+            sidebar.classList.toggle('collapsed');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (window.matchMedia('(max-width: 900px)').matches) {
+                const sidebar = document.getElementById('appSidebar');
+                if (sidebar.classList.contains('mobile-open') &&
+                    !e.target.closest('#appSidebar') &&
+                    !e.target.closest('.toggle-btn')) {
+                    sidebar.classList.remove('mobile-open');
+                }
+            }
+        });
+
+
+        const STUDIO_HELP = {
+            dashboard:{title:'Dashboard',intro:'È la schermata di controllo generale dello Studio. Mostra il riepilogo dei fascicoli, delle scadenze, delle comunicazioni e delle attività recenti.',steps:['Apri Dashboard dopo l’accesso per controllare la situazione generale.','Controlla il numero dei fascicoli e delle scadenze aperte.','Apri Attività recenti per verificare gli eventi registrati.','Controlla le prossime scadenze e usa i relativi menu per intervenire.'],studio:'Non richiede inserimenti obbligatori: serve soprattutto per controllo e monitoraggio.',client:'Il Cliente non opera direttamente in questa schermata.'},
+            team:{title:'Team & Professionisti',intro:'Gestisce i professionisti autorizzati a lavorare nell’Area Studio e mostra i fascicoli assegnati.',steps:['Apri Team & Professionisti.','Per aggiungere un professionista usa il modulo Aggiungi professionista.','Inserisci nome, email e ruolo.','Premi Invia invito.','Attendi l’attivazione tramite email e poi verifica che il professionista compaia nell’elenco.'],studio:'Il ruolo determina il livello operativo previsto dal sistema. Verifica sempre l’email prima dell’invio.',client:'Il Cliente non deve eseguire operazioni in questa sezione.'},
+            conflict:{title:'Conflict Check',intro:'Cerca nei dati delle pratiche dello Studio eventuali corrispondenze relative a una controparte o a un Codice Fiscale/P.IVA.',steps:['Inserisci nome o denominazione della controparte.','Se disponibile, inserisci anche CF/P.IVA.','Premi Esegui Verifica Incrociata.','Leggi le pratiche corrispondenti eventualmente trovate.','Prima di accettare o rifiutare un incarico, esegui la valutazione professionale del risultato.'],studio:'La ricerca attuale interroga i dati delle pratiche presenti nello Studio. Un risultato negativo non sostituisce la valutazione professionale.',client:'Il Cliente non deve usare questo menu.'},
+            clients:{title:'Anagrafica Clienti',intro:'È la Rubrica principale dei clienti dello Studio e il punto di partenza per portale, privacy, pratiche e documenti.',steps:['Crea o apri il cliente nella Rubrica.','Verifica i dati anagrafici e l’email.','Apri il dettaglio per controllare accesso Portale e stato privacy.','Se il Portale non è attivo, invita il cliente e invia l’informativa privacy attiva.','Crea dal dettaglio il fascicolo quando lo Studio apre una nuova pratica.','Controlla pratiche, documenti restituiti e presa visione privacy dello stesso cliente.','Usa Aggiorna per ricaricare i dati reali da Supabase.'],studio:'Il cliente registrato dal Portale deve rimanere nella Rubrica e non deve essere ricreato come nuovo cliente solo perché apre una nuova pratica.',client:'Il Cliente fornisce e aggiorna i propri dati tramite la propria Area Cliente; lo Studio li consulta qui.'},
+            matters:{title:'Fascicoli & Contenzioso',intro:'Raccoglie i fascicoli dello Studio e permette di cercare, filtrare e aprire il dettaglio di una pratica.',steps:['Apri Fascicoli & Contenzioso.','Cerca per cliente, CF/P.IVA, materia o controparte oppure usa il filtro Stato.','Premi Apri sul fascicolo interessato.','Controlla dati della pratica, documenti, analisi IA e bozze archiviate.','Usa il fascicolo come punto di riferimento per le attività successive.'],studio:'Il fascicolo è il contenitore operativo della pratica. Evita di creare duplicati per lo stesso procedimento.',client:'Il Cliente vede solo le attività/documenti che il Portale gli rende disponibili; la gestione interna del fascicolo resta allo Studio.'},
+            jurisprudence:{title:'Ricerca RAG',intro:'Esegue una ricerca interna sui contenuti realmente presenti nello Studio: pratiche, analisi IA archiviate e bozze.',steps:['Inserisci una parola chiave o un quesito.','Premi Cerca nei dati dello Studio.','Controlla separatamente pratiche, analisi archiviate e bozze trovate.','Verifica sempre le fonti e i documenti originali prima di usare il risultato.'],studio:'È una ricerca interna: non è una banca dati giurisprudenziale esterna e non sostituisce la verifica professionale delle fonti.',client:'Il Cliente non usa direttamente questa funzione.'},
+            'ai-generator':{title:'Redazione IA & Firma',intro:'Prepara una bozza tramite il servizio IA collegato al progetto e la mostra nell’area di redazione.',steps:['Inserisci nelle Istruzioni Redazione ciò che vuoi ottenere.','Premi Genera Bozza con IA.','Il sistema usa la pratica più recente disponibile come riferimento.','Leggi e verifica integralmente il testo prodotto.','Modifica la bozza secondo le esigenze professionali prima di utilizzarla.','La funzione Firma e Invia non esegue attualmente una firma FEQ reale né un invio PEC reale.'],studio:'La bozza IA deve essere sempre controllata da un professionista. Non inserire una firma o dichiarare un invio come eseguito se non è stato realmente eseguito da un servizio collegato.',client:'Il Cliente riceve un documento solo attraverso un flusso effettivamente attivato dallo Studio/Portale.'},
+            agenda:{title:'Agenda & Scadenze',intro:'Registra e controlla udienze, termini, depositi, adempimenti e appuntamenti collegati alle pratiche.',steps:['Inserisci il titolo della scadenza.','Collega la pratica quando disponibile.','Scegli il tipo di attività.','Inserisci data e ora.','Imposta la priorità.','Salva.','Quando l’attività è terminata, usa Completa; elimina solo le voci inserite per errore.'],studio:'Le scadenze sono dati persistenti dello Studio. Verifica sempre data, ora e pratica collegata.',client:'Il Cliente non modifica direttamente l’agenda dello Studio.'},
+            'pec-client':{title:'Client PEC / Comunicazioni',intro:'Registra le comunicazioni dello Studio per conservarne traccia e collegarle, quando necessario, a una pratica.',steps:['Scegli il canale: Email, PEC o PCT.','Collega la pratica se pertinente.','Inserisci il destinatario.','Inserisci oggetto/contenuto.','Premi Registra.','Controlla l’elenco delle comunicazioni registrate.'],studio:'Il modulo attuale registra la comunicazione ma non dispone di una casella PEC automatica collegata: registrare non significa che una PEC sia stata realmente spedita.',client:'Il Cliente non deve interpretare una voce registrata come prova di invio PEC se non esiste una ricevuta del servizio PEC.'},
+            'pct-deposit':{title:'Deposito PCT',intro:'Prepara e tiene traccia delle attività di deposito telematico collegate a una pratica.',steps:['Seleziona la pratica.','Inserisci il tipo di atto.','Inserisci ufficio o destinatario.','Crea il deposito.','Controlla lo stato: preparazione, pronto, inviato, ricevuto, rifiutato o annullato.','Aggiorna lo stato solo quando corrisponde all’operazione realmente eseguita.'],studio:'Il modulo attuale gestisce il registro del deposito ma non effettua un invio ministeriale reale. Non considerare “inviato” un deposito finché non è stato realmente trasmesso tramite il canale competente.',client:'Il Cliente deve ricevere l’esito/documentazione effettiva dello Studio, non uno stato inserito solo manualmente.'},
+            'time-tracker':{title:'Time Tracker',intro:'Registra il tempo lavorato dal professionista su una pratica o su un’attività.',steps:['Seleziona la pratica se pertinente.','Inserisci la descrizione dell’attività.','Premi Avvia sessione.','Quando hai terminato, premi Ferma.','Controlla la durata registrata nell’elenco.'],studio:'Il tempo registrato può essere utilizzato per il controllo interno e come base informativa per la fatturazione; non equivale automaticamente a una fattura.',client:'Il Cliente non avvia né ferma il cronometro dello Studio.'},
+            billing:{title:'Parcelle & Fatturazione',intro:'Registra le fatture dello Studio e le conserva come dati persistenti.',steps:['Seleziona il cliente.','Collega la pratica se pertinente.','Inserisci la descrizione.','Inserisci imponibile e IVA.','Premi Salva.','Controlla che la fattura risulti in stato bozza e con SDI non collegato, finché non esiste un collegamento reale.'],studio:'Il modulo attuale salva una fattura in bozza e non trasmette automaticamente allo SDI.',client:'Il Cliente deve considerare definitiva una fattura solo quando lo Studio ha completato il reale processo di emissione/trasmissione.'},
+            'client-portal':{title:'Portale Clienti',intro:'È il punto di collegamento operativo tra Studio e Cliente per inviti, documenti e richieste di firma.',steps:['Seleziona un cliente con accesso attivo oppure invitalo tramite il modulo Invita/attiva.','Per inviare un documento seleziona il cliente.','Scegli una pratica oppure Documento non collegato a pratica.','Scegli il tipo di firma richiesto, se necessario.','Seleziona il file e premi Invia.','Verifica che il documento compaia negli Ultimi documenti portale.','Il Cliente riceve la notifica nella propria Area Cliente.'],studio:'Il documento viene collegato direttamente al cliente e, se selezionata, anche alla pratica. Il limite attuale per il file è 10 MB. I servizi di firma esterni non sono automaticamente integrati solo perché compaiono nel menu.',client:'Il Cliente riceve la notifica, apre il documento e può eseguire le operazioni previste dal flusso. I documenti inviati dal Cliente allo Studio vengono registrati con direzione client_to_studio.'},
+            archive:{title:'Archivio & Audit',intro:'Mostra gli eventi registrati dal sistema per mantenere una traccia delle operazioni dello Studio.',steps:['Apri Archivio & Audit.','Controlla data e ora dell’evento.','Controlla il tipo di operazione.','Controlla la pratica e l’utente coinvolto quando presenti.','Usa Aggiorna per ottenere i dati più recenti.'],studio:'L’Audit è uno strumento di controllo: non deve essere modificato manualmente per simulare un’operazione non avvenuta.',client:'Il Cliente non modifica l’Audit dello Studio.'},
+            'studio-pratiche':{title:'Pratiche ricevute dal Portale Clienti',intro:'Mostra le pratiche che i Clienti hanno inviato attraverso il Portale Clienti e permette allo Studio di controllare i dati ricevuti e gli allegati.',steps:['Apri Pratiche ricevute dal Portale Clienti.','Effettua l’accesso richiesto con l’account autorizzato dello Studio.','Controlla cliente, area legale, controparte, richiesta e allegati della pratica ricevuta.','Apri la gestione della pratica per esaminare i dati e i documenti disponibili.','Verifica che la pratica sia associata al cliente corretto prima di proseguire con le attività dello Studio.','Aggiorna l’elenco dopo nuove ricezioni dal Portale.'],studio:'Questa sezione è il punto di ingresso delle pratiche inviate dai Clienti. La ricezione non significa che l’incarico sia già accettato: lo Studio deve verificare dati, documenti e condizioni prima di procedere.',client:'Il Cliente compila la propria richiesta nell’Area Cliente, inserisce i dati richiesti, allega i documenti necessari e invia la pratica. Dopo l’invio deve attendere la presa in carico dello Studio.'},
+            lexroom:{title:'Lexroom LAB',intro:'È il laboratorio IA gratuito dello Studio per analizzare pratiche, preparare bozze e lavorare sui modelli interni, senza API IA a pagamento.',steps:['Apri Lexroom LAB dal menu laterale.','Controlla l’elenco delle pratiche disponibili.','Per una pratica premi Analisi LAB per avviare l’analisi oppure Bozza LAB per preparare una bozza.','Leggi il risultato restituito e verifica i dati della pratica e il testo prodotto.','Per usare un modello interno, inserisci nome, materia e contenuto e premi Salva modello.','Usa Aggiorna per ricaricare pratiche e risultati.','Se viene proposta la preparazione di una comunicazione LAB, ricorda che il sistema prepara l’operazione ma non invia una email reale.'],studio:'Il LAB è gratuito e non deve essere presentato come un servizio professionale autonomo. Ogni analisi o bozza IA deve essere verificata dal professionista prima dell’uso.',client:'Il Cliente non utilizza direttamente il LAB. I risultati destinati al Cliente devono essere verificati e inviati dallo Studio tramite un canale realmente attivo.'}
+        };
+        function renderStudioHelp(panelId){
+            const data=STUDIO_HELP[panelId];
+            const headerBtn=document.getElementById('studioHeaderHelp');
+            if(headerBtn) headerBtn.title=data ? 'Guida operativa: '+data.title : 'Guida operativa';
+        }
+        function openStudioHelp(panelId){
+            const data=STUDIO_HELP[panelId], box=document.getElementById('studioHelpContent'), modal=document.getElementById('studioHelpModal'), title=document.getElementById('studioHelpTitle');
+            if(!data||!box||!modal)return;
+            title.textContent='HELP — '+data.title;
+            box.innerHTML='<p><strong>Cosa fa:</strong> '+data.intro+'</p><h3>Passo passo — cosa deve fare lo Studio</h3><ol>'+data.steps.map(x=>'<li>'+x+'</li>').join('')+'</ol><div class="studio-help-note"><strong>Indicazioni per lo Studio:</strong> '+data.studio+'</div><h3>Cosa deve fare il Cliente</h3><p>'+data.client+'</p>';
+            modal.classList.add('open');
+        }
+        window.renderStudioHelpForActive=()=>{
+            const active=document.querySelector('.panel.active');
+            if(active)renderStudioHelp(active.id.replace(/^panel-/,''));
+        };
+        document.addEventListener('DOMContentLoaded',()=>{
+            document.getElementById('studioHeaderHelp')?.addEventListener('click',()=>{
+                const active=document.querySelector('.panel.active');
+                openStudioHelp(active?.id?.replace(/^panel-/,'')||'manual');
+            });
+            document.getElementById('studioHelpClose')?.addEventListener('click',()=>document.getElementById('studioHelpModal')?.classList.remove('open'));
+            document.getElementById('studioHelpModal')?.addEventListener('click',e=>{if(e.target.id==='studioHelpModal')e.currentTarget.classList.remove('open')});
+        });
+
+        function switchTab(panelId, element) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel-' + panelId).classList.add('active');
+
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            if(element) element.classList.add('active');
+
+            const sidebar = document.getElementById('appSidebar');
+            if (sidebar) {
+                sidebar.classList.remove('mobile-open');
+            }
+
+            const titles = {
+                'manual': 'Manuale Operativo e Guida in Linea',
+                'dashboard': 'Dashboard Studio Legale Silella',
+                'team': 'Gestione Team & Professionisti',
+                'conflict': 'Verifica Conflitti (Conflict Check)',
+                'clients': 'Anagrafica Clienti e Controparti',
+                'matters': 'Fascicoli & Contenzioso',
+                'jurisprudence': 'Ricerca Giurisprudenziale RAG',
+                'ai-generator': 'Redazione IA & Firma Digitale',
+                'agenda': 'Agenda Legale & Scadenze',
+                'pec-client': 'Client PEC Studio Silella',
+                'pct-deposit': 'Deposito Telematico (PCT)',
+                'time-tracker': 'Time Tracker & Ore Lavorate',
+                'billing': 'Parcelle & Fatturazione Elettronica',
+                'client-portal': 'Portale Clienti (Extranet)',
+                'archive': 'Archivio Storico e Audit Trail',
+                'privacy': 'Gestione Privacy'
+            };
+            window.__studioActivePanel = panelId;
+            if (window.renderStudioHelpForActive) window.renderStudioHelpForActive();
+            // L'intestazione superiore mantiene sempre i recapiti dello Studio.
+        }
+
+        async function runConflictCheck() {
+            const query = document.getElementById('conflictQuery').value.trim();
+            const taxId = document.getElementById('conflictTaxId').value.trim();
+            const result = document.getElementById('conflictResult');
+            if(!query && !taxId) { alert("Inserisci una controparte o un Codice Fiscale / P.IVA da verificare."); return; }
+
+            result.style.display = 'block';
+            result.innerHTML = '<strong>🔍 Verifica in corso…</strong>';
+
+            const client = window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
+                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}))
+                : null);
+
+            if(!client) {
+                result.innerHTML = '<strong style="color:#b91c1c;">⚠️ Servizio di verifica non disponibile.</strong>';
+                return;
+            }
+
+            const terms = [];
+            if(query) {
+                const safeQuery = query.replace(/[%_,]/g, ' ').trim();
+                if(safeQuery) terms.push('client_name.ilike.%'+safeQuery+'%', 'counterparty.ilike.%'+safeQuery+'%');
+            }
+            if(taxId) {
+                const safeTaxId = taxId.replace(/[%_,]/g, ' ').trim();
+                if(safeTaxId) terms.push('tax_id.ilike.%'+safeTaxId+'%');
+            }
+
+            if(!terms.length) {
+                result.innerHTML = '<strong>Nessun criterio di ricerca valido.</strong>';
+                return;
+            }
+
+            const { data, error } = await client
+                .from('studio_pratiche')
+                .select('id,client_name,tax_id,legal_area,counterparty,status,created_at')
+                .or(terms.join(','))
+                .order('created_at', { ascending: false });
+
+            if(error) {
+                console.error(error);
+                result.innerHTML = '<strong style="color:#b91c1c;">⚠️ Errore durante la verifica.</strong><div style="margin-top:6px;font-size:13px;">Impossibile completare il controllo sui dati dello Studio.</div>';
+                return;
+            }
+
+            const escConflict = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+
+            if(!data || !data.length) {
+                result.style.background = 'rgba(240,253,244,0.95)';
+                result.style.borderColor = '#bbf7d0';
+                result.innerHTML = '<strong style="color:var(--success);">✅ Nessuna corrispondenza trovata nei dati delle pratiche dello Studio.</strong><div style="margin-top:6px;font-size:13px;color:#475569;">Il risultato è informativo e non sostituisce la valutazione professionale del conflitto.</div>';
+                return;
+            }
+
+            result.style.background = 'rgba(255,247,237,0.95)';
+            result.style.borderColor = '#fed7aa';
+            result.innerHTML = '<strong style="color:#9a3412;">⚠️ Potenziali corrispondenze trovate: '+data.length+'</strong>' +
+                '<div style="margin-top:7px;display:grid;gap:8px;">' +
+                data.map(p => '<div style="padding:10px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;">' +
+                    '<strong>'+escConflict(p.client_name || 'Cliente non indicato')+'</strong>' +
+                    (p.tax_id ? '<div style="font-size:12px;color:#64748b;">CF/P.IVA: '+escConflict(p.tax_id)+'</div>' : '') +
+                    (p.counterparty ? '<div style="font-size:12px;color:#64748b;">Controparte: '+escConflict(p.counterparty)+'</div>' : '') +
+                    '<div style="font-size:12px;color:#64748b;">Area: '+escConflict(p.legal_area || 'n/d')+' · Stato: '+escConflict(p.status || 'n/d')+'</div>' +
+                '</div>').join('') +
+                '</div><div style="margin-top:8px;font-size:13px;color:#475569;">Il risultato segnala corrispondenze nei dati disponibili; la decisione sul conflitto resta una valutazione professionale.</div>';
+        }
+
+        async function runRagSearch() {
+            const query = document.getElementById('ragQuery').value.trim();
+            const result = document.getElementById('ragResults');
+            if(!query) { alert("Inserisci un quesito di ricerca."); return; }
+
+            result.style.display = 'block';
+            result.innerHTML = '<div class="card"><strong>🔎 Ricerca in corso…</strong></div>';
+
+            const client = window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
+                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}))
+                : null);
+            if(!client) {
+                result.innerHTML = '<div class="card"><strong style="color:#b91c1c;">⚠️ Servizio di ricerca non disponibile.</strong></div>';
+                return;
+            }
+
+            const safe = query.replace(/[%_,]/g, ' ').trim();
+            if(!safe) { result.innerHTML = '<div class="card"><strong>Nessun criterio di ricerca valido.</strong></div>'; return; }
+            const pattern = '%'+safe+'%';
+
+            const [pratiche, analisi, bozze] = await Promise.all([
+                client.from('studio_pratiche').select('id,client_name,tax_id,legal_area,counterparty,description,status,created_at').or('client_name.ilike.'+pattern+',legal_area.ilike.'+pattern+',counterparty.ilike.'+pattern+',description.ilike.'+pattern).order('created_at',{ascending:false}).limit(20),
+                client.from('studio_ai_analisi').select('id,pratica_id,summary,provider,model,created_at').ilike('summary',pattern).order('created_at',{ascending:false}).limit(20),
+                client.from('studio_bozze').select('id,pratica_id,content,status,created_at').ilike('content',pattern).order('created_at',{ascending:false}).limit(20)
+            ]);
+
+            const firstError = pratiche.error || analisi.error || bozze.error;
+            if(firstError) {
+                console.error(firstError);
+                result.innerHTML = '<div class="card"><strong style="color:#b91c1c;">⚠️ Errore durante la ricerca.</strong><div style="margin-top:6px;font-size:13px;">La ricerca non ha potuto interrogare tutti i dati disponibili.</div></div>';
+                return;
+            }
+
+            const escRag = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+            const pRows = pratiche.data || [];
+            const aRows = analisi.data || [];
+            const bRows = bozze.data || [];
+
+            if(!pRows.length && !aRows.length && !bRows.length) {
+                result.innerHTML = '<div class="card" style="background:rgba(240,253,244,.95);"><strong>ℹ️ Nessun contenuto corrispondente trovato nei dati dello Studio.</strong><div style="margin-top:6px;font-size:13px;color:#475569;">La ricerca utilizza esclusivamente contenuti realmente presenti in Supabase; non viene mostrata una sentenza o una fonte giurisprudenziale inventata.</div></div>';
+                return;
+            }
+
+            const blocks = [];
+            if(pRows.length) blocks.push('<div class="card"><h4>📁 Pratiche corrispondenti ('+pRows.length+')</h4>'+pRows.map(p=>'<div style="padding:10px 0;border-bottom:1px solid #e2e8f0;"><strong>'+escRag(p.client_name||'Cliente non indicato')+'</strong><div style="font-size:12px;color:#64748b;">'+escRag(p.legal_area||'')+' · '+escRag(p.status||'')+' · '+escRag(p.counterparty||'')+'</div><div style="margin-top:5px;font-size:13px;white-space:pre-wrap;">'+escRag(p.description||'')+'</div></div>').join('')+'</div>');
+            if(aRows.length) blocks.push('<div class="card"><h4>🧠 Analisi archiviate ('+aRows.length+')</h4>'+aRows.map(a=>'<div style="padding:10px 0;border-bottom:1px solid #e2e8f0;"><strong>'+escRag(a.provider||'Analisi')+' · '+escRag(a.model||'')+'</strong><div style="margin-top:5px;font-size:13px;white-space:pre-wrap;">'+escRag(a.summary||'')+'</div></div>').join('')+'</div>');
+            if(bRows.length) blocks.push('<div class="card"><h4>📝 Bozze archiviate ('+bRows.length+')</h4>'+bRows.map(b=>'<div style="padding:10px 0;border-bottom:1px solid #e2e8f0;"><strong>Stato: '+escRag(b.status||'')+'</strong><div style="margin-top:5px;font-size:13px;white-space:pre-wrap;">'+escRag(b.content||'')+'</div></div>').join('')+'</div>');
+            blocks.push('<div style="margin-top:8px;font-size:12px;color:#64748b;">Questa è una ricerca RAG interna sui contenuti dello Studio. Non costituisce una banca dati giurisprudenziale esterna e non sostituisce la verifica professionale delle fonti.</div>');
+            result.innerHTML = blocks.join('');
+        }
+
+        function getMatterStatusClass(status) {
+            return status === 'approvata' ? 'status-sent' : '';
+        }
+
+        function escapeMatter(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+        }
+
+        async function loadMatters() {
+            const body = document.getElementById('mattersTableBody');
+            const statusBox = document.getElementById('mattersStatus');
+            if(!body || !statusBox) return;
+
+            body.innerHTML = '<tr><td colspan="7">Caricamento…</td></tr>';
+            const client = getStudioClient();
+            if(!client) {
+                statusBox.textContent = 'Servizio Supabase non disponibile.';
+                body.innerHTML = '<tr><td colspan="7">Impossibile caricare i fascicoli.</td></tr>';
+                return;
+            }
+
+            const { data: { user }, error: authError } = await client.auth.getUser();
+            if(authError || !user) {
+                statusBox.textContent = 'Accesso richiesto.';
+                body.innerHTML = '<tr><td colspan="7">Effettua l’accesso per visualizzare i fascicoli.</td></tr>';
+                return;
+            }
+
+            // Il caricamento del registro fascicoli dipende solo dalla tabella principale.
+            // I moduli collegati sono caricati in modo indipendente: un errore in un
+            // modulo secondario non deve rendere inutilizzabile l'intero registro.
+            const queries = {
+                pratiche: client.from('studio_pratiche').select('id,client_name,tax_id,legal_area,counterparty,description,file_names,status,client_status,client_status_note,ai_status,created_at,updated_at,owner_user_id,client_id,client_user_id').order('created_at', { ascending:false }),
+                documenti: client.from('studio_documenti').select('id,pratica_id,file_name,storage_path,mime_type,size_bytes,created_at').order('created_at', { ascending:false }),
+                analisi: client.from('studio_ai_analisi').select('id,pratica_id,status,provider,model,summary,created_at,completed_at').order('created_at', { ascending:false }),
+                bozze: client.from('studio_bozze').select('id,pratica_id,status,version_no,created_at,approved_at').order('created_at', { ascending:false }),
+                portalDocs: client.from('studio_portale_documenti').select('id,pratica_id,cliente_id,sender_user_id,recipient_user_id,file_name,storage_path,mime_type,size_bytes,direction,document_kind,status,created_at,signature_mode,parent_document_id,version,returned_at,signed_at,verified_at,notes').order('created_at', { ascending:false }),
+                comunicazioni: client.from('studio_comunicazioni').select('id,pratica_id,channel,recipient,subject,status,sent_at').order('sent_at',{ascending:false}),
+                pct: client.from('studio_pct_depositi').select('id,pratica_id,type,recipient,subject,file_names,status,external_id,submitted_at,received_at,notes,created_at').order('created_at',{ascending:false}),
+                tempi: client.from('studio_time_entries').select('id,pratica_id,user_id,started_at,ended_at,duration_seconds,description,billable,created_at').order('created_at',{ascending:false}),
+                fatture: client.from('studio_fatture').select('id,pratica_id,cliente_id,invoice_number,issue_date,due_date,description,total,status,sdi_status,external_id,notes,created_at').order('created_at',{ascending:false}),
+                notifiche: client.from('studio_notifiche').select('id,pratica_id,recipient_user_id,tipo,titolo,messaggio,documento_id,letta_at,created_at').order('created_at',{ascending:false}),
+                audit: client.from('studio_audit').select('id,pratica_id,actor_user_id,event_type,details,created_at').order('created_at',{ascending:false}),
+                membri: client.from('studio_utenti').select('user_id,role,full_name').in('role',['studio','admin'])
+            };
+
+            const names = Object.keys(queries);
+            const results = await Promise.all(names.map(name => queries[name]));
+            const byName = Object.fromEntries(results.map((result,index) => [names[index], result]));
+
+            if(byName.pratiche.error) {
+                console.error('[Fascicoli] studio_pratiche:', byName.pratiche.error);
+                statusBox.textContent = 'Errore nel caricamento dei fascicoli.';
+                body.innerHTML = '<tr><td colspan="7">Impossibile caricare i dati reali dello Studio.</td></tr>';
+                return;
+            }
+
+            // I dati secondari restano opzionali per la lista; l'errore viene tracciato
+            // senza bloccare la visualizzazione dei fascicoli reali.
+            const secondaryData = {};
+            names.filter(name => name !== 'pratiche').forEach(name => {
+                if(byName[name].error) {
+                    console.error('[Fascicoli] '+name+':', byName[name].error);
+                    secondaryData[name] = [];
+                } else {
+                    secondaryData[name] = byName[name].data || [];
+                }
+            });
+
+            const practiceIds=(byName.pratiche.data||[]).map(p=>p.id).filter(Boolean);
+            const {data:agendaData,error:agendaError}=practiceIds.length
+                ? await client.from('studio_agenda').select('id,pratica_id,title,type,starts_at,due_at,location,notes,client_note,client_visible,status,created_at,updated_at').in('pratica_id',practiceIds).order('starts_at',{ascending:true})
+                : {data:[],error:null};
+            if(agendaError) console.error('[Fascicoli] agenda:', agendaError);
+
+            const matters = (byName.pratiche.data || []).map(p => ({
+                ...p,
+                documents: secondaryData.documenti || [],
+                analyses: secondaryData.analisi || [],
+                drafts: secondaryData.bozze || [],
+                portalDocuments: secondaryData.portalDocs || [],
+                communications: secondaryData.comunicazioni || [],
+                pct: secondaryData.pct || [],
+                timeEntries: secondaryData.tempi || [],
+                invoices: secondaryData.fatture || [],
+                notifications: secondaryData.notifiche || [],
+                audit: secondaryData.audit || [],
+                owner: (secondaryData.membri || []).find(u => u.user_id === p.owner_user_id) || null,
+                events: (agendaData || []).filter(e => e.pratica_id === p.id)
+            }));
+
+            // I dati secondari sono globali: qui li restringiamo correttamente al fascicolo.
+            matters.forEach(m => {
+                m.documents = m.documents.filter(x => x.pratica_id === m.id);
+                m.analyses = m.analyses.filter(x => x.pratica_id === m.id);
+                m.drafts = m.drafts.filter(x => x.pratica_id === m.id);
+                m.portalDocuments = m.portalDocuments.filter(x => x.pratica_id === m.id);
+                m.communications = m.communications.filter(x => x.pratica_id === m.id);
+                m.pct = m.pct.filter(x => x.pratica_id === m.id);
+                m.timeEntries = m.timeEntries.filter(x => x.pratica_id === m.id);
+                m.invoices = m.invoices.filter(x => x.pratica_id === m.id);
+                m.notifications = m.notifications.filter(x => x.pratica_id === m.id);
+                m.audit = m.audit.filter(x => x.pratica_id === m.id);
+            });
+
+            window.__studioMatters = matters;
+            const filter = document.getElementById('mattersStatusFilter');
+            const currentFilter = filter?.value || '';
+            const states = [...new Set(matters.map(m => m.status || 'n/d'))].sort();
+            if(filter) {
+                filter.innerHTML = '<option value="">Tutti gli stati</option>' + states.map(s => '<option value="'+escapeMatter(s)+'">'+escapeMatter(s)+'</option>').join('');
+                if(states.includes(currentFilter)) filter.value = currentFilter;
+            }
+            const secondaryErrors = names.filter(name => name !== 'pratiche' && byName[name].error).length + (agendaError ? 1 : 0);
+            statusBox.textContent = secondaryErrors
+                ? 'Dati reali · fascicoli caricati · '+secondaryErrors+' modulo/i collegato/i non disponibile/i'
+                : 'Dati reali · tutti i moduli collegati caricati';
+            renderMatters();
+        }
+
+        function renderMatters() {
+            const body = document.getElementById('mattersTableBody');
+            const statusBox = document.getElementById('mattersStatus');
+            const matters = window.__studioMatters || [];
+            const search = (document.getElementById('mattersSearch')?.value || '').trim().toLowerCase();
+            const stateFilter = document.getElementById('mattersStatusFilter')?.value || '';
+
+            const filtered = matters.filter(m => {
+                const haystack = [m.id,m.client_name,m.tax_id,m.legal_area,m.counterparty,m.description,m.status,m.ai_status].join(' ').toLowerCase();
+                return (!search || haystack.includes(search)) && (!stateFilter || (m.status || 'n/d') === stateFilter);
+            });
+
+            statusBox.textContent = 'Dati reali · ' + filtered.length + ' di ' + matters.length + ' fascicoli';
+            if(!filtered.length) {
+                body.innerHTML = '<tr><td colspan="7">Nessun fascicolo corrispondente.</td></tr>';
+                return;
+            }
+
+            body.innerHTML = filtered.map((m, index) => {
+                const originalIndex = matters.indexOf(m);
+                return '<tr>' +
+                    '<td><strong>'+escapeMatter(m.id)+'</strong><div style="font-size:11px;color:#64748b">'+escapeMatter(m.created_at ? new Date(m.created_at).toLocaleDateString('it-IT') : '')+'</div></td>' +
+                    '<td><strong>'+escapeMatter(m.client_name || 'Cliente non indicato')+'</strong>'+(m.tax_id ? '<div style="font-size:11px;color:#64748b">'+escapeMatter(m.tax_id)+'</div>' : '')+'</td>' +
+                    '<td>'+escapeMatter(m.legal_area || 'n/d')+(m.counterparty ? '<div style="font-size:12px;color:#64748b;margin-top:3px">c/ '+escapeMatter(m.counterparty)+'</div>' : '')+'</td>' +
+                    '<td><span class="badge-status '+getMatterStatusClass(m.status)+'">'+escapeMatter(m.status || 'n/d')+'</span></td>' +
+                    '<td>'+escapeMatter(m.ai_status || 'non_avviata')+'</td>' +
+                    '<td>'+m.documents.length+'</td>' +
+                    '<td><button class="btn btn-info matter-detail-btn" type="button" data-matter-index="'+originalIndex+'">Apri</button></td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        async function saveClientMatterStatus(index) {
+            const matters=window.__studioMatters||[], m=matters[index];
+            if(!m)return;
+            const status=document.getElementById('clientStatusInput')?.value.trim()||null;
+            const note=document.getElementById('clientStatusNoteInput')?.value.trim()||null;
+            const client=getStudioClient();
+            if(!client)return;
+            const btn=document.getElementById('saveClientStatusBtn');
+            const out=document.getElementById('clientStatusSaveStatus');
+            if(btn)btn.disabled=true;
+            if(out)out.textContent='Salvataggio…';
+            const {error}=await client.from('studio_pratiche').update({client_status:status,client_status_note:note,updated_at:new Date().toISOString()}).eq('id',m.id);
+            if(error){if(out)out.textContent='Errore: '+error.message;}
+            else{m.client_status=status;m.client_status_note=note;m.updated_at=new Date().toISOString();if(out)out.textContent='Aggiornamento Cliente salvato.';renderMatters();}
+            if(btn)btn.disabled=false;
+        }
+
+        async function addClientAgendaEvent(index) {
+            const matters=window.__studioMatters||[], m=matters[index];
+            if(!m)return;
+            const client=getStudioClient();
+            if(!client)return;
+            const title=document.getElementById('clientEventTitle')?.value.trim();
+            const type=document.getElementById('clientEventType')?.value||'udienza';
+            const starts=document.getElementById('clientEventStarts')?.value;
+            const location=document.getElementById('clientEventLocation')?.value.trim()||null;
+            const note=document.getElementById('clientEventNote')?.value.trim()||null;
+            const visible=document.getElementById('clientEventVisible')?.checked===true;
+            const out=document.getElementById('clientEventStatus');
+            if(!title||!starts){if(out)out.textContent='Titolo e data/ora sono obbligatori.';return}
+            const {data:{user}}=await client.auth.getUser();
+            if(!user){if(out)out.textContent='Sessione Studio non disponibile.';return}
+            const btn=document.getElementById('addClientEventBtn');if(btn)btn.disabled=true;
+            if(out)out.textContent='Salvataggio…';
+            const {data,error}=await client.from('studio_agenda').insert({pratica_id:m.id,created_by:user.id,title,type,starts_at:new Date(starts).toISOString(),location,client_note:note,client_visible:visible,status:'da_fare'}).select().single();
+            if(error){if(out)out.textContent='Errore: '+error.message;}
+            else{m.events.push(data);m.events.sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at));showMatterDetail(index);if(out)out.textContent='Evento salvato.';}
+            if(btn)btn.disabled=false;
+        }
+
+        async function toggleClientAgendaEvent(index,eventId,visible) {
+            const client=getStudioClient();
+            if(!client)return;
+            const {error}=await client.from('studio_agenda').update({client_visible:visible}).eq('id',eventId);
+            if(error){alert('Impossibile aggiornare la visibilità: '+error.message);return}
+            const m=(window.__studioMatters||[])[index];const ev=m?.events?.find(x=>x.id===eventId);if(ev)ev.client_visible=visible;
+            showMatterDetail(index);
+        }
+
+        async function deleteClientAgendaEvent(index,eventId) {
+            if(!confirm('Eliminare questa voce dall’agenda?'))return;
+            const client=getStudioClient();
+            if(!client)return;
+            const {error}=await client.from('studio_agenda').delete().eq('id',eventId);
+            if(error){alert('Impossibile eliminare la voce: '+error.message);return}
+            const m=(window.__studioMatters||[])[index];if(m)m.events=(m.events||[]).filter(x=>x.id!==eventId);
+            showMatterDetail(index);
+        }
+
+        async function openMatterDocument(documentId) {
+            const matters=window.__studioMatters||[];
+            const doc=matters.flatMap(m=>m.documents||[]).find(d=>d.id===documentId);
+            if(!doc?.storage_path){alert('Documento senza file archiviato.');return}
+            const client=getStudioClient(); if(!client)return;
+            const {data,error}=await client.storage.from('studio-legale-documenti').createSignedUrl(doc.storage_path,300);
+            if(error||!data?.signedUrl){alert('Impossibile aprire il documento: '+(error?.message||'URL non disponibile'));return}
+            window.open(data.signedUrl,'_blank','noopener,noreferrer');
+        }
+
+        function openMatterLinkedModule(tab) {
+            const item=Array.from(document.querySelectorAll('.menu-item')).find(m => (m.getAttribute('onclick') || '').includes("'"+tab+"'"));
+            switchTab(tab,item||null);
+        }
+
+        async function openMatterPortalDocument(documentId) {
+            const matters=window.__studioMatters||[];
+            const doc=matters.flatMap(m=>m.portalDocuments||[]).find(d=>d.id===documentId);
+            if(!doc?.storage_path){alert('Documento senza file archiviato.');return}
+            const client=getStudioClient(); if(!client)return;
+            const {data,error}=await client.storage.from('studio-legale-documenti').download(doc.storage_path);
+            if(error){alert('Visualizzazione non disponibile: '+error.message);return}
+            const url=URL.createObjectURL(data); window.open(url,'_blank','noopener'); setTimeout(()=>URL.revokeObjectURL(url),60000);
+        }
+
+        async function sendMatterPortalDocument(index) {
+            const m=(window.__studioMatters||[])[index]; if(!m)return;
+            const client=getStudioClient(); if(!client)return;
+            const file=document.getElementById('matterPortalFile')?.files?.[0];
+            const kind=document.getElementById('matterPortalKind')?.value||'documento';
+            const mode=document.getElementById('matterPortalMode')?.value||'nessuna';
+            const out=document.getElementById('matterPortalStatus');
+            if(!file){if(out)out.textContent='Seleziona un file.';return}
+            if(file.size>10*1024*1024){if(out)out.textContent='Il file supera 10 MB.';return}
+            const {data:{user}}=await client.auth.getUser(); if(!user){if(out)out.textContent='Sessione Studio non disponibile.';return}
+            const {data:clientRow,error:clientError}=await client.from('studio_clienti').select('id,user_id').eq('id',m.client_id).maybeSingle();
+            if(clientError||!clientRow?.user_id){if(out)out.textContent='Il cliente non ha un accesso Portale attivo.';return}
+            const path='studio/'+clientRow.id+'/'+crypto.randomUUID()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+            if(out)out.textContent='Archiviazione…';
+            const up=await client.storage.from('studio-legale-documenti').upload(path,file,{contentType:file.type,upsert:false});
+            if(up.error){if(out)out.textContent='Errore upload: '+up.error.message;return}
+            const {data,error}=await client.from('studio_portale_documenti').insert({pratica_id:m.id,cliente_id:clientRow.id,sender_user_id:user.id,recipient_user_id:clientRow.user_id,file_name:file.name,storage_path:path,mime_type:file.type,size_bytes:file.size,direction:'studio_to_client',document_kind:kind,status:mode==='nessuna'?'inviato':'da_firmare',signature_mode:mode,version:1}).select().single();
+            if(error){await client.storage.from('studio-legale-documenti').remove([path]);if(out)out.textContent='Errore registrazione documento: '+error.message;return}
+            m.portalDocuments=m.portalDocuments||[];m.portalDocuments.unshift(data);
+            if(out)out.textContent='Documento archiviato e inviato al Cliente.';
+            const f=document.getElementById('matterPortalFile');if(f)f.value='';
+            showMatterDetail(index);
+        }
+
+                function showMatterDetail(index) {
+            const detail = document.getElementById('matterDetail');
+            const matters = window.__studioMatters || [];
+            const m = matters[index];
+            if(!detail || !m) return;
+
+            const documentRows = m.documents.length
+                ? m.documents.map(d => '<div class="matter-compact-row" style="padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div><strong>'+escapeMatter(d.file_name || 'Documento')+'</strong><div style="font-size:12px;color:#64748b">'+escapeMatter(d.mime_type || 'tipo non indicato')+' · '+(d.size_bytes ? Math.round(d.size_bytes/1024)+' KB' : 'dimensione n/d')+' · '+escapeMatter(d.created_at?new Date(d.created_at).toLocaleString('it-IT'):'—')+'</div></div>'+(d.storage_path?'<button class="btn btn-info" type="button" onclick="openMatterDocument(\''+d.id+'\')">Apri / Scarica</button>':'<span style="font-size:12px;color:#64748b">File non disponibile</span>')+'</div></div>').join('')
+                : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessun documento associato.</div>';
+            const portalDocumentRows = (m.portalDocuments||[]).length
+                ? m.portalDocuments.map(d => '<div class="matter-compact-row" style="padding:9px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div><strong>'+escapeMatter(d.file_name||'Documento portale')+'</strong><div style="font-size:12px;color:#64748b;margin-top:3px">'+escapeMatter(d.direction==='studio_to_client'?'Studio → Cliente':'Cliente → Studio')+' · '+escapeMatter(d.document_kind||'documento')+' · '+escapeMatter(d.status||'n/d')+' · '+escapeMatter(d.version?'v'+d.version:'')+'</div><div style="font-size:11px;color:#64748b;margin-top:3px">'+escapeMatter(d.created_at?new Date(d.created_at).toLocaleString('it-IT'):'—')+(d.verified_at?' · Verificato':'')+(d.returned_at?' · Restituito':'')+'</div></div><button class="btn btn-info" type="button" onclick="openMatterPortalDocument(\''+d.id+'\')">Visualizza</button></div></div>').join('')
+                : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessun documento portale collegato a questa pratica.</div>';
+
+            const eventRows = (m.events||[]).length
+                ? m.events.map(e => '<div class="matter-compact-row" style="padding:10px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;margin-top:7px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div><strong>'+escapeMatter(e.title||'Attività')+'</strong><div style="font-size:12px;color:#64748b;margin-top:3px">'+escapeMatter(e.type||'altro')+' · '+escapeMatter(e.starts_at?new Date(e.starts_at).toLocaleString('it-IT'):'')+(e.location?' · '+escapeMatter(e.location):'')+'</div>'+(e.client_note?'<div style="font-size:13px;margin-top:6px;white-space:pre-wrap">'+escapeMatter(e.client_note)+'</div>':'')+'</div><span class="badge-status '+(e.client_visible?'status-sent':'')+'">'+(e.client_visible?'Visibile al Cliente':'Interno')+'</span></div><div class="matter-compact-sub" style="margin-top:8px;display:flex;gap:7px;flex-wrap:wrap"><button class="btn btn-info" type="button" onclick="toggleClientAgendaEvent('+index+',\''+e.id+'\','+(!e.client_visible)+')">'+(e.client_visible?'Nascondi al Cliente':'Rendi visibile al Cliente')+'</button><button class="btn btn-danger" type="button" onclick="deleteClientAgendaEvent('+index+',\''+e.id+'\')">Elimina</button></div></div>').join('')
+                : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessuna attività/udienza collegata.</div>';
+
+            const analysisRows = m.analyses.length
+                ? m.analyses.map(a => '<div class="matter-compact-row" style="padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px"><strong>'+escapeMatter(a.provider || 'Analisi')+'</strong> · '+escapeMatter(a.status || 'n/d')+'<div style="font-size:12px;color:#64748b;margin-top:3px">'+escapeMatter(a.model || '')+'</div><div style="margin-top:5px;font-size:13px;white-space:pre-wrap">'+escapeMatter(a.summary || '')+'</div></div>').join('')
+                : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessuna analisi associata.</div>';
+
+            const draftRows = m.drafts.length
+                ? m.drafts.map(b => '<div class="matter-compact-row" style="padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px"><strong>Versione '+escapeMatter(b.version_no || '')+'</strong> · '+escapeMatter(b.status || 'n/d')+(b.approved_at ? '<div style="font-size:12px;color:#64748b;margin-top:3px">Approvata: '+escapeMatter(new Date(b.approved_at).toLocaleString('it-IT'))+'</div>' : '')+'</div>').join('')
+                : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessuna bozza associata.</div>';
+
+            const listArea = document.getElementById('matterListArea');
+            if(listArea) listArea.classList.add('is-hidden');
+            detail.style.display = 'block';
+            detail.innerHTML = '<div style="padding:8px;background:rgba(248,250,252,.95);border:1px solid #e2e8f0;border-radius:10px">' +
+                '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h4 style="margin:0">📁 Fascicolo '+escapeMatter(m.id)+'</h4><button class="btn" type="button" id="closeMatterDetail">Chiudi</button></div>' +
+                '<div style="margin-top:7px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;font-size:13px">' +
+                    '<div><strong>Cliente</strong><br>'+escapeMatter(m.client_name || 'n/d')+'</div>' +
+                    '<div><strong>Avvocato responsabile</strong><br>'+escapeMatter(m.owner?.full_name || 'Non assegnato')+'</div>' +
+                    '<div><strong>CF/P.IVA</strong><br>'+escapeMatter(m.tax_id || 'n/d')+'</div>' +
+                    '<div><strong>Materia</strong><br>'+escapeMatter(m.legal_area || 'n/d')+'</div>' +
+                    '<div><strong>Controparte</strong><br>'+escapeMatter(m.counterparty || 'n/d')+'</div>' +
+                    '<div><strong>Stato interno</strong><br>'+escapeMatter(m.status || 'n/d')+'</div>' +
+                    '<div><strong>Stato Cliente</strong><br>'+escapeMatter(m.client_status || 'non impostato')+'</div>' +
+                '</div>' +
+                '<div class="matter-compact-section" style="margin-top:7px;padding:12px;background:#fff;border:1px solid #e2e8f0;border-radius:9px"><strong>📢 Stato visibile al Cliente</strong><div class="grid-2" style="margin-top:7px"><div class="form-group"><label>Stato</label><input id="clientStatusInput" value="'+escapeMatter(m.client_status||'')+'" placeholder="Es. In lavorazione"></div><div class="form-group"><label>Aggiornamento per il Cliente</label><input id="clientStatusNoteInput" value="'+escapeMatter(m.client_status_note||'')+'" placeholder="Es. In attesa dell’udienza del…"></div></div><div style="margin-top:8px;display:flex;gap:10px;align-items:center"><button class="btn btn-success" id="saveClientStatusBtn" type="button" onclick="saveClientMatterStatus('+index+')">Salva aggiornamento Cliente</button><span id="clientStatusSaveStatus" style="font-size:12px;color:#64748b"></span></div></div>' +
+                '<div class="matter-compact-section" style="margin-top:7px;padding:12px;background:#fff;border:1px solid #e2e8f0;border-radius:9px"><strong>📤 Invia documento al Cliente</strong><div style="font-size:12px;color:#64748b;margin-top:4px">Il documento viene archiviato nel fascicolo e inviato nel Portale Cliente.</div><div class="grid-2" style="margin-top:7px"><div class="form-group"><label>Tipo documento</label><select id="matterPortalKind"><option value="documento">Documento</option><option value="pratica">Documento del fascicolo</option><option value="documento_personale">Documento personale</option><option value="altro">Altro</option></select></div><div class="form-group"><label>Modalità</label><select id="matterPortalMode"><option value="nessuna">Solo invio</option><option value="download_upload">Da firmare e restituire</option><option value="online">Firma online (servizio esterno)</option><option value="qualificata">Firma qualificata (servizio esterno)</option><option value="spid">Firma con SPID (servizio esterno)</option></select></div></div><input id="matterPortalFile" type="file" style="margin-top:8px"><div style="margin-top:8px;display:flex;gap:10px;align-items:center"><button class="btn btn-success" type="button" onclick="sendMatterPortalDocument('+index+')">📤 Invia al Cliente</button><span id="matterPortalStatus" style="font-size:12px;color:#64748b"></span></div></div>' +
+                '<div class="matter-compact-section" style="margin-top:7px;padding:12px;background:#fff;border:1px solid #e2e8f0;border-radius:9px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><strong>📅 Udienze e attività visibili al Cliente</strong></div><div>'+eventRows+'</div><div style="margin-top:8px;padding-top:12px;border-top:1px solid #e2e8f0"><strong>Aggiungi udienza / aggiornamento</strong><div class="grid-2" style="margin-top:7px"><div class="form-group"><label>Titolo *</label><input id="clientEventTitle" placeholder="Es. Udienza di comparizione"></div><div class="form-group"><label>Tipo</label><select id="clientEventType"><option value="udienza">Udienza</option><option value="scadenza">Scadenza</option><option value="deposito">Deposito</option><option value="adempimento">Adempimento</option><option value="appuntamento">Appuntamento</option><option value="altro">Altro</option></select></div><div class="form-group"><label>Data e ora *</label><input id="clientEventStarts" type="datetime-local"></div><div class="form-group"><label>Luogo</label><input id="clientEventLocation" placeholder="Es. Tribunale di Bari · Aula…"></div></div><div class="form-group"><label>Nota visibile al Cliente</label><textarea id="clientEventNote" rows="3" placeholder="Esito o informazione che vuoi pubblicare al Cliente…"></textarea></div><label style="display:flex;gap:8px;align-items:center;font-size:12px"><input id="clientEventVisible" type="checkbox" checked> Rendi subito visibile al Cliente</label><div style="margin-top:8px;display:flex;gap:10px;align-items:center"><button class="btn btn-success" id="addClientEventBtn" type="button" onclick="addClientAgendaEvent('+index+')">Salva evento</button><span id="clientEventStatus" style="font-size:12px;color:#64748b"></span></div></div></div>' +
+                '<div style="margin-top:8px"><strong>Descrizione</strong><div style="margin-top:5px;white-space:pre-wrap;font-size:13px">'+escapeMatter(m.description || 'Nessuna descrizione disponibile.')+'</div></div>' +
+                '<div style="margin-top:8px"><strong>Documenti associati ('+m.documents.length+')</strong>'+documentRows+'</div>' +
+                '<div style="margin-top:8px;padding:12px;background:#fff;border:1px solid #e2e8f0;border-radius:9px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><strong>🌐 Documenti del Portale collegati al fascicolo ('+(m.portalDocuments||[]).length+')</strong></div>'+portalDocumentRows+'</div>' +
+                '<div style="margin-top:8px"><strong>Analisi IA archiviate ('+m.analyses.length+')</strong> <button class="btn btn-info" type="button" onclick="openMatterLinkedModule(\'ai-generator\')">Gestisci IA</button>'+analysisRows+'</div>' +
+                '<div style="margin-top:8px"><strong>Bozze archiviate ('+m.drafts.length+')</strong> <button class="btn btn-info" type="button" onclick="openMatterLinkedModule(\'ai-generator\')">Apri Redazione IA</button>'+draftRows+'</div>' +
+                '<div style="margin-top:8px"><strong>✉️ Comunicazioni ('+(m.communications||[]).length+')</strong> <button class="btn btn-info" type="button" onclick="openMatterLinkedModule(\'pec-client\')">Gestisci comunicazioni</button>'+((m.communications||[]).length ? m.communications.map(x=>'<div class="matter-compact-row" style="padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px;font-size:13px"><strong>'+escapeMatter(x.channel||'comunicazione')+'</strong> · '+escapeMatter(x.subject||'Senza oggetto')+' · '+escapeMatter(x.status||'n/d')+'<div style="font-size:12px;color:#64748b">'+escapeMatter(x.recipient||'')+' · '+escapeMatter(x.sent_at?new Date(x.sent_at).toLocaleString('it-IT'):'')+'</div></div>').join('') : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessuna comunicazione associata.</div>')+'</div>' +
+                '<div style="margin-top:8px"><strong>🏛 Depositi PCT ('+(m.pct||[]).length+')</strong> <button class="btn btn-info" type="button" onclick="openMatterLinkedModule(\'pct-deposit\')">Gestisci PCT</button>'+((m.pct||[]).length ? m.pct.map(x=>'<div class="matter-compact-row" style="padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px;font-size:13px"><strong>'+escapeMatter(x.type||'Deposito')+'</strong> · '+escapeMatter(x.status||'n/d')+' · '+escapeMatter(x.subject||'')+'<div style="font-size:12px;color:#64748b">'+escapeMatter(x.recipient||'')+' · '+escapeMatter(x.file_names||'')+'</div></div>').join('') : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessun deposito PCT associato.</div>')+'</div>' +
+                '<div style="margin-top:8px"><strong>⏱ Tempi lavorati ('+(m.timeEntries||[]).length+')</strong> <button class="btn btn-info" type="button" onclick="openMatterLinkedModule(\'time-tracker\')">Gestisci tempi</button>'+((m.timeEntries||[]).length ? m.timeEntries.map(x=>'<div class="matter-compact-row" style="padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px;font-size:13px"><strong>'+escapeMatter(x.description||'Attività')+'</strong> · '+escapeMatter(x.duration_seconds!=null ? Math.round(x.duration_seconds/60)+' min' : 'in corso')+' · '+(x.billable?'Fatturabile':'Non fatturabile')+'</div>').join('') : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessuna registrazione tempi.</div>')+'</div>' +
+                '<div style="margin-top:8px"><strong>💶 Fatture ('+(m.invoices||[]).length+')</strong> <button class="btn btn-info" type="button" onclick="openMatterLinkedModule(\'billing\')">Gestisci fatturazione</button>'+((m.invoices||[]).length ? m.invoices.map(x=>'<div class="matter-compact-row" style="padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px;font-size:13px"><strong>'+escapeMatter(x.invoice_number||'Fattura')+'</strong> · '+escapeMatter(x.status||'n/d')+' · '+escapeMatter(x.sdi_status||'SDI n/d')+' · '+escapeMatter(x.total!=null ? x.total+' €' : '')+'<div style="font-size:12px;color:#64748b">'+escapeMatter(x.description||'')+'</div></div>').join('') : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessuna fattura associata.</div>')+'</div>' +
+                '<div style="margin-top:8px"><strong>🔔 Notifiche ('+(m.notifications||[]).length+')</strong> <button class="btn btn-info" type="button" onclick="document.getElementById(\'studioNotifyBtn\')?.click()">Apri notifiche</button>'+((m.notifications||[]).length ? m.notifications.map(x=>'<div class="matter-compact-row" style="padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px;font-size:13px"><strong>'+escapeMatter(x.titolo||x.tipo||'Notifica')+'</strong><div style="font-size:12px;color:#64748b">'+escapeMatter(x.messaggio||'')+' · '+escapeMatter(x.letta_at?'Letta':'Non letta')+'</div></div>').join('') : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessuna notifica associata.</div>')+'</div>' +
+                '<div style="margin-top:8px"><strong>🛡 Audit del fascicolo ('+(m.audit||[]).length+')</strong>'+((m.audit||[]).length ? m.audit.slice(0,20).map(x=>'<div class="matter-compact-row" style="padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px;font-size:12px"><strong>'+escapeMatter(x.event_type||'Evento')+'</strong> · '+escapeMatter(x.created_at?new Date(x.created_at).toLocaleString('it-IT'):'')+'<div style="white-space:pre-wrap;color:#64748b">'+escapeMatter(JSON.stringify(x.details||{}))+'</div></div>').join('') : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessun evento di audit associato.</div>')+'</div>' +
+                '</div>';
+
+            document.getElementById('closeMatterDetail').addEventListener('click', () => {
+                detail.style.display='none';
+                const listArea = document.getElementById('matterListArea');
+                if(listArea) listArea.classList.remove('is-hidden');
+            });
+        }
+
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('.matter-detail-btn');
+            if(btn) showMatterDetail(Number(btn.dataset.matterIndex));
+        });
+        window.saveClientMatterStatus=saveClientMatterStatus; window.addClientAgendaEvent=addClientAgendaEvent; window.toggleClientAgendaEvent=toggleClientAgendaEvent; window.deleteClientAgendaEvent=deleteClientAgendaEvent; window.openMatterDocument=openMatterDocument; window.openMatterPortalDocument=openMatterPortalDocument; window.openMatterLinkedModule=openMatterLinkedModule; window.sendMatterPortalDocument=sendMatterPortalDocument;
+        document.getElementById('mattersRefresh')?.addEventListener('click', loadMatters);
+        document.getElementById('mattersSearch')?.addEventListener('input', renderMatters);
+        document.getElementById('mattersStatusFilter')?.addEventListener('change', renderMatters);
+        const mattersMenuItem = Array.from(document.querySelectorAll('.menu-item')).find(m => (m.getAttribute('onclick') || '').includes("'matters'"));
+        mattersMenuItem?.addEventListener('click', () => setTimeout(loadMatters, 0));
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadMatters);
+        } else {
+            setTimeout(loadMatters, 0);
+        }
+
+        function getStudioClient() {
+            return window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
+                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}))
+                : null);
+        }
+
+        async function loadClients() {
+            const body = document.getElementById('clientsTableBody');
+            const status = document.getElementById('clientsStatus');
+            if(!body || !status) return;
+            body.innerHTML = '<tr><td colspan="7">Caricamento…</td></tr>';
+            const client = getStudioClient();
+            if(!client) return;
+            const { data:{user}, error:authError } = await client.auth.getUser();
+            if(authError || !user) {
+                status.textContent='Accesso richiesto.';
+                body.innerHTML='<tr><td colspan="6">Effettua l’accesso per visualizzare i clienti.</td></tr>';
+                return;
+            }
+            const [{data:clientsData,error:clientsError},{data:practicesData,error:practicesError},{data:membersData,error:membersError}] = await Promise.all([
+                client.from('studio_clienti').select('*').order('created_at',{ascending:false}),
+                client.from('studio_pratiche').select('id,client_id,client_name,tax_id,legal_area,counterparty,status,created_at,owner_user_id,client_user_id').order('created_at',{ascending:false}),
+                client.from('studio_utenti').select('user_id,role,full_name').in('role',['studio','admin']).order('full_name',{ascending:true})
+            ]);
+            if(clientsError || practicesError || membersError) {
+                console.error(clientsError||practicesError);
+                status.textContent='Errore nel caricamento dell’anagrafica.';
+                body.innerHTML='<tr><td colspan="7">Impossibile caricare i dati reali dello Studio.</td></tr>';
+                return;
+            }
+            const byClient=new Map();
+            (practicesData||[]).forEach(p=>{
+                if(!p.client_id)return;
+                if(!byClient.has(p.client_id))byClient.set(p.client_id,[]);
+                byClient.get(p.client_id).push(p);
+            });
+            const membersById=new Map((membersData||[]).map(u=>[u.user_id,u]));
+            const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+            const clients=(clientsData||[]).map(c=>({...c,practices:(byClient.get(c.id)||[]).map(p=>({...p,owner:membersById.get(p.owner_user_id)||null}))}));
+            window.__studioClients=clients;
+            status.textContent='Dati reali · '+clients.length+' clienti · '+(practicesData||[]).length+' pratiche';
+            body.innerHTML=clients.length?clients.map((cl,i)=>{
+                const p=cl.practices[0];
+                const lawyers=[...new Map(cl.practices.filter(p=>p.owner?.full_name).map(p=>[p.owner_user_id,p.owner.full_name])).values()];
+                return '<tr><td><strong>'+esc(cl.full_name||'Cliente senza nome')+'</strong></td><td>'+esc(cl.tax_id||'—')+'</td><td>'+esc(lawyers.join(', ')||'Non assegnato')+'</td><td>'+cl.practices.length+'</td><td>'+esc(p?.created_at?new Date(p.created_at).toLocaleDateString('it-IT'):'—')+'</td><td><span class="badge-status status-sent">'+esc(p?.status||cl.status||'attivo')+'</span></td><td><button class="btn btn-info client-detail-btn" type="button" data-client-index="'+i+'">Apri</button></td></tr>';
+            }).join(''):'<tr><td colspan="6">Nessun cliente presente nella Rubrica dello Studio.</td></tr>';
+        }
+
+        async function showClientDetail(index) {
+            const detail=document.getElementById('clientDetail'), clients=window.__studioClients||[], cl=clients[index];
+            if(!detail||!cl)return;
+            const client=getStudioClient(), esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+            detail.style.display='block';
+            detail.innerHTML='<div style="padding:16px;background:rgba(248,250,252,.95);border:1px solid #e2e8f0;border-radius:10px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h4 style="margin:0">👤 '+esc(cl.full_name||'Cliente')+'</h4><button class="btn" type="button" id="closeClientDetail">Chiudi</button></div><div style="margin-top:8px;color:#64748b;font-size:13px">Caricamento fascicolo cliente…</div></div>';
+            document.getElementById('closeClientDetail').onclick=()=>detail.style.display='none';
+            if(!client||!cl.id)return;
+
+            const [{data:docs,error:docsError},{data:consensi,error:consensiError}] = await Promise.all([
+                client.from('studio_portale_documenti').select('id,pratica_id,cliente_id,file_name,mime_type,size_bytes,direction,document_kind,status,created_at,signature_mode,parent_document_id,version,returned_at,signed_at,verified_at,notes').eq('cliente_id',cl.id).order('created_at',{ascending:false}),
+                client.from('studio_privacy_consensi').select('id,informativa_id,tipo_azione,finalita,esito,fonte,evidenza,registrato_at').eq('cliente_id',cl.id).order('registrato_at',{ascending:false})
+            ]);
+            if(docsError)console.error(docsError);
+            if(consensiError)console.error(consensiError);
+
+            const fields=[
+                ['Nome e cognome',cl.full_name],['Codice fiscale',cl.tax_id],['Email',cl.email],['Telefono',cl.phone],
+                ['Data di nascita',cl.birth_date],['Luogo di nascita',cl.birth_place],['Indirizzo',cl.address],
+                ['CAP',cl.postal_code],['Comune',cl.city],['Provincia',cl.province],['Stato',cl.country||cl.status],
+                ['PEC',cl.pec],['P.IVA',cl.vat_number],['IBAN',cl.iban]
+            ];
+            const anag=fields.map(([l,v])=>'<div><strong>'+esc(l)+'</strong><br>'+esc(v||'—')+'</div>').join('');
+
+            const labelDocKind=k=>({
+                carta_identita:'Carta d’identità',tessera_sanitaria:'Tessera sanitaria / codice fiscale',
+                documento_personale:'Documento personale',pratica:'Documento del fascicolo',
+                privacy_informativa:'Informativa privacy',altro:'Documento'
+            }[k]||k||'Documento');
+            const labelDirection=d=>({client_to_studio:'Cliente → Studio',studio_to_client:'Studio → Cliente'}[d]||d||'—');
+            const groupOrder=['pratica','carta_identita','tessera_sanitaria','documento_personale','privacy_informativa','altro'];
+            const groups=groupOrder.map(kind=>[kind,(docs||[]).filter(d=>d.document_kind===kind)]).filter(([,items])=>items.length);
+            const unknown=(docs||[]).filter(d=>!groupOrder.includes(d.document_kind));
+            if(unknown.length)groups.push(['altro',unknown]);
+            const docsHtml=groups.length?groups.map(([kind,items])=>'<div style="margin-top:8px"><strong>'+esc(labelDocKind(kind))+' ('+items.length+')</strong>'+items.map(d=>'<div class="matter-compact-row" style="padding:9px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px;font-size:13px"><strong>'+esc(d.file_name||'Documento')+'</strong><div style="font-size:12px;color:#64748b;margin-top:3px">'+esc(labelDirection(d.direction))+' · '+esc(d.status||'n/d')+(d.pratica_id?' · Fascicolo: '+esc(d.pratica_id):'')+(d.size_bytes?' · '+Math.round(d.size_bytes/1024)+' KB':'')+'</div><div style="font-size:11px;color:#64748b;margin-top:3px">Inserito: '+esc(d.created_at?new Date(d.created_at).toLocaleString('it-IT'):'—')+(d.returned_at?' · Restituito: '+esc(new Date(d.returned_at).toLocaleString('it-IT')):'')+(d.verified_at?' · Verificato: '+esc(new Date(d.verified_at).toLocaleString('it-IT')):'')+'</div></div>').join('')+'</div>').join(''):'<div style="font-size:13px;color:#64748b;margin-top:6px">Nessun documento collegato a questo cliente.</div>';
+
+            const consentHtml=consensi?.length?consensi.map(x=>'<div class="matter-compact-row" style="padding:9px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px;font-size:13px"><strong>'+esc(x.tipo_azione||'Consenso')+'</strong><div style="font-size:12px;color:#64748b;margin-top:3px">'+esc(x.esito||'—')+' · '+esc(x.fonte||'—')+' · '+esc(x.registrato_at?new Date(x.registrato_at).toLocaleString('it-IT'):'—')+'</div><div style="font-size:12px;color:#64748b;margin-top:3px">'+esc(x.finalita||'')+(x.evidenza?' · '+esc(x.evidenza):'')+'</div></div>').join(''):'<div style="font-size:13px;color:#64748b;margin-top:6px">Nessuna registrazione privacy presente per questo cliente.</div>';
+
+            const prHtml=cl.practices.length?cl.practices.map(p=>'<div style="padding:12px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;font-size:13px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div><strong>📁 Fascicolo '+esc(p.id)+'</strong><div style="font-size:12px;color:#64748b;margin-top:4px">'+esc(p.legal_area||'Materia non indicata')+' · '+esc(p.counterparty?'c/ '+p.counterparty:'Controparte non indicata')+' · '+esc(p.status||'n/d')+'</div><div style="font-size:12px;margin-top:5px"><strong>Avvocato responsabile:</strong> '+esc(p.owner?.full_name||'Non assegnato')+'</div></div><button class="btn btn-info" type="button" onclick="openMatterFromClient(\''+esc(p.id)+'\')">Apri fascicolo</button></div></div>').join(''):'<div style="font-size:13px;color:#64748b;margin-top:6px">Nessuna pratica associata.</div>';
+
+            detail.innerHTML='<div style="padding:16px;background:rgba(248,250,252,.95);border:1px solid #e2e8f0;border-radius:10px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h4 style="margin:0">👤 '+esc(cl.full_name||'Cliente')+'</h4><button class="btn" type="button" id="closeClientDetail">Chiudi</button></div><div style="margin-top:8px"><strong>Anagrafica completa</strong><div style="margin-top:8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;font-size:13px">'+anag+'</div></div><div style="margin-top:8px"><strong>Documenti ricevuti/inviati ('+(docs||[]).length+')</strong>'+docsHtml+'</div><div style="margin-top:8px"><strong>Privacy e prese visione ('+(consensi||[]).length+')</strong>'+consentHtml+'</div><div style="margin-top:8px"><strong>Pratiche associate ('+cl.practices.length+')</strong><div class="matter-compact-sub" style="margin-top:8px;display:grid;gap:6px">'+prHtml+'</div></div></div>';
+            document.getElementById('closeClientDetail').onclick=()=>detail.style.display='none';
+        }
+
+        function openMatterFromClient(practiceId) {
+            const idx=(window.__studioMatters||[]).findIndex(m=>m.id===practiceId);
+            if(idx<0){alert('Il fascicolo non è disponibile nella lista Fascicoli.');return;}
+            switchTab('matters', document.querySelector('[onclick="switchTab(\'matters\', this)"]'));
+            setTimeout(()=>showMatterDetail(idx),80);
+        }
+        window.openMatterFromClient=openMatterFromClient;
+
+        document.addEventListener('click',e=>{const b=e.target.closest('.client-detail-btn');if(b)showClientDetail(Number(b.dataset.clientIndex));});
+        document.getElementById('clientsRefresh')?.addEventListener('click',loadClients);
+        document.querySelector('[onclick="switchTab(\'clients\', this)"]')?.addEventListener('click',()=>setTimeout(loadClients,0));
+        loadClients();
+
+        async function loadTeam() {
+            const body = document.getElementById('teamTableBody');
+            const status = document.getElementById('teamStatus');
+            if(!body || !status) return;
+
+            body.innerHTML = '<tr><td colspan="5">Caricamento…</td></tr>';
+            const client = getStudioClient();
+            if(!client) {
+                status.textContent = 'Servizio Supabase non disponibile.';
+                body.innerHTML = '<tr><td colspan="5">Impossibile caricare il Team.</td></tr>';
+                return;
+            }
+
+            const { data: { user }, error: authError } = await client.auth.getUser();
+            if(authError || !user) {
+                status.textContent = 'Accesso richiesto.';
+                body.innerHTML = '<tr><td colspan="5">Effettua l’accesso per visualizzare i professionisti.</td></tr>';
+                return;
+            }
+
+            const [{ data: members, error: membersError }, { data: practices, error: practicesError }, { data: clients, error: clientsError }] = await Promise.all([
+                client.from('studio_utenti')
+                    .select('user_id,role,full_name,created_at')
+                    .in('role', ['studio','admin'])
+                    .order('created_at', { ascending: true }),
+                client.from('studio_pratiche').select('id,owner_user_id'),
+                client.from('studio_clienti').select('user_id')
+            ]);
+
+            if(membersError || practicesError || clientsError) {
+                console.error(membersError || practicesError || clientsError);
+                status.textContent = 'Errore nel caricamento dei professionisti.';
+                body.innerHTML = '<tr><td colspan="5">Impossibile caricare i professionisti dello Studio.</td></tr>';
+                return;
+            }
+
+            const counts = {};
+            (practices || []).forEach(p => {
+                if(p.owner_user_id) counts[p.owner_user_id] = (counts[p.owner_user_id] || 0) + 1;
+            });
+
+            // Regola definitiva del Team: solo professionisti. Un utente presente nella Rubrica Clienti
+            // non può comparire qui, anche se per errore avesse un ruolo Studio/Admin.
+            const clientIds = new Set((clients || []).map(c => c.user_id).filter(Boolean));
+            const professionals = (members || []).filter(member =>
+                ['studio','admin'].includes(member.role) && !clientIds.has(member.user_id)
+            );
+
+            const rows = professionals.map(member => {
+                const isCurrent = member.user_id === user.id;
+                const name = escapeTeam(member.full_name || (isCurrent ? (user.email || 'Utente autenticato') : 'Professionista'));
+                const role = escapeTeam(member.role === 'admin' ? 'Amministratore' : 'Professionista');
+                const count = counts[member.user_id] || 0;
+                const contact = isCurrent ? escapeTeam(user.email || '—') : '—';
+                return '<tr>' +
+                    '<td><strong>' + name + '</strong></td>' +
+                    '<td>' + role + '</td>' +
+                    '<td>' + count + '</td>' +
+                    '<td>' + contact + '</td>' +
+                    '<td><span style="color:var(--success);font-weight:650;">' + (isCurrent ? 'Online' : 'Registrato') + '</span></td>' +
+                    '</tr>';
+            });
+
+            body.innerHTML = rows.length ? rows.join('') : '<tr><td colspan="5">Nessun professionista presente.</td></tr>';
+            status.textContent = professionals.length + ' professionista/i dello Studio · i Clienti sono gestiti esclusivamente nella Rubrica Clienti';
+            window.__studioTeam = professionals;
+        }
+
+        function escapeTeam(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({
+                '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+            }[ch]));
+        }
+
+        function openTeamAddModal() {
+            const modal=document.getElementById('teamAddModal');
+            if(!modal)return;
+            ['teamAddName','teamAddEmail'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+            const status=document.getElementById('teamAddStatus');
+            if(status)status.textContent='';
+            modal.classList.add('open');
+        }
+
+        function closeTeamAddModal() {
+            document.getElementById('teamAddModal')?.classList.remove('open');
+        }
+
+        async function inviteStudioProfessional() {
+            const name=document.getElementById('teamAddName')?.value.trim();
+            const email=document.getElementById('teamAddEmail')?.value.trim().toLowerCase();
+            const role=document.getElementById('teamAddRole')?.value||'studio';
+            const status=document.getElementById('teamAddStatus');
+            const submit=document.getElementById('teamAddSubmit');
+            const client=getStudioClient();
+
+            if(!name || !email){
+                if(status)status.textContent='Nome e email sono obbligatori.';
+                return;
+            }
+            if(!client){
+                if(status)status.textContent='Servizio Supabase non disponibile.';
+                return;
+            }
+
+            submit.disabled=true;
+            submit.textContent='Invio…';
+            if(status)status.textContent='Invio invito al professionista…';
+            try{
+                const {data:{session},error:sessionError}=await client.auth.getSession();
+                if(sessionError || !session?.access_token){
+                    if(status)status.textContent='Sessione Studio non disponibile. Effettua nuovamente l’accesso.';
+                    return;
+                }
+                const {data,error}=await client.functions.invoke('studio-invita-professionista',{
+                    body:{email,full_name:name,role}
+                });
+                if(error || !data?.ok){
+                    const message=data?.error||error?.message||'Impossibile inviare l’invito.';
+                    if(status)status.textContent=message;
+                    return;
+                }
+                if(status)status.textContent='Invito inviato correttamente. Il professionista comparirà nel Team dopo la registrazione/attivazione.';
+                await loadTeam();
+                setTimeout(closeTeamAddModal,900);
+            }catch(e){
+                console.error('Invito professionista:',e);
+                if(status)status.textContent=e?.message||'Errore durante l’invio dell’invito.';
+            }finally{
+                submit.disabled=false;
+                submit.textContent='Invia invito';
+            }
+        }
+
+        document.getElementById('teamRefresh')?.addEventListener('click', loadTeam);
+        document.getElementById('teamAdd')?.addEventListener('click', openTeamAddModal);
+        document.getElementById('teamAddClose')?.addEventListener('click', closeTeamAddModal);
+        document.getElementById('teamAddCancel')?.addEventListener('click', closeTeamAddModal);
+        document.getElementById('teamAddSubmit')?.addEventListener('click', inviteStudioProfessional);
+        document.getElementById('teamAddModal')?.addEventListener('click',e=>{if(e.target.id==='teamAddModal')closeTeamAddModal();});
+        const teamMenuItem = Array.from(document.querySelectorAll('.menu-item')).find(m => (m.getAttribute('onclick') || '').includes("'team'"));
+        teamMenuItem?.addEventListener('click', () => setTimeout(loadTeam, 0));
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadTeam);
+        } else {
+            setTimeout(loadTeam, 0);
+        }
+
+        let timerInterval, secondsElapsed = 0;
+        function startTimer() {
+            if(timerInterval) return;
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                let hrs = Math.floor(secondsElapsed / 3600).toString().padStart(2, '0');
+                let mins = Math.floor((secondsElapsed % 3600) / 60).toString().padStart(2, '0');
+                let secs = (secondsElapsed % 60).toString().padStart(2, '0');
+                document.getElementById('stopwatchDisplay').innerText = `${hrs}:${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if(!timerInterval) return;
+            clearInterval(timerInterval);
+            timerInterval = null;
+            alert(`⏱️ Sessione registrata per lo Studio Silella! Tempo: ${Math.floor(secondsElapsed/60)} min.`);
+            secondsElapsed = 0;
+            document.getElementById('stopwatchDisplay').innerText = "00:00:00";
+        }
+
+        async function generateAILetter() {
+            const desc = document.getElementById('caseDescription').value.trim();
+            const outputBox = document.getElementById('aiOutputResult');
+            if(!desc) {
+                alert("Inserisci le istruzioni per la redazione.");
+                return;
+            }
+
+            outputBox.value = "Elaborazione della bozza IA in corso...";
+
+            const client = window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
+                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}))
+                : null);
+
+            if(!client) {
+                outputBox.value = "Servizio Supabase non disponibile.";
+                return;
+            }
+
+            const { data: sessionData, error: sessionError } = await client.auth.getSession();
+            const session = sessionData?.session;
+            if(sessionError || !session?.access_token) {
+                outputBox.value = "Sessione Studio non disponibile. Effettua nuovamente l'accesso.";
+                return;
+            }
+
+            const { data: practice, error: practiceError } = await client
+                .from('studio_pratiche')
+                .select('id,client_name,legal_area,counterparty,description,status')
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            if(practiceError || !practice) {
+                outputBox.value = "Nessuna pratica disponibile per la redazione.";
+                return;
+            }
+
+            const { data, error } = await client.functions.invoke('studio-lexroom', {
+                body: {
+                    practiceId: practice.id,
+                    action: 'lab_draft',
+                    instructions: desc
+                }
+            });
+
+            if(error || !data?.ok) {
+                console.error(error || data);
+                const edgeMessage = data?.error || error?.message || error?.context?.message || "Impossibile generare la bozza IA.";
+                outputBox.value = edgeMessage;
+                return;
+            }
+
+            outputBox.value = data.text || data.draft?.content || "La funzione IA non ha restituito testo.";
+        }
+
+        async function signAndSendDocument() {
+            const output = document.getElementById('aiOutputResult');
+            if (!output || !output.value.trim()) {
+                alert("Genera prima una bozza.");
+                return;
+            }
+            alert("La firma FEQ e l'invio PEC non sono collegati a un provider reale in questo progetto. La bozza resta disponibile per la revisione professionale; nessuna firma o PEC è stata eseguita.");
+        }
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.76.0"></script><script src="config.js?v=20261003-6"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const btn=document.getElementById('studioHeaderLogout');
+  if(!btn)return;
+  btn.addEventListener('click',async()=>{
+    btn.disabled=true;
+    btn.textContent='Uscita…';
+    try{
+      const client=window.STUDIO_SUPABASE_CLIENT || (window.STUDIO_SUPABASE_CLIENT=window.supabase.createClient(
+        window.STUDIO_SUPABASE_URL,
+        window.STUDIO_SUPABASE_PUBLISHABLE_KEY,
+        {auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
+      ));
+      await client.auth.signOut();
+    }catch(e){console.error('Logout Studio:',e);}
+    window.location.href='index.html';
+  });
+});
+</script>
+<script src="studio-dashboard.js?v=20261003-1"></script><script src="studio-privacy.js?v=20261003-5"></script><script src="lexroom-dashboard.js?v=20261002-2"></script><script src="studio-modules.js?v=20261003-2"></script><script src="studio-ai.js?v=20261004-2"></script>
+
+<div id="studioHelpModal" class="studio-help-modal" role="dialog" aria-modal="true" aria-labelledby="studioHelpTitle">
+  <div class="studio-help-box">
+    <div class="studio-help-head"><h2 id="studioHelpTitle">HELP</h2><button type="button" class="studio-help-close" id="studioHelpClose">Chiudi</button></div>
+    <div id="studioHelpContent"></div>
+  </div>
+</div>
+</body>
+</html>
