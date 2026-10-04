@@ -5,7 +5,7 @@
     try{ sb=await window.studioSupabaseReady; }catch(error){ console.error('Client Supabase Studio non disponibile.',error); return; }
   }
   if(!sb){ console.error('Client Supabase Studio non disponibile.'); return; }
-  let user=null, clients=[], informatives=[], treatments=[];
+  let user=null, clients=[], informatives=[], treatments=[], studioIdentity=null;
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const fmt=v=>v?new Date(v).toLocaleString('it-IT',{dateStyle:'short',timeStyle:'short'}):'—';
@@ -23,7 +23,7 @@
   function field(label,id,value='',type='text',placeholder=''){return '<div class="form-group"><label>'+esc(label)+'</label><input id="'+id+'" type="'+type+'" value="'+esc(value)+'" placeholder="'+esc(placeholder)+'"></div>'}
   function area(label,id,value=''){return '<div class="form-group"><label>'+esc(label)+'</label><textarea id="'+id+'" rows="3">'+esc(value)+'</textarea></div>'}
   function actions(save,cancel){return '<div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-success" type="button" id="'+save+'">Salva</button><button class="btn" type="button" id="'+cancel+'">Annulla</button></div>'}
-  function showBox(name){['privacyTreatmentBox','privacyRequestBox','privacyBreachBox','privacyInformativeBox','privacyConsensiBox','privacyResponsabiliBox','privacyDpiaBox'].forEach(x=>{if($(x))$(x).style.display=x===name?'block':'none'})}
+  function showBox(name){['privacyTreatmentBox','privacyRequestBox','privacyBreachBox','privacyInformativeBox','privacyStudioIdentityBox','privacyConsensiBox','privacyResponsabiliBox','privacyDpiaBox'].forEach(x=>{if($(x))$(x).style.display=x===name?'block':'none'})}
   function optionList(rows,valueKey,labelKey,selected){return rows.map(x=>'<option value="'+esc(x[valueKey])+'" '+(String(x[valueKey])===String(selected||'')?'selected':'')+'>'+esc(x[labelKey])+'</option>').join('')}
 
   function treatmentForm(data={}){
@@ -78,7 +78,7 @@
   function renderTreatments(rows){treatments=rows;$('privacyTreatments').innerHTML=rows.length?'<table><thead><tr><th>Trattamento</th><th>Base</th><th>Conservazione</th><th>Stato</th><th></th></tr></thead><tbody>'+rows.map(x=>'<tr><td><b>'+esc(x.nome)+'</b><br><small>'+esc(x.finalita||'')+'</small></td><td>'+esc(x.base_giuridica||'—')+'</td><td>'+esc(x.conservazione||'—')+'</td><td>'+esc(x.stato)+'</td><td><button class="btn" onclick="window.editPrivacyTreatment(\''+x.id+'\')">Modifica</button></td></tr>').join('')+'</tbody></table>':'<div style="padding:14px;background:#f8fafc;border-radius:8px">Nessun trattamento ancora registrato.</div>'}
   function renderRequests(rows){$('privacyRequests').innerHTML=rows.length?'<table><thead><tr><th>Richiedente</th><th>Tipo</th><th>Ricevuta</th><th>Scadenza</th><th>Stato</th><th></th></tr></thead><tbody>'+rows.map(x=>'<tr><td><b>'+esc(x.richiedente_nome)+'</b><br><small>'+esc(x.richiedente_email||'')+'</small></td><td>'+esc(typeLabel[x.tipo_richiesta]||x.tipo_richiesta)+'</td><td>'+fmt(x.ricevuta_at)+'</td><td>'+date(x.scadenza_at)+'</td><td>'+esc(x.stato)+'</td><td><button class="btn" onclick="window.editPrivacyRequest(\''+x.id+'\')">Modifica</button></td></tr>').join('')+'</tbody></table>':'<div style="padding:14px;background:#f8fafc;border-radius:8px">Nessuna richiesta registrata.</div>'}
   function renderBreaches(rows){$('privacyBreaches').innerHTML=rows.length?'<table><thead><tr><th>Evento</th><th>Rilevato</th><th>Rischio</th><th>Stato</th><th>Notifiche</th><th></th></tr></thead><tbody>'+rows.map(x=>'<tr><td><b>'+esc(x.titolo)+'</b></td><td>'+fmt(x.rilevato_at)+'</td><td>'+esc(x.rischio||'—')+'</td><td>'+esc(x.stato)+'</td><td>'+((x.notifica_garante?'Garante ':'')+(x.notifica_interessati?'Interessati':'')||'—')+'</td><td><button class="btn" onclick="window.editPrivacyBreach(\''+x.id+'\')">Modifica</button></td></tr>').join('')+'</tbody></table>':'<div style="padding:14px;background:#f8fafc;border-radius:8px">Nessun data breach registrato.</div>'}
-  function renderInformative(rows){informatives=rows;$('privacyInformatives').innerHTML=rows.length?'<table class="privacy-informative-table" style="table-layout:auto"><thead><tr><th style="min-width:320px">Titolo</th><th style="white-space:nowrap">Versione</th><th style="white-space:nowrap">Validità</th><th style="white-space:nowrap">Stato</th><th>Azioni</th></tr></thead><tbody>'+rows.map(x=>'<tr><td style="vertical-align:top;min-width:320px"><b>'+esc(x.titolo)+'</b><br><small>'+esc(x.tipo)+'</small></td><td style="white-space:nowrap;vertical-align:top">'+esc(x.versione)+'</td><td style="white-space:nowrap;vertical-align:top">'+date(x.valida_dal)+' → '+date(x.valida_al)+'</td><td style="white-space:nowrap;vertical-align:top">'+esc(x.stato)+'</td><td style="vertical-align:top;display:flex;gap:6px;flex-wrap:wrap"><button class="btn" onclick="window.editPrivacyInformative(\''+x.id+'\')">Modifica</button>'+(x.stato==='attiva'&&x.tipo==='clienti'?'<button class="btn btn-success" onclick="window.sendPrivacyInformative(\''+x.id+'\')">Prepara e verifica</button>':'')+'</td></tr>').join('')+'</tbody></table>':'<div style="padding:14px;background:#f8fafc;border-radius:8px">Nessuna informativa registrata.</div>'}
+  function renderInformative(rows){informatives=rows;$('privacyInformatives').innerHTML=rows.length?'<table class="privacy-informative-table" style="table-layout:auto"><thead><tr><th style="min-width:320px">Titolo</th><th style="white-space:nowrap">Versione</th><th style="white-space:nowrap">Validità</th><th style="white-space:nowrap">Stato</th><th>Azioni</th></tr></thead><tbody>'+rows.map(x=>'<tr><td style="vertical-align:top;min-width:320px"><b>'+esc(x.titolo)+'</b><br><small>'+esc(x.tipo)+'</small></td><td style="white-space:nowrap;vertical-align:top">'+esc(x.versione)+'</td><td style="white-space:nowrap;vertical-align:top">'+date(x.valida_dal)+' → '+date(x.valida_al)+'</td><td style="white-space:nowrap;vertical-align:top">'+esc(x.stato)+'</td><td style="vertical-align:top;display:table-cell!important;white-space:nowrap"><button class="btn" onclick="window.editPrivacyInformative(\''+x.id+'\')">Modifica</button>'+(x.stato==='attiva'&&x.tipo==='clienti'?'<button class="btn btn-success" onclick="window.sendPrivacyInformative(\''+x.id+'\')">Prepara e verifica</button>':'')+'</td></tr>').join('')+'</tbody></table>':'<div style="padding:14px;background:#f8fafc;border-radius:8px">Nessuna informativa registrata.</div>'}
   function renderConsensi(rows){$('privacyConsensi').innerHTML=rows.length?'<table><thead><tr><th>Cliente</th><th>Informativa</th><th>Azione</th><th>Data</th><th>Fonte</th><th>Gestione</th></tr></thead><tbody>'+rows.map(x=>'<tr><td>'+esc(x.studio_clienti?.full_name||x.client_name||'—')+'</td><td>'+esc(x.studio_privacy_informative?.titolo||x.informativa_titolo||'—')+(x.informativa_versione?' <small>v'+esc(x.informativa_versione)+'</small>':'')+'</td><td>'+esc(x.tipo_azione||x.tipo||'—')+'</td><td>'+fmt(x.registrato_at||x.accepted_at)+'</td><td>'+esc(x.fonte||'portale')+'</td><td>'+(x._portal?'<span style="color:#166534;font-weight:600">Portale</span>':'<button class="btn" onclick="window.editPrivacyConsent(\''+x.id+'\')">Modifica</button>')+'</td></tr>').join('')+'</tbody></table>':'<div style="padding:14px;background:#f8fafc;border-radius:8px">Nessuna registrazione.</div>'}
   function renderProcessors(rows){$('privacyResponsabili').innerHTML=rows.length?'<table><thead><tr><th>Fornitore</th><th>Servizio</th><th>Nomina</th><th>Scadenza</th><th></th></tr></thead><tbody>'+rows.map(x=>'<tr><td><b>'+esc(x.denominazione)+'</b></td><td>'+esc(x.servizio||'—')+'</td><td>'+esc(x.contratto_stato)+'</td><td>'+date(x.scadenza_data)+'</td><td><button class="btn" onclick="window.editPrivacyProcessor(\''+x.id+'\')">Modifica</button></td></tr>').join('')+'</tbody></table>':'<div style="padding:14px;background:#f8fafc;border-radius:8px">Nessun responsabile registrato.</div>'}
   function renderDpia(rows){$('privacyDpia').innerHTML=rows.length?'<table><thead><tr><th>Valutazione</th><th>Trattamento</th><th>Stato</th><th>Prossimo riesame</th><th></th></tr></thead><tbody>'+rows.map(x=>'<tr><td><b>'+esc(x.titolo)+'</b></td><td>'+esc(x.studio_privacy_trattamenti?.nome||'—')+'</td><td>'+esc(x.stato)+'</td><td>'+fmt(x.prossimo_riesame_at)+'</td><td><button class="btn" onclick="window.editPrivacyDpia(\''+x.id+'\')">Modifica</button></td></tr>').join('')+'</tbody></table>':'<div style="padding:14px;background:#f8fafc;border-radius:8px">Nessuna DPIA/valutazione registrata.</div>'}
@@ -89,6 +89,76 @@
   async function saveTreatment(id){try{const row={nome:$('ptNome').value.trim(),finalita:$('ptFinalita').value.trim(),base_giuridica:$('ptBase').value.trim(),categorie_interessati:$('ptInteressati').value.trim(),categorie_dati:$('ptDati').value.trim(),destinatari:$('ptDestinatari').value.trim(),conservazione:$('ptConservazione').value.trim(),misure_sicurezza:$('ptMisure').value.trim(),stato:$('ptStato').value,updated_by:user.id,updated_at:new Date().toISOString()};if(!row.nome)throw Error('Inserisci il nome del trattamento.');await save('studio_privacy_trattamenti',row,id);$('privacyTreatmentForm').style.display='none'}catch(e){alert(e.message)}}
   async function saveRequest(id){try{const row={richiedente_nome:$('prNome').value.trim(),richiedente_email:$('prEmail').value.trim()||null,tipo_richiesta:$('prTipo').value,descrizione:$('prDescrizione').value.trim(),ricevuta_at:$('prRicevuta').value?new Date($('prRicevuta').value).toISOString():new Date().toISOString(),scadenza_at:$('prScadenza').value?new Date($('prScadenza').value+'T23:59:59').toISOString():null,verifica_identita:$('prIdentita').value.trim(),risposta_at:$('prRisposta').value?new Date($('prRisposta').value).toISOString():null,proroga_at:$('prProroga').value?new Date($('prProroga').value).toISOString():null,motivazione_proroga:$('prMotivazione').value.trim(),esito_risposta:$('prEsito').value.trim(),evidenza_risposta:$('prEvidenza').value.trim(),note:$('prNote').value.trim(),stato:$('prStato').value,updated_at:new Date().toISOString()};if(!row.richiedente_nome)throw Error('Inserisci il nome del richiedente.');await save('studio_privacy_richieste',row,id);$('privacyRequestForm').style.display='none'}catch(e){alert(e.message)}}
   async function saveBreach(id){try{const row={titolo:$('pbTitolo').value.trim(),rilevato_at:$('pbRilevato').value?new Date($('pbRilevato').value).toISOString():new Date().toISOString(),descrizione:$('pbDescrizione').value.trim(),categorie_dati:$('pbDati').value.trim(),interessati_coinvolti:$('pbInteressati').value.trim(),valutazione_rischio:$('pbValutazione').value.trim(),azioni_intrapprese:$('pbAzioni').value.trim(),misure_preventive:$('pbMisure').value.trim(),rischio:$('pbRischio').value,stato:$('pbStato').value,notifica_garante:$('pbGarante').checked,notifica_interessati:$('pbNotificaInteressati').checked,notifica_garante_at:$('pbGaranteAt').value?new Date($('pbGaranteAt').value).toISOString():null,notifica_interessati_at:$('pbInteressatiAt').value?new Date($('pbInteressatiAt').value).toISOString():null,riferimento_garante:$('pbRiferimento').value.trim(),decisione_notifica:$('pbDecisione').value.trim(),data_chiusura:$('pbChiusura').value?new Date($('pbChiusura').value).toISOString():null,updated_at:new Date().toISOString()};if(!row.titolo)throw Error('Inserisci il titolo dell’evento.');await save('studio_privacy_breach',row,id);$('privacyBreachForm').style.display='none'}catch(e){alert(e.message)}}
+  function studioIdentityForm(data={}){
+    const logo = data.logo_signed_url ? '<div style="margin-top:8px"><img src="'+esc(data.logo_signed_url)+'" alt="Logo Studio" style="max-width:260px;max-height:100px;object-fit:contain;border:1px solid #e2e8f0;border-radius:8px;padding:6px;background:#fff"></div>' : '<div style="margin-top:8px;color:#64748b;font-size:12px">Nessun logo configurato.</div>';
+    return '<div class="grid-2">'+
+      field('Nome Studio','siNome',data.nome_studio||'Studio Legale Silella')+
+      field('Indirizzo','siIndirizzo',data.indirizzo||'')+
+      field('CAP','siCap',data.cap||'')+
+      field('Comune','siComune',data.comune||'')+
+      field('Provincia','siProvincia',data.provincia||'')+
+      field('Paese','siPaese',data.paese||'Italia')+
+      field('Telefono','siTelefono',data.telefono||'')+
+      field('Email','siEmail',data.email||'','email')+
+      field('PEC','siPec',data.pec||'','email')+
+      field('Sito web','siSito',data.sito_web||'','url')+
+      '</div>'+area('Piè di pagina del documento (opzionale)','siFooter',data.footer_text||'')+
+      '<div class="form-group"><label>Logo dello Studio (JPG o PNG, max 2 MB)</label><input id="siLogo" type="file" accept="image/jpeg,image/png"><div id="siLogoPreview">'+logo+'</div></div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn btn-success" type="button" id="saveStudioIdentity">Salva identità</button><button class="btn" type="button" id="removeStudioLogo">Rimuovi logo</button></div>';
+  }
+  async function loadStudioIdentity(){
+    const {data,error}=await sb.from('studio_impostazioni').select('*').eq('config_key','default').maybeSingle();
+    if(error)throw error;
+    studioIdentity=data||{};
+    if(studioIdentity.logo_storage_path){
+      const {data:signed,error:se}=await sb.storage.from('studio-legale-documenti').createSignedUrl(studioIdentity.logo_storage_path,3600);
+      if(!se&&signed)studioIdentity.logo_signed_url=signed.signedUrl;
+    }
+    if($('privacyStudioIdentityForm'))$('privacyStudioIdentityForm').innerHTML=studioIdentityForm(studioIdentity);
+    bindStudioIdentityForm();
+  }
+  function bindStudioIdentityForm(){
+    const saveBtn=$('saveStudioIdentity'),file=$('siLogo'),remove=$('removeStudioLogo');
+    if(!saveBtn)return;
+    saveBtn.onclick=saveStudioIdentity;
+    if(remove)remove.onclick=removeStudioLogo;
+    if(file)file.onchange=()=>{
+      const f=file.files?.[0];if(!f)return;
+      if(!['image/jpeg','image/png'].includes(f.type)||f.size>2*1024*1024){$('privacyStudioIdentityStatus').textContent='Logo non valido: usa JPG o PNG fino a 2 MB.';file.value='';return}
+      const reader=new FileReader();reader.onload=()=>{$('siLogoPreview').innerHTML='<img src="'+reader.result+'" alt="Anteprima logo" style="max-width:260px;max-height:100px;object-fit:contain;border:1px solid #e2e8f0;border-radius:8px;padding:6px;background:#fff">'};reader.readAsDataURL(f);
+    };
+  }
+  async function saveStudioIdentity(){
+    const status=$('privacyStudioIdentityStatus'),btn=$('saveStudioIdentity'),file=$('siLogo');
+    btn.disabled=true;status.textContent='Salvataggio…';
+    try{
+      const row={nome_studio:$('siNome').value.trim(),indirizzo:$('siIndirizzo').value.trim(),cap:$('siCap').value.trim(),comune:$('siComune').value.trim(),provincia:$('siProvincia').value.trim(),paese:$('siPaese').value.trim(),telefono:$('siTelefono').value.trim(),email:$('siEmail').value.trim(),pec:$('siPec').value.trim(),sito_web:$('siSito').value.trim(),footer_text:$('siFooter').value.trim(),updated_by:user.id};
+      if(!row.nome_studio)throw Error('Il nome dello Studio è obbligatorio.');
+      const f=file?.files?.[0];
+      if(f){
+        const ext=f.type==='image/png'?'png':'jpg',path='studio/settings/logo-'+Date.now()+'-'+crypto.randomUUID()+'.'+ext;
+        const {error:ue}=await sb.storage.from('studio-legale-documenti').upload(path,f,{contentType:f.type,upsert:false});
+        if(ue)throw ue;
+        row.logo_storage_path=path;row.logo_file_name=f.name;row.logo_mime_type=f.type;
+      }
+      const {error:ue}=await sb.from('studio_impostazioni').update(row).eq('config_key','default');
+      if(ue)throw ue;
+      if(f&&studioIdentity?.logo_storage_path&&studioIdentity.logo_storage_path!==row.logo_storage_path)await sb.storage.from('studio-legale-documenti').remove([studioIdentity.logo_storage_path]);
+      status.textContent='Identità dello Studio salvata correttamente.';await loadStudioIdentity();
+    }catch(e){console.error(e);status.textContent=e.message||'Errore nel salvataggio.'}finally{btn.disabled=false}
+  }
+  async function removeStudioLogo(){
+    const status=$('privacyStudioIdentityStatus');
+    try{
+      if(!studioIdentity?.logo_storage_path){status.textContent='Nessun logo da rimuovere.';return}
+      const old=studioIdentity.logo_storage_path;
+      const {error:ue}=await sb.from('studio_impostazioni').update({logo_storage_path:null,logo_file_name:null,logo_mime_type:null,updated_by:user.id}).eq('config_key','default');
+      if(ue)throw ue;
+      await sb.storage.from('studio-legale-documenti').remove([old]);
+      status.textContent='Logo rimosso.';await loadStudioIdentity();
+    }catch(e){status.textContent=e.message||'Errore nella rimozione del logo.'}
+  }
+
   window.sendPrivacyInformative = async function sendPrivacyInformative(id){
     const existing=document.getElementById('privacySendModal');
     if(existing) existing.remove();
@@ -179,7 +249,7 @@ async function saveInformative(id){try{const row={titolo:$('piTitolo').value.tri
 
   async function loadAll(){
     try{await ensureAccess();
-      const [t,r,b,i,c,pc,p,d,cl]=await Promise.all([
+      const [t,r,b,i,c,pc,p,d,cl,si]=await Promise.all([
         sb.from('studio_privacy_trattamenti').select('*').order('created_at',{ascending:false}),
         sb.from('studio_privacy_richieste').select('*').order('ricevuta_at',{ascending:false}),
         sb.from('studio_privacy_breach').select('*').order('rilevato_at',{ascending:false}),
@@ -188,20 +258,21 @@ async function saveInformative(id){try{const row={titolo:$('piTitolo').value.tri
         sb.from('studio_consensi_portale').select('*,studio_privacy_informative(titolo,versione)').eq('tipo','privacy').order('accepted_at',{ascending:false}),
         sb.from('studio_privacy_responsabili').select('*').order('created_at',{ascending:false}),
         sb.from('studio_privacy_dpia').select('*,studio_privacy_trattamenti(nome)').order('created_at',{ascending:false}),
-        sb.from('studio_clienti').select('id,user_id,full_name').order('full_name')
+        sb.from('studio_clienti').select('id,user_id,full_name').order('full_name'),
+        sb.from('studio_impostazioni').select('*').eq('config_key','default').maybeSingle()
       ]);
-      for(const x of [t,r,b,i,c,pc,p,d,cl])if(x.error)throw x.error;
-      clients=cl.data||[];
+      for(const x of [t,r,b,i,c,pc,p,d,cl,si])if(x.error)throw x.error;
+      clients=cl.data||[];studioIdentity=si.data||{};
       const clientByUser=new Map(clients.map(x=>[x.user_id,x]));
       const portalPrivacy=(pc.data||[]).map(x=>({...x,_portal:true,client_name:clientByUser.get(x.user_id)?.full_name||x.user_id}));
       renderTreatments(t.data||[]);renderRequests(r.data||[]);renderBreaches(b.data||[]);renderInformative(i.data||[]);renderConsensi([...(c.data||[]),...portalPrivacy]);renderProcessors(p.data||[]);renderDpia(d.data||[]);
-      msg('Gestione Privacy aggiornata.',true);
+      if($('privacyStudioIdentityForm')){ $('privacyStudioIdentityForm').innerHTML=studioIdentityForm(studioIdentity); bindStudioIdentityForm(); } msg('Gestione Privacy aggiornata.',true);
     }catch(e){console.error(e);msg(e.message||'Errore caricamento Privacy.')}
   }
 
   if(typeof STUDIO_HELP!=='undefined')STUDIO_HELP.privacy={title:'Gestione Privacy',intro:'Modulo operativo per organizzare i principali adempimenti privacy dello Studio.',steps:['Registro trattamenti: finalità, base giuridica, dati, interessati, destinatari, conservazione e sicurezza.','Informative: testo, versione, validità e stato. Solo le informative attive di tipo clienti vengono rese visibili nel Portale Clienti.','Consensi/prese visione: collega il cliente alla versione dell’informativa e conserva l’evidenza.','Responsabili: censisci fornitori e stato della nomina/contratto.','Richieste interessati: traccia identità, scadenze, risposta, proroghe ed evidenze.','DPIA: documenta necessità, rischi, misure, rischio residuo e riesami quando richiesto.','Data breach: documenta valutazione, decisione di notifica, notifiche e misure correttive.'],studio:'Strumento organizzativo: i testi delle informative, le basi giuridiche e le valutazioni devono essere parametrizzati ai trattamenti reali dello Studio e verificati professionalmente.',client:'Il Portale Clienti gestisce pratiche, documenti, comunicazioni e registra la presa visione dell’informativa privacy attiva.'};
 
-  const tabs=[['privacyTabTreatments','privacyTreatmentBox'],['privacyTabRequests','privacyRequestBox'],['privacyTabBreaches','privacyBreachBox'],['privacyTabInformative','privacyInformativeBox'],['privacyTabConsensi','privacyConsensiBox'],['privacyTabResponsabili','privacyResponsabiliBox'],['privacyTabDpia','privacyDpiaBox']];
+  const tabs=[['privacyTabTreatments','privacyTreatmentBox'],['privacyTabStudioIdentity','privacyStudioIdentityBox'],['privacyTabRequests','privacyRequestBox'],['privacyTabBreaches','privacyBreachBox'],['privacyTabInformative','privacyInformativeBox'],['privacyTabConsensi','privacyConsensiBox'],['privacyTabResponsabili','privacyResponsabiliBox'],['privacyTabDpia','privacyDpiaBox']];
   tabs.forEach(([a,b])=>{if($(a))$(a).onclick=()=>showBox(b)});
   if($('privacyNewTreatment'))$('privacyNewTreatment').onclick=()=>{showBox('privacyTreatmentBox');openForm('treatment')};
   if($('privacyNewRequest'))$('privacyNewRequest').onclick=()=>{showBox('privacyRequestBox');openForm('request')};
@@ -211,6 +282,7 @@ async function saveInformative(id){try{const row={titolo:$('piTitolo').value.tri
   if($('privacyNewProcessor'))$('privacyNewProcessor').onclick=()=>{showBox('privacyResponsabiliBox');openForm('processor')};
   if($('privacyNewDpia'))$('privacyNewDpia').onclick=()=>{showBox('privacyDpiaBox');openForm('dpia')};
   if($('privacyRefresh'))$('privacyRefresh').onclick=loadAll;
+  if($('privacyStudioIdentityRefresh'))$('privacyStudioIdentityRefresh').onclick=loadStudioIdentity;
   let privacyAuthLoading = false;
   async function refreshPrivacyFromAuth(){
     if(privacyAuthLoading) return;
