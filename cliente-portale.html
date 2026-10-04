@@ -90,6 +90,13 @@ let currentUser=null, currentClient=null, portalDocs=[], notifications=[], pract
 let activePrivacyNotice=null;
 
 function showPortal(){ $('portalView').classList.remove('hidden'); window.scrollTo(0,0); }
+function setTab(tab){
+  const valid=['home','practices','docs','sign','personal','privacy','practice'];
+  const target=valid.includes(tab)?tab:'home';
+  document.querySelectorAll('.tabPanel').forEach(panel=>panel.classList.toggle('hidden',panel.id!=='tab-'+target));
+  document.querySelectorAll('.tab').forEach(button=>button.classList.toggle('active',button.dataset.tab===target));
+  window.scrollTo(0,0);
+}
 function fmt(d){return d?new Date(d).toLocaleString('it-IT',{dateStyle:'short',timeStyle:'short'}):''}
 function fmtDate(d){return d?new Date(d).toLocaleDateString('it-IT'):''}
 function labelStatus(s){return ({da_firmare:'Da firmare',restituito:'Restituito',firmato:'Firmato',verificato:'Verificato',archiviato:'Archiviato',visualizzato:'Visualizzato',inviato:'Inviato',caricato:'Caricato'}[s]||s)}
