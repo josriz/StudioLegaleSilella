@@ -5,11 +5,7 @@
       return;
     }
 
-    const client = window.STUDIO_SUPABASE_CLIENT || (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(
-      window.STUDIO_SUPABASE_URL,
-      window.STUDIO_SUPABASE_PUBLISHABLE_KEY,
-      {auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
-    ));
+    const client = window.STUDIO_SUPABASE_CLIENT;
 
     const menu = document.querySelector('.sidebar-menu');
     const contentArea = document.querySelector('.content-area');
