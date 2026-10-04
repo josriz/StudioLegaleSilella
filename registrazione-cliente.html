@@ -98,15 +98,20 @@ $('signupForm').onsubmit=async e=>{
     if(data.session){
       const {error:bootError}=await sb.rpc('studio_bootstrap_cliente');
       if(bootError)throw bootError;
-      const {data:userData}=await sb.auth.getUser();
-      if(userData?.user)await sb.from('studio_clienti').update({full_name:name}).eq('user_id',userData.user.id);
-      location.replace('cliente-portale.html');
+      const {error:requestError}=await sb.rpc('studio_registra_richiesta_cliente',{p_customer_type:customerType,p_tax_id:taxId,p_vat_number:vat,p_request_description:description,p_privacy_notice_id:activePrivacyNotice.id,p_terms_accepted:!!$('termsConsent').checked,p_privacy_notice_seen:!!$('privacyConsent').checked});
+      if(requestError)throw requestError;
+      localStorage.removeItem('studio_onboarding_request_v1');
+      $('signupErr').textContent='Richiesta inviata allo Studio. L’accesso operativo resta sospeso fino alla valutazione e verifica.';
+      $('signupErr').className='status';
+      setTimeout(()=>location.replace('cliente-portale.html'),1800);
     }else{
-      $('signupErr').textContent='Account creato. Controlla la posta, conferma l’email e poi accedi all’Area Cliente.';
+      $('signupErr').textContent='Account creato. Conferma l’email dal messaggio ricevuto, poi accedi dall’Area Cliente usando questo stesso browser per inviare la richiesta salvata. La registrazione non equivale all’accettazione dell’incarico.';
+      $('signupErr').className='status';
     }
   }catch(err){$('signupErr').textContent=err.message}
   finally{$('signupBtn').disabled=false}
 };
+updateCustomerType();
 loadPrivacy();
 </script>
 </body>
