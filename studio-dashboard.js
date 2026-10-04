@@ -5,7 +5,8 @@
       return;
     }
 
-    const client = window.STUDIO_SUPABASE_CLIENT;
+    const client = window.getStudioSupabaseClient ? window.getStudioSupabaseClient() : window.STUDIO_SUPABASE_CLIENT;
+    if (!client) { console.error('[Studio Auth] Client Supabase Studio non disponibile.'); return; }
 
     const menu = document.querySelector('.sidebar-menu');
     const contentArea = document.querySelector('.content-area');
