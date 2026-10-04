@@ -34,6 +34,9 @@
   const docsFor=id=>state.docs.filter(d=>d.pratica_id===id);
   const practiceOptions=()=>'<option value="">— seleziona —</option>'+state.practices.map(p=>'<option value="'+p.id+'">'+esc(p.client_name)+' · '+esc(p.legal_area||'')+'</option>').join('');
   const isAdmin=()=>state.profile && ['studio','admin'].includes(state.profile.role);
+  const auditLabel=t=>({gemini_bozza_generata:'Bozza generata con IA',bozza_approvata:'Bozza approvata dallo Studio',lab_comunicazione_preparata:'Comunicazione LAB preparata',test_flow_created:'Flusso di test creato'}[t]||t||'Attivita');
+  const auditText=a=>{const d=a&&a.details||{};if(a.event_type==='gemini_bozza_generata')return 'Modalita LAB gratuita · Modello: '+(d.model||'IA gratuita');if(a.event_type==='bozza_approvata')return 'Bozza approvata · ID: '+(d.bozza_id||'—');if(a.event_type==='lab_comunicazione_preparata')return 'Destinatario: '+(d.recipient||'—')+' · Nessun invio reale';if(a.event_type==='test_flow_created')return 'Flusso Cliente → Studio · Cliente: '+(d.client_email||'—');return Object.keys(d).length?Object.entries(d).map(([k,v])=>k+': '+String(v)).join(' · '):'—'};
+  const auditPractice=a=>{const p=state.practices.find(x=>x.id===a.pratica_id);return p?(p.client_name||'Fascicolo')+' · '+(p.legal_area||''):(a.pratica_id?'Fascicolo di test':'—')};
 
   let studioAuthReady=false;
   async function refreshAll(){
@@ -64,7 +67,7 @@
   function renderDashboard(){
     const next=state.agenda.filter(a=>a.status==='da_fare' && new Date(a.starts_at)>=new Date()).slice(0,10);
     const recent=state.audit.slice(0,10);
-    panel('dashboard','<div class="grid-3" style="margin-bottom:20px"><div class="stat-card"><span>Fascicoli</span><h4>'+state.practices.length+'</h4></div><div class="stat-card"><span>Scadenze aperte</span><h4>'+state.agenda.filter(a=>a.status==='da_fare').length+'</h4></div><div class="stat-card"><span>Comunicazioni</span><h4>'+state.communications.length+'</h4></div></div><div class="card"><h3>Attività recenti reali</h3><table><thead><tr><th>Data</th><th>Evento</th><th>Pratica</th><th>Dettagli</th></tr></thead><tbody data-module-body>'+(recent.map(a=>'<tr><td>'+fmt(a.created_at)+'</td><td>'+esc(a.event_type||'—')+'</td><td>'+esc(a.pratica_id||'—')+'</td><td>'+esc(JSON.stringify(a.details||{}))+'</td></tr>').join('')||'<tr><td colspan="4">Nessun evento.</td></tr>')+'</tbody></table></div><div class="card"><h3>Prossime scadenze</h3><table><thead><tr><th>Data</th><th>Titolo</th><th>Stato</th></tr></thead><tbody>'+(next.map(a=>'<tr><td>'+fmt(a.starts_at)+'</td><td>'+esc(a.title)+'</td><td>'+esc(a.status)+'</td></tr>').join('')||'<tr><td colspan="3">Nessuna scadenza.</td></tr>')+'</tbody></table></div>');
+    panel('dashboard','<div class="grid-3" style="margin-bottom:20px"><div class="stat-card"><span>Fascicoli</span><h4>'+state.practices.length+'</h4></div><div class="stat-card"><span>Scadenze aperte</span><h4>'+state.agenda.filter(a=>a.status==='da_fare').length+'</h4></div><div class="stat-card"><span>Comunicazioni</span><h4>'+state.communications.length+'</h4></div></div><div class="card"><h3>Attività recenti reali</h3><table><thead><tr><th>Data</th><th>Attivita</th><th>Fascicolo</th><th>Dettagli</th></tr></thead><tbody data-module-body>'+(recent.map(a=>'<tr><td>'+fmt(a.created_at)+'</td><td>'+esc(auditLabel(a.event_type))+'</td><td>'+esc(auditPractice(a))+'</td><td>'+esc(auditText(a))+'</td></tr>').join('')||'<tr><td colspan="4">Nessun evento.</td></tr>')+'</tbody></table></div><div class="card"><h3>Prossime scadenze</h3><table><thead><tr><th>Data</th><th>Titolo</th><th>Stato</th></tr></thead><tbody>'+(next.map(a=>'<tr><td>'+fmt(a.starts_at)+'</td><td>'+esc(a.title)+'</td><td>'+esc(a.status)+'</td></tr>').join('')||'<tr><td colspan="3">Nessuna scadenza.</td></tr>')+'</tbody></table></div>');
   }
 
   function renderTeam(){
@@ -191,7 +194,7 @@
   }
 
   function renderArchive(){
-    panel('archive','<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h3>🗄️ Archivio Storico e Audit Trail</h3><div style="font-size:12px;color:#64748b">Dati reali da studio_audit</div></div><button class="btn btn-info" id="archiveRefresh">Aggiorna</button></div><table><thead><tr><th>Timestamp</th><th>Evento</th><th>Pratica</th><th>Utente</th><th>Dettagli</th></tr></thead><tbody data-module-body>'+(state.audit.map(a=>'<tr><td>'+fmt(a.created_at)+'</td><td>'+esc(a.event_type||'—')+'</td><td>'+esc(a.pratica_id||'—')+'</td><td>'+esc(a.actor_user_id||'—')+'</td><td>'+esc(JSON.stringify(a.details||{}))+'</td></tr>').join('')||'<tr><td colspan="5">Nessun evento.</td></tr>')+'</tbody></table></div>');
+    panel('archive','<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h3>🗄️ Archivio Storico e Audit Trail</h3><div style="font-size:12px;color:#64748b">Dati reali da studio_audit</div></div><button class="btn btn-info" id="archiveRefresh">Aggiorna</button></div><table><thead><tr><th>Data</th><th>Attivita</th><th>Fascicolo</th><th>Utente</th><th>Dettagli</th></tr></thead><tbody data-module-body>'+(state.audit.map(a=>'<tr><td>'+fmt(a.created_at)+'</td><td>'+esc(auditLabel(a.event_type))+'</td><td>'+esc(auditPractice(a))+'</td><td>'+esc(a.actor_user_id||'—')+'</td><td>'+esc(auditText(a))+'</td></tr>').join('')||'<tr><td colspan="5">Nessun evento.</td></tr>')+'</tbody></table></div>');
     document.getElementById('archiveRefresh').onclick=refreshAll;
   }
 
