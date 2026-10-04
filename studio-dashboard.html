@@ -2082,6 +2082,34 @@
             await showClientDetail(index);
         }
 
+        async function sendClientOnboardingDocument(index) {
+            const cl=(window.__studioClients||[])[index], client=getStudioClient();
+            if(!cl||!client)return;
+            const out=document.getElementById('onboardingActionStatus');
+            const file=document.getElementById('onboardingDocFile')?.files?.[0];
+            const kind=document.getElementById('onboardingDocKind')?.value||'altro';
+            if(!cl.user_id){if(out)out.textContent='Il cliente non ha ancora un accesso confermato al portale.';return;}
+            if(!file||file.type!=='application/pdf'){if(out)out.textContent='Seleziona un file PDF.';return;}
+            if(file.size>10*1024*1024){if(out)out.textContent='Il PDF supera il limite di 10 MB.';return;}
+            const {data:{user},error:userError}=await client.auth.getUser();
+            if(userError||!user){if(out)out.textContent='Sessione Studio non disponibile.';return;}
+            const path='studio/'+cl.id+'/onboarding/'+crypto.randomUUID()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+            if(out)out.textContent='Caricamento documento…';
+            const up=await client.storage.from('studio-legale-documenti').upload(path,file,{contentType:'application/pdf',upsert:false});
+            if(up.error){if(out)out.textContent='Upload non riuscito: '+up.error.message;return;}
+            const {data:doc,error}=await client.from('studio_portale_documenti').insert({
+              cliente_id:cl.id,sender_user_id:user.id,recipient_user_id:cl.user_id,file_name:file.name,
+              storage_path:path,mime_type:'application/pdf',size_bytes:file.size,direction:'studio_to_client',
+              document_kind:kind,status:'da_firmare',signature_mode:'download_upload',version:1,
+              notes:'Documentazione onboarding inviata dallo Studio'
+            }).select('id').single();
+            if(error){await client.storage.from('studio-legale-documenti').remove([path]);if(out)out.textContent='Registrazione documento non riuscita: '+error.message;return;}
+            await client.from('studio_notifiche').insert({recipient_user_id:cl.user_id,tipo:'documento_studio',titolo:'Nuovi documenti da firmare',messaggio:'Lo Studio ha inviato il documento: '+file.name,documento_id:doc.id});
+            if(out)out.textContent='PDF inviato al cliente.';
+            await loadClients();
+            await showClientDetail(index);
+        }
+
         async function verifyClientDocument(documentId) {
             const client=getStudioClient();
             if(!client)return;
@@ -2110,6 +2138,8 @@
             if(privacy){sendClientPrivacy(Number(privacy.dataset.clientIndex));return;}
             const verify=e.target.closest('.verify-client-doc');
             if(verify){verifyClientDocument(verify.dataset.documentId);}
+            const sendDoc=e.target.closest('.send-onboarding-doc');
+            if(sendDoc){sendClientOnboardingDocument(Number(sendDoc.dataset.clientIndex));}
         });
         document.getElementById('clientsRefresh')?.addEventListener('click',loadClients);
         document.querySelector('[onclick="switchTab(\'clients\', this)"]')?.addEventListener('click',()=>setTimeout(loadClients,0));
