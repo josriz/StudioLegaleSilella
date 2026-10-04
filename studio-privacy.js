@@ -1,6 +1,9 @@
-(function(){
+(async function(){
   'use strict';
-  const sb=window.getStudioSupabaseClient ? window.getStudioSupabaseClient() : window.STUDIO_SUPABASE_CLIENT;
+  let sb=window.getStudioSupabaseClient ? window.getStudioSupabaseClient() : window.STUDIO_SUPABASE_CLIENT;
+  if(!sb && window.studioSupabaseReady){
+    try{ sb=await window.studioSupabaseReady; }catch(error){ console.error('Client Supabase Studio non disponibile.',error); return; }
+  }
   if(!sb){ console.error('Client Supabase Studio non disponibile.'); return; }
   let user=null, clients=[], informatives=[], treatments=[];
   const $=id=>document.getElementById(id);
