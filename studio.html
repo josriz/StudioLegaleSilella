@@ -1672,7 +1672,50 @@
             showMatterDetail(index);
         }
 
-                function showMatterDetail(index) {
+                async function runMatterAIAnalysis(index) {
+            const matters=window.__studioMatters||[];
+            const m=matters[index];
+            if(!m)return;
+            const client=getStudioClient();
+            if(!client)return;
+            const status=document.getElementById('matterAiAnalysisStatus');
+            const btn=document.getElementById('matterAiAnalysisBtn');
+            if(btn)btn.disabled=true;
+            if(status)status.textContent='Analisi AI del fascicolo in corso…';
+            try{
+                const {data:{session}}=await client.auth.getSession();
+                if(!session)throw new Error('Sessione Studio non disponibile.');
+                const response=await fetch(window.STUDIO_SUPABASE_URL+'/functions/v1/studio-lexroom',{
+                    method:'POST',
+                    headers:{
+                        apikey:window.STUDIO_SUPABASE_PUBLISHABLE_KEY,
+                        Authorization:'Bearer '+session.access_token,
+                        'content-type':'application/json'
+                    },
+                    body:JSON.stringify({
+                        practiceId:m.id,
+                        action:'matter_ai',
+                        instructions:'Analizza il fascicolo e i documenti disponibili. Riassumi i fatti disponibili, evidenzia le questioni da approfondire, indica quali informazioni o documenti mancano e suggerisci le verifiche che il professionista deve eseguire. Non inventare fatti o fonti.'
+                    })
+                });
+                const out=await response.json().catch(()=>({}));
+                if(!response.ok||!out.ok)throw new Error(out.error||'Analisi AI non disponibile.');
+                if(out.analysis){
+                    m.analyses=m.analyses||[];
+                    m.analyses.unshift(out.analysis);
+                }
+                if(status)status.textContent='Analisi AI completata e archiviata nel fascicolo. Modello: '+(out.model||'—')+'.';
+                showMatterDetail(index);
+            }catch(error){
+                console.error('[Fascicolo AI] Analisi:',error);
+                if(status)status.textContent=error?.message||'Errore durante l’analisi AI.';
+            }finally{
+                const current=document.getElementById('matterAiAnalysisBtn');
+                if(current)current.disabled=false;
+            }
+        }
+
+        function showMatterDetail(index) {
             const detail = document.getElementById('matterDetail');
             const matters = window.__studioMatters || [];
             const m = matters[index];
@@ -1717,7 +1760,7 @@
                 '<div style="margin-top:8px"><strong>Descrizione</strong><div style="margin-top:5px;white-space:pre-wrap;font-size:13px">'+escapeMatter(m.description || 'Nessuna descrizione disponibile.')+'</div></div>' +
                 '<div style="margin-top:8px"><strong>Documenti associati ('+m.documents.length+')</strong>'+documentRows+'</div>' +
                 '<div style="margin-top:8px;padding:12px;background:#fff;border:1px solid #e2e8f0;border-radius:9px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><strong>🌐 Documenti del Portale collegati al fascicolo ('+(m.portalDocuments||[]).length+')</strong></div>'+portalDocumentRows+'</div>' +
-                '<div style="margin-top:8px"><strong>Analisi IA archiviate ('+m.analyses.length+')</strong> <button class="btn btn-info" type="button" onclick="openMatterLinkedModule(\'ai-generator\')">Gestisci IA</button>'+analysisRows+'</div>' +
+                '<div style="margin-top:8px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><strong>🔎 Analisi AI del fascicolo ('+m.analyses.length+')</strong><button class="btn btn-info" type="button" id="matterAiAnalysisBtn" onclick="runMatterAIAnalysis('+index+')">Analizza fascicolo con AI</button></div><div id="matterAiAnalysisStatus" style="font-size:12px;color:#64748b;margin-top:6px">L’AI analizza i dati e i documenti disponibili nel fascicolo e salva il risultato qui.</div>'+analysisRows+'</div>' +
                 '<div style="margin-top:8px"><strong>Bozze archiviate ('+m.drafts.length+')</strong> <button class="btn btn-info" type="button" onclick="openMatterLinkedModule(\'ai-generator\')">Apri Redazione IA</button>'+draftRows+'</div>' +
                 '<div style="margin-top:8px"><strong>✉️ Comunicazioni ('+(m.communications||[]).length+')</strong> <button class="btn btn-info" type="button" onclick="openMatterLinkedModule(\'pec-client\')">Gestisci comunicazioni</button>'+((m.communications||[]).length ? m.communications.map(x=>'<div class="matter-compact-row" style="padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px;font-size:13px"><strong>'+escapeMatter(x.channel||'comunicazione')+'</strong> · '+escapeMatter(x.subject||'Senza oggetto')+' · '+escapeMatter(x.status||'n/d')+'<div style="font-size:12px;color:#64748b">'+escapeMatter(x.recipient||'')+' · '+escapeMatter(x.sent_at?new Date(x.sent_at).toLocaleString('it-IT'):'')+'</div></div>').join('') : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessuna comunicazione associata.</div>')+'</div>' +
                 '<div style="margin-top:8px"><strong>🏛 Depositi PCT ('+(m.pct||[]).length+')</strong> <button class="btn btn-info" type="button" onclick="openMatterLinkedModule(\'pct-deposit\')">Gestisci PCT</button>'+((m.pct||[]).length ? m.pct.map(x=>'<div class="matter-compact-row" style="padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:7px;margin-top:6px;font-size:13px"><strong>'+escapeMatter(x.type||'Deposito')+'</strong> · '+escapeMatter(x.status||'n/d')+' · '+escapeMatter(x.subject||'')+'<div style="font-size:12px;color:#64748b">'+escapeMatter(x.recipient||'')+' · '+escapeMatter(x.file_names||'')+'</div></div>').join('') : '<div style="font-size:13px;color:#64748b;margin-top:6px">Nessun deposito PCT associato.</div>')+'</div>' +
@@ -1738,7 +1781,7 @@
             const btn = e.target.closest('.matter-detail-btn');
             if(btn) showMatterDetail(Number(btn.dataset.matterIndex));
         });
-        window.saveClientMatterStatus=saveClientMatterStatus; window.addClientAgendaEvent=addClientAgendaEvent; window.toggleClientAgendaEvent=toggleClientAgendaEvent; window.deleteClientAgendaEvent=deleteClientAgendaEvent; window.openMatterDocument=openMatterDocument; window.openMatterPortalDocument=openMatterPortalDocument; window.openMatterLinkedModule=openMatterLinkedModule; window.sendMatterPortalDocument=sendMatterPortalDocument;
+        window.saveClientMatterStatus=saveClientMatterStatus; window.addClientAgendaEvent=addClientAgendaEvent; window.toggleClientAgendaEvent=toggleClientAgendaEvent; window.deleteClientAgendaEvent=deleteClientAgendaEvent; window.openMatterDocument=openMatterDocument; window.openMatterPortalDocument=openMatterPortalDocument; window.openMatterLinkedModule=openMatterLinkedModule; window.sendMatterPortalDocument=sendMatterPortalDocument; window.runMatterAIAnalysis=runMatterAIAnalysis;
         document.getElementById('mattersRefresh')?.addEventListener('click', loadMatters);
         document.getElementById('mattersSearch')?.addEventListener('input', renderMatters);
         document.getElementById('mattersStatusFilter')?.addEventListener('change', renderMatters);
