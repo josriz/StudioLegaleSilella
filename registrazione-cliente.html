@@ -63,7 +63,7 @@ const STUDIO_SUPABASE_URL='https://dscinvstqizfxwrovsbb.supabase.co';
 const STUDIO_SUPABASE_PUBLISHABLE_KEY='sb_publishable_aVF8u7kXdbznCYQakC3NqQ_fJQkBZQ9';
 const sb=supabase.createClient(STUDIO_SUPABASE_URL,STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-client-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
-let activePrivacyNotice=null;
+let activePrivacyNotice=null;\nfunction updateCustomerType(){const company=$('customerType').value==='azienda';$('signupName').placeholder=company?'Ragione sociale':'Nome e cognome';$('signupTaxId').required=!company;$('signupVat').required=company;$('vatLabel').hidden=!company;$('signupVat').hidden=!company;$('signupTaxId').hidden=company;$('taxLabel').hidden=company;}\n$('customerType').addEventListener('change',updateCustomerType);
 async function loadPrivacy(){
   const today=new Date().toISOString().slice(0,10);
   const {data,error}=await sb.from('studio_privacy_informative').select('id,titolo,versione,contenuto,valida_dal,valida_al').eq('tipo','clienti').eq('stato','attiva').or('valida_dal.is.null,valida_dal.lte.'+today).or('valida_al.is.null,valida_al.gte.'+today).order('valida_dal',{ascending:false}).limit(1).maybeSingle();
