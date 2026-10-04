@@ -1,7 +1,7 @@
 (function(){
   'use strict';
-  const sb=window.STUDIO_SUPABASE_CLIENT;
-  if(!sb){ console.error('Client Supabase Studio non inizializzato da config.js.'); return; }
+  const sb=window.getStudioSupabaseClient ? window.getStudioSupabaseClient() : window.STUDIO_SUPABASE_CLIENT;
+  if(!sb){ console.error('Client Supabase Studio non disponibile.'); return; }
   let user=null, clients=[], informatives=[], treatments=[];
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
