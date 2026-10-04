@@ -47,6 +47,7 @@ button,input,select,textarea{font:inherit}.container{width:min(1160px,calc(100% 
         <p class="heroLead">Un ambiente professionale e riservato per gestire il rapporto con lo Studio: accedi al tuo spazio personale per documenti, pratiche e comunicazioni.</p>
         <div class="accessGrid">
           <div class="accessCard"><div style="display:flex;align-items:center;gap:15px"><div class="accessIcon">♙</div><div><h3>Area Cliente</h3><p>Il tuo spazio personale per documenti, richieste e notifiche.</p></div></div><button class="btn gold" id="openLoginHero">Accedi</button></div>
+          <div class="accessCard"><div style="display:flex;align-items:center;gap:15px"><div class="accessIcon">⚖</div><div><h3>Area Studio</h3><p>Gestione professionale di clienti, pratiche, documenti e comunicazioni.</p></div></div><button class="btn gold" id="openStudioHero">Accedi</button></div>
         </div>
         <div class="actions"><button class="btn outline" id="openRegister">Sono un nuovo cliente</button></div>
       </div>
@@ -71,7 +72,7 @@ button,input,select,textarea{font:inherit}.container{width:min(1160px,calc(100% 
 <div class="step"><div class="num">04</div><h3>Firma</h3><p>Scarica, firma e restituisci il documento oppure utilizza una procedura di firma online quando disponibile.</p></div>
 </div></div></section>
 <section class="section" id="sicurezza"><div class="container"><div class="infoCard" style="max-width:900px;margin:auto"><div class="eyebrow" style="color:#8a6a2e">Riservatezza</div><h2>Un ambiente personale e protetto.</h2><p class="sectionLead">L'accesso è autenticato e i documenti sono conservati in un'area privata. Le autorizzazioni vengono applicate anche lato database e archivio, non soltanto nell'interfaccia.</p></div></div></section>
-<footer class="footer"><div class="container footerInner"><div>© Studio Legale Silella · Portale Clienti</div><div><a href="#" onclick="openLegal('privacy');return false">Privacy</a><a href="#" onclick="openLegal('cookie');return false">Cookie</a><a href="#" onclick="openLegal('terms');return false">Termini</a></div></div></footer>
+<footer class="footer"><div class="container footerInner"><div>© Studio Legale Silella</div><div><a href="#" onclick="openLegal('privacy');return false">Privacy</a><a href="#" onclick="openLegal('cookie');return false">Cookie</a><a href="#" onclick="openLegal('terms');return false">Termini</a></div></div></footer>
 </div>
 
 
@@ -80,6 +81,7 @@ button,input,select,textarea{font:inherit}.container{width:min(1160px,calc(100% 
 function openLegal(type){const data={privacy:['Privacy','Il sito presenta le informazioni generali dello Studio e indirizza le aree riservate ai rispettivi accessi.'],cookie:['Cookie','Il sito utilizza esclusivamente tecnologie necessarie al funzionamento, salvo eventuali strumenti ulteriori indicati nella policy.'],terms:['Termini','Le aree riservate sono accessibili esclusivamente agli utenti autorizzati.']};document.getElementById('legalTitle').textContent=data[type]?.[0]||'Informazioni';document.getElementById('legalBody').textContent=data[type]?.[1]||'';document.getElementById('legalModal').classList.remove('hidden')}
 function closeLegal(){document.getElementById('legalModal').classList.add('hidden')}
 document.getElementById('openLoginHero')?.addEventListener('click',()=>location.href='cliente.html');
+document.getElementById('openStudioHero')?.addEventListener('click',()=>location.href='studio.html');
 document.getElementById('openRegister')?.addEventListener('click',()=>location.href='cliente.html');
 </script>
 </body>
