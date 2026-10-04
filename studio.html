@@ -781,6 +781,39 @@
             .studio-login-subtitle{margin-bottom:18px}
         }
 
+
+        /* DEMO GUIDATA DELLO STUDIO */
+        .studio-demo-hero{background:linear-gradient(135deg,rgba(15,23,42,.94),rgba(30,41,59,.86));color:#fff;border-radius:16px;padding:24px;box-shadow:0 14px 38px rgba(15,23,42,.18);margin-bottom:18px}
+        .studio-demo-hero h2{margin:0 0 7px;font-size:24px}
+        .studio-demo-hero p{margin:0;line-height:1.55;color:rgba(255,255,255,.86);font-size:13px}
+        .studio-demo-case{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:16px}
+        .studio-demo-case div{padding:11px 12px;border:1px solid rgba(255,255,255,.18);border-radius:10px;background:rgba(255,255,255,.08)}
+        .studio-demo-case strong{display:block;font-size:11px;color:rgba(255,255,255,.62);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+        .studio-demo-case span{font-size:13px;font-weight:700}
+        .studio-demo-step{position:relative;border:1px solid #e2e8f0;border-radius:14px;padding:18px 18px 16px;margin-bottom:12px;background:rgba(255,255,255,.92);box-shadow:0 5px 18px rgba(15,23,42,.06)}
+        .studio-demo-step-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+        .studio-demo-step-number{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 9px;border-radius:10px;background:#0f172a;color:#fff;font-weight:800;font-size:13px}
+        .studio-demo-step h3{margin:0;font-size:16px;color:#0f172a}
+        .studio-demo-step .studio-demo-time{font-size:11px;color:#64748b;margin-top:3px}
+        .studio-demo-step p{margin:10px 0 0;font-size:13px;line-height:1.55;color:#334155}
+        .studio-demo-say{margin-top:11px;padding:11px 13px;border-left:3px solid var(--accent);background:#fffbeb;border-radius:7px;font-size:12px;line-height:1.55;color:#78350f}
+        .studio-demo-action{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+        .studio-demo-action small{color:#64748b;font-size:11px}
+        .studio-demo-rule{margin-top:16px;padding:14px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:10px;font-size:12px;line-height:1.55;color:#1e3a8a}
+        .studio-demo-end{margin-top:18px;padding:18px;border:1px solid #bbf7d0;background:#f0fdf4;border-radius:14px}
+        .studio-demo-end h3{margin:0 0 9px;color:#166534}
+        .studio-demo-timeline{display:grid;gap:6px}
+        .studio-demo-timeline div{display:flex;gap:10px;font-size:12px;line-height:1.45}
+        .studio-demo-timeline strong{min-width:52px;color:#166534}
+        @media (max-width:900px){
+            .studio-demo-case{grid-template-columns:repeat(2,minmax(0,1fr))}
+        }
+        @media (max-width:600px){
+            .studio-demo-case{grid-template-columns:minmax(0,1fr)}
+            .studio-demo-step{padding:14px}
+            .studio-demo-step-top{align-items:flex-start}
+        }
+
 </style>
 </head>
 <body class="studio-auth-pending">
@@ -793,6 +826,7 @@
         <div class="sidebar-menu">
             <div class="menu-section-title">Studio</div>
             <a class="menu-item active" onclick="switchTab('dashboard', this)">📊 <span>Dashboard</span></a>
+             <a class="menu-item" onclick="switchTab('demo', this)">🧭 <span>Demo — Una giornata nello Studio</span></a>
             <div class="menu-section-title">Professionisti e Team</div>
             <a class="menu-item" onclick="switchTab('team', this)">⚖️ <span>Professionisti & Team</span></a>
             <div class="menu-section-title">Clienti</div>
@@ -836,6 +870,114 @@
 
         <div class="content-area">
 
+
+            <!-- DEMO GUIDATA: UNA GIORNATA NELLO STUDIO -->
+            <div id="panel-demo" class="panel">
+                <div class="studio-demo-hero">
+                    <div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.62);margin-bottom:6px">Demo guidata</div>
+                    <h2>🧭 Una giornata nello Studio Legale Silella</h2>
+                    <p>Una storia completa da raccontare a un professionista mentre si naviga nel gestionale: dall'arrivo del cliente alla gestione del fascicolo, fino alla revisione, approvazione e verifica dello storico.</p>
+                    <div class="studio-demo-case">
+                        <div><strong>Cliente</strong><span>Mario Rossi</span></div>
+                        <div><strong>Materia</strong><span>Diritto Civile</span></div>
+                        <div><strong>Controparte</strong><span>Test S.r.l.</span></div>
+                        <div><strong>Caso</strong><span>Controversia contrattuale</span></div>
+                    </div>
+                </div>
+
+                <div class="card" style="padding:16px">
+                    <h3 style="margin:0">🎤 Come usare questa demo</h3>
+                    <p style="margin-top:7px;font-size:13px;line-height:1.55;color:#475569">Non è un'altra procedura da imparare. È una storia da seguire davanti al professionista. Per ogni passaggio puoi leggere cosa dire, poi aprire la schermata reale del gestionale e mostrare la funzione.</p>
+                    <div class="studio-demo-rule"><strong>Regola della demo:</strong> il professionista decide sempre cosa fare. L'AI analizza e prepara bozze; il professionista verifica, modifica e approva. Nel progetto LAB attuale non viene effettuato alcun invio reale di email o PEC.</div>
+                </div>
+
+                <div class="studio-demo-step">
+                    <div class="studio-demo-step-top"><div style="display:flex;gap:11px;align-items:flex-start"><span class="studio-demo-step-number">1</span><div><h3>👤 Arriva Mario Rossi</h3><div class="studio-demo-time">08:30 · Registrazione del cliente</div></div></div></div>
+                    <p><strong>Cosa fai:</strong> apri Anagrafica Clienti e cerchi/crei Mario Rossi.</p>
+                    <div class="studio-demo-say"><strong>Cosa racconti:</strong> “Immaginiamo che siano le 8:30. Arriva un nuovo cliente. La segreteria lo registra e verifica i suoi dati. Da questo momento il cliente può essere collegato alle pratiche dello Studio.”</div>
+                    <div class="studio-demo-action"><button class="btn btn-info" type="button" onclick="demoNavigate('clients')">Apri Anagrafica Clienti</button></div>
+                </div>
+
+                <div class="studio-demo-step">
+                    <div class="studio-demo-step-top"><div style="display:flex;gap:11px;align-items:flex-start"><span class="studio-demo-step-number">2</span><div><h3>📁 Apriamo il fascicolo</h3><div class="studio-demo-time">08:40 · Creazione della pratica</div></div></div></div>
+                    <p><strong>Dati della demo:</strong> Mario Rossi · Civile · controparte Test S.r.l.</p>
+                    <div class="studio-demo-say"><strong>Cosa racconti:</strong> “Apriamo il fascicolo della controversia. Il fascicolo è il contenitore centrale della pratica: qui ritroveremo documenti, analisi, bozze e attività.”</div>
+                    <div class="studio-demo-action"><button class="btn btn-info" type="button" onclick="demoNavigate('matters')">Apri Fascicoli & Contenzioso</button></div>
+                </div>
+
+                <div class="studio-demo-step">
+                    <div class="studio-demo-step-top"><div style="display:flex;gap:11px;align-items:flex-start"><span class="studio-demo-step-number">3</span><div><h3>📄 Il cliente invia i documenti</h3><div class="studio-demo-time">09:00 · Portale Cliente → Fascicolo</div></div></div></div>
+                    <p><strong>Esempio:</strong> contratto, fattura, comunicazione della controparte e documentazione della controversia. Nella demo puoi mostrare il Portale Clienti e poi il fascicolo dello Studio.</p>
+                    <div class="studio-demo-say"><strong>Cosa racconti:</strong> “Il cliente lavora nella sua area e deposita i documenti. Lo Studio li ritrova collegati al cliente e, quando previsto, alla pratica. Il cliente non entra nell'Area Studio.”</div>
+                    <div class="studio-demo-action"><button class="btn btn-info" type="button" onclick="demoNavigate('client-portal')">Apri Portale Clienti</button><button class="btn" type="button" onclick="demoNavigate('matters')">Mostra Fascicolo</button></div>
+                </div>
+
+                <div class="studio-demo-step">
+                    <div class="studio-demo-step-top"><div style="display:flex;gap:11px;align-items:flex-start"><span class="studio-demo-step-number">4</span><div><h3>🔎 Analizziamo il fascicolo con l'AI</h3><div class="studio-demo-time">09:30 · Comprensione del caso</div></div></div></div>
+                    <p><strong>Cosa fai:</strong> apri il fascicolo di Mario Rossi e usa la funzione <strong>Analisi AI del fascicolo</strong>. L'AI riassume i fatti disponibili, evidenzia le questioni da approfondire e indica informazioni o documenti mancanti.</p>
+                    <div class="studio-demo-say"><strong>Cosa racconti:</strong> “Prima di chiedere all'AI di scrivere un atto, la usiamo per capire il materiale che abbiamo ricevuto. Il risultato è un supporto al professionista, non una decisione automatica.”</div>
+                    <div class="studio-demo-action"><button class="btn btn-info" type="button" onclick="demoNavigate('matters')">Apri il fascicolo e mostra Analisi AI</button></div>
+                </div>
+
+                <div class="studio-demo-step">
+                    <div class="studio-demo-step-top"><div style="display:flex;gap:11px;align-items:flex-start"><span class="studio-demo-step-number">5</span><div><h3>⚖️ Decidiamo di preparare un atto</h3><div class="studio-demo-time">10:00 · Decisione del professionista</div></div></div></div>
+                    <p><strong>Esempio:</strong> l'avvocato decide di preparare una comparsa di costituzione e risposta per un giudizio civile davanti al Tribunale di Bari.</p>
+                    <div class="studio-demo-say"><strong>Cosa racconti:</strong> “Non è l'AI a decidere quale atto fare. È il professionista che, dopo aver esaminato il fascicolo, sceglie l'attività. L'AI viene poi utilizzata per preparare una prima bozza.”</div>
+                    <div class="studio-demo-action"><button class="btn btn-info" type="button" onclick="demoNavigate('ai-generator')">Apri Redazione Atti AI</button></div>
+                </div>
+
+                <div class="studio-demo-step">
+                    <div class="studio-demo-step-top"><div style="display:flex;gap:11px;align-items:flex-start"><span class="studio-demo-step-number">6</span><div><h3>📝 Generiamo la bozza dell'atto</h3><div class="studio-demo-time">10:05 · Prima redazione AI</div></div></div></div>
+                    <p><strong>Istruzione demo:</strong> “Redigi una bozza di comparsa di costituzione e risposta per giudizio civile dinanzi al Tribunale di Bari, utilizzando esclusivamente le informazioni disponibili nel fascicolo.”</p>
+                    <div class="studio-demo-say"><strong>Cosa racconti:</strong> “L'AI prepara una prima bozza. Non la presentiamo come atto definitivo: deve essere letta e verificata integralmente dal professionista.”</div>
+                    <div class="studio-demo-action"><button class="btn btn-success" type="button" onclick="demoNavigate('ai-generator')">Mostra Redazione Atti AI</button></div>
+                </div>
+
+                <div class="studio-demo-step">
+                    <div class="studio-demo-step-top"><div style="display:flex;gap:11px;align-items:flex-start"><span class="studio-demo-step-number">7</span><div><h3>👨‍⚖️ Revisione e approvazione</h3><div class="studio-demo-time">10:30 · Controllo professionale</div></div></div></div>
+                    <p><strong>Cosa controlla l'avvocato:</strong> fatti, nomi, date, importi, richieste, riferimenti e coerenza con i documenti. Se necessario modifica la bozza. Quando è corretta, usa <strong>Approva bozza</strong>.</p>
+                    <div class="studio-demo-say"><strong>Cosa racconti:</strong> “Questo è il passaggio decisivo: l'AI prepara, il professionista verifica e decide. L'approvazione registra che la bozza è stata presa in carico dallo Studio.”</div>
+                    <div class="studio-demo-action"><button class="btn btn-info" type="button" onclick="demoNavigate('ai-generator')">Mostra la schermata di redazione</button></div>
+                </div>
+
+                <div class="studio-demo-step">
+                    <div class="studio-demo-step-top"><div style="display:flex;gap:11px;align-items:flex-start"><span class="studio-demo-step-number">8</span><div><h3>✉️ Prepariamo una comunicazione</h3><div class="studio-demo-time">11:00 · Lettera alla controparte</div></div></div></div>
+                    <p><strong>Esempio:</strong> l'avvocato decide di preparare una lettera alla controparte, con oggetto “Contestazione e richiesta di riscontro”. Inserisce le proprie istruzioni e chiede all'AI di preparare la bozza.</p>
+                    <div class="studio-demo-say"><strong>Cosa racconti:</strong> “Quando non serve un atto giudiziario ma una comunicazione professionale, utilizziamo Lettere & Comunicazioni AI. È una funzione distinta dalla Redazione Atti.”</div>
+                    <div class="studio-demo-action"><button class="btn btn-info" type="button" onclick="demoNavigate('communications-ai')">Apri Lettere & Comunicazioni AI</button></div>
+                </div>
+
+                <div class="studio-demo-step">
+                    <div class="studio-demo-step-top"><div style="display:flex;gap:11px;align-items:flex-start"><span class="studio-demo-step-number">9</span><div><h3>🧪 LAB: preparazione simulata</h3><div class="studio-demo-time">12:00 · Ambiente gratuito di prova</div></div></div></div>
+                    <p><strong>Importante:</strong> il LAB è separato dal percorso ordinario. Può essere mostrato per far vedere le possibilità di sperimentazione dell'AI, ma non va presentato come un canale di invio reale.</p>
+                    <div class="studio-demo-say"><strong>Cosa racconti:</strong> “Questa versione è gratuita e serve alla sperimentazione. Possiamo preparare una comunicazione LAB, ma non viene inviata realmente via email o PEC.”</div>
+                    <div class="studio-demo-action"><button class="btn btn-info" type="button" onclick="demoNavigate('lexroom')">Apri Lexroom AI — LAB</button></div>
+                </div>
+
+                <div class="studio-demo-step">
+                    <div class="studio-demo-step-top"><div style="display:flex;gap:11px;align-items:flex-start"><span class="studio-demo-step-number">10</span><div><h3>📋 Controlliamo lo storico</h3><div class="studio-demo-time">12:30 · Audit della pratica</div></div></div></div>
+                    <p><strong>Cosa mostri:</strong> gli eventi registrati durante il percorso, come fascicolo, analisi AI, bozza generata, approvazione e comunicazione preparata.</p>
+                    <div class="studio-demo-say"><strong>Cosa racconti:</strong> “Alla fine possiamo ricostruire cosa è successo sulla pratica. Lo storico serve al controllo dello Studio e non deve essere usato per simulare operazioni che non sono realmente avvenute.”</div>
+                    <div class="studio-demo-action"><button class="btn btn-info" type="button" onclick="demoNavigate('archive')">Apri Archivio & Audit</button></div>
+                </div>
+
+                <div class="studio-demo-end">
+                    <h3>🎯 La storia completa di Mario Rossi</h3>
+                    <div class="studio-demo-timeline">
+                        <div><strong>08:30</strong><span>Cliente registrato</span></div>
+                        <div><strong>08:40</strong><span>Fascicolo creato</span></div>
+                        <div><strong>09:00</strong><span>Documenti ricevuti</span></div>
+                        <div><strong>09:30</strong><span>Analisi AI del fascicolo</span></div>
+                        <div><strong>10:05</strong><span>Bozza dell'atto generata</span></div>
+                        <div><strong>10:30</strong><span>Revisione e approvazione del professionista</span></div>
+                        <div><strong>11:00</strong><span>Comunicazione professionale richiesta</span></div>
+                        <div><strong>11:10</strong><span>Bozza della comunicazione generata</span></div>
+                        <div><strong>12:00</strong><span>Preparazione simulata nel LAB</span></div>
+                        <div><strong>12:30</strong><span>Verifica dello storico e dell'Audit</span></div>
+                    </div>
+                    <div style="margin-top:12px;font-size:12px;color:#166534;line-height:1.55"><strong>Messaggio finale da lasciare al professionista:</strong> “Il cliente deposita i documenti, lo Studio gestisce il fascicolo, l'AI aiuta ad analizzare e preparare i contenuti, il professionista verifica e decide, e il sistema conserva lo storico delle attività.”</div>
+                </div>
+            </div>
 
             <!-- GESTIONE PRIVACY -->
             <div id="panel-privacy" class="panel">
