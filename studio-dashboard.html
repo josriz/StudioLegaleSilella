@@ -2013,7 +2013,7 @@
             if(consensiError)console.error(consensiError);
 
             const fields=[
-                ['Nome e cognome',cl.full_name],['Codice fiscale',cl.tax_id],['Email',cl.email],['Telefono',cl.phone],
+                ['Nome / ragione sociale',cl.full_name],['Tipologia cliente',cl.customer_type==='azienda'?'Azienda / professionista':'Persona fisica'],['Codice fiscale',cl.tax_id],['Partita IVA',cl.vat_number],['Email',cl.email],['Descrizione richiesta',cl.request_description],['Stato onboarding',cl.onboarding_status],['Nota Studio',cl.studio_decision_note],['Telefono',cl.phone],
                 ['Data di nascita',cl.birth_date],['Luogo di nascita',cl.birth_place],['Indirizzo',cl.address],
                 ['CAP',cl.postal_code],['Comune',cl.city],['Provincia',cl.province],['Stato',cl.country||cl.status],
                 ['PEC',cl.pec],['P.IVA',cl.vat_number],['IBAN',cl.iban]
