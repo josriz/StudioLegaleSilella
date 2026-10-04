@@ -92,7 +92,7 @@ $('signupForm').onsubmit=async e=>{
     if(customerType==='persona_fisica'&&!taxId)throw Error('Il codice fiscale è obbligatorio.');
     if(customerType==='azienda'&&!vat)throw Error('La Partita IVA è obbligatoria.');
     if(!$('privacyConsent').checked||!$('termsConsent').checked)throw Error('Conferma la presa visione dell’informativa e accetta i Termini di utilizzo.');
-    const {data,error}=await sb.auth.signUp({email,password,options:{data:{full_name:name}}});
+    const {data,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:'https://josriz.github.io/StudioLegaleSilella/cliente.html',data:{full_name:name}}});
     if(error)throw error;
     localStorage.setItem('studio_onboarding_request_v1',JSON.stringify({customer_type:customerType,tax_id:taxId,vat_number:vat,request_description:description,privacy_notice_id:activePrivacyNotice.id,terms_accepted:!!$('termsConsent').checked,privacy_notice_seen:!!$('privacyConsent').checked}));
     if(data.session){
