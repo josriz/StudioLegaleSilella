@@ -91,7 +91,7 @@ let activePrivacyNotice=null;
 
 function showPortal(){ $('portalView').classList.remove('hidden'); window.scrollTo(0,0); }\nfunction applyOnboardingGate(){
   const c=currentClient, enabled=c?.operational_enabled===true&&c?.onboarding_status==='abilitato';
-  const documentationOpen=['documentazione_da_completare','in_verifica'].includes(c?.onboarding_status);
+  const documentationOpen=enabled||['documentazione_da_completare','in_verifica'].includes(c?.onboarding_status);
   const banner=$('onboardingBanner');
   document.querySelectorAll('.tab[data-tab="practices"],.tab[data-tab="practice"]').forEach(b=>b.classList.toggle('hidden',!enabled));
   document.querySelectorAll('.tab[data-tab="docs"],.tab[data-tab="sign"],.tab[data-tab="personal"]').forEach(b=>b.classList.toggle('hidden',!documentationOpen));
