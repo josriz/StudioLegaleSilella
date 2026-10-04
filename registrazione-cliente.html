@@ -80,7 +80,7 @@ $('signupForm').onsubmit=async e=>{
     if(password.length<8)throw Error('La password deve contenere almeno 8 caratteri.');\n    if(!name||!description)throw Error('Compila tutti i campi obbligatori.');\n    if(customerType==='persona_fisica'&&!taxId)throw Error('Il codice fiscale è obbligatorio.');\n    if(customerType==='azienda'&&!vat)throw Error('La Partita IVA è obbligatoria.');\n    if(!$('privacyConsent').checked||!$('termsConsent').checked)throw Error('Conferma la presa visione dell’informativa e accetta i Termini di utilizzo.');
     const {data,error}=await sb.auth.signUp({email,password,options:{data:{full_name:name}}});
     if(error)throw error;
-    localStorage.setItem('studio_portal_consents_v1',JSON.stringify({privacy:!!$('privacyConsent').checked,terms:!!$('termsConsent').checked}));
+    localStorage.setItem('studio_onboarding_request_v1',JSON.stringify({customer_type:customerType,tax_id:taxId,vat_number:vat,request_description:description,privacy_notice_id:activePrivacyNotice.id,terms_accepted:!!$('termsConsent').checked,privacy_notice_seen:!!$('privacyConsent').checked}));
     if(data.session){
       const {error:bootError}=await sb.rpc('studio_bootstrap_cliente');
       if(bootError)throw bootError;
