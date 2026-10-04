@@ -87,7 +87,7 @@ body{margin:0}
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=20261004-6"></script>
+<script src="config.js?v=20261004-8"></script>
 <script>
 const sb=supabase.createClient(window.STUDIO_SUPABASE_URL,window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-client-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
@@ -100,31 +100,6 @@ async function loadPrivacy(){
   const el=$('privacySignupInfo');
   if(el)el.textContent=activePrivacyNotice?'Informativa privacy vigente disponibile.':'Informativa privacy vigente non disponibile: registrazione temporaneamente sospesa.';
 }
-function openAuth(mode='login'){
-  const loginBox=$('loginBox'),registerBox=$('registerBox');
-  if(!loginBox||!registerBox)return;
-  if(mode==='register'){
-    loginBox.style.display='none';
-    registerBox.classList.remove('hidden');
-    registerBox.style.display='block';
-  }else{
-    registerBox.style.display='none';
-    registerBox.classList.add('hidden');
-    loginBox.style.display='block';
-  }
-  $('loginErr').textContent='';
-  $('signupErr').textContent='';
-}
-$('showRegister').addEventListener('click',e=>{
-  e.preventDefault();
-  e.stopPropagation();
-  openAuth('register');
-});
-$('showLogin').addEventListener('click',e=>{
-  e.preventDefault();
-  e.stopPropagation();
-  openAuth('login');
-});
 $('forgotBtn').onclick=async()=>{
   const email=$('loginEmail').value.trim();
   if(!email){$('loginErr').textContent='Inserisci prima l’email.';return}
