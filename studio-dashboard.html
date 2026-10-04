@@ -1992,7 +1992,7 @@
             body.innerHTML=clients.length?clients.map((cl,i)=>{
                 const p=cl.practices[0];
                 const lawyers=[...new Map(cl.practices.filter(p=>p.owner?.full_name).map(p=>[p.owner_user_id,p.owner.full_name])).values()];
-                return '<tr><td><strong>'+esc(cl.full_name||'Cliente senza nome')+'</strong></td><td>'+esc(cl.tax_id||'—')+'</td><td>'+esc(lawyers.join(', ')||'Non assegnato')+'</td><td>'+cl.practices.length+'</td><td>'+esc(p?.created_at?new Date(p.created_at).toLocaleDateString('it-IT'):'—')+'</td><td><span class="badge-status status-sent">'+esc(p?.status||cl.status||'attivo')+'</span></td><td><button class="btn btn-info client-detail-btn" type="button" data-client-index="'+i+'">Apri</button></td></tr>';
+                const ob=cl.onboarding_status||'abilitato'; const obLabel=({nuova_richiesta:'Nuova richiesta',in_valutazione:'In valutazione',documentazione_da_completare:'Documenti da completare',in_verifica:'In verifica',abilitato:'Abilitato',rifiutato:'Rifiutato',sospeso:'Sospeso'})[ob]||ob; return '<tr><td><strong>'+esc(cl.full_name||'Cliente senza nome')+'</strong></td><td>'+esc(cl.customer_type==='azienda'?(cl.vat_number||'—'):(cl.tax_id||'—'))+'</td><td>'+esc(lawyers.join(', ')||'Non assegnato')+'</td><td>'+cl.practices.length+'</td><td>'+esc(p?.created_at?new Date(p.created_at).toLocaleDateString('it-IT'):'—')+'</td><td><span class="badge-status status-sent">'+esc(obLabel)+'</span></td><td><button class="btn btn-info client-detail-btn" type="button" data-client-index="'+i+'">Apri</button></td></tr>';
             }).join(''):'<tr><td colspan="6">Nessun cliente presente nella Rubrica dello Studio.</td></tr>';
         }
 
