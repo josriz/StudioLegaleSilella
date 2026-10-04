@@ -41,7 +41,7 @@ textarea{min-height:88px;resize:vertical}summary{cursor:pointer;font-size:12px}d
     <p class="subtitle">Registrati per accedere al portale dello Studio Legale Silella.</p>
     <form id="signupForm">
       <label for="customerType">Tipologia cliente</label><select id="customerType" required><option value="persona_fisica">Persona fisica</option><option value="azienda">Azienda / professionista</option></select>
-      <label for="signupName">Nome e cognome</label>
+      <label for="signupName" id="nameLabel">Nome e cognome</label>
       <input id="signupName" type="text" autocomplete="name" required placeholder="Nome e cognome">
       <label for="signupTaxId" id="taxLabel">Codice fiscale</label><input id="signupTaxId" type="text" required placeholder="Codice fiscale">
       <label for="signupVat" id="vatLabel" hidden>Partita IVA</label><input id="signupVat" type="text" placeholder="Partita IVA" hidden>
@@ -69,7 +69,7 @@ const STUDIO_SUPABASE_PUBLISHABLE_KEY='sb_publishable_aVF8u7kXdbznCYQakC3NqQ_fJQ
 const sb=supabase.createClient(STUDIO_SUPABASE_URL,STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-client-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 let activePrivacyNotice=null;
-function updateCustomerType(){const company=$('customerType').value==='azienda';$('signupName').placeholder=company?'Ragione sociale':'Nome e cognome';$('signupTaxId').required=!company;$('signupVat').required=company;$('vatLabel').hidden=!company;$('signupVat').hidden=!company;$('signupTaxId').hidden=company;$('taxLabel').hidden=company;}
+function updateCustomerType(){const company=$('customerType').value==='azienda';$('nameLabel').textContent=company?'Ragione sociale':'Nome e cognome';$('signupName').placeholder=company?'Ragione sociale':'Nome e cognome';$('signupTaxId').required=!company;$('signupVat').required=company;$('vatLabel').hidden=!company;$('signupVat').hidden=!company;$('signupTaxId').hidden=company;$('taxLabel').hidden=company;}
 $('customerType').addEventListener('change',updateCustomerType);
 async function loadPrivacy(){
   const today=new Date().toISOString().slice(0,10);
