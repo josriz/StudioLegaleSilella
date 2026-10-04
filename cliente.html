@@ -140,6 +140,36 @@ $('loginForm').onsubmit=async e=>{
     $('loginErr').textContent='Questo account è abilitato all’Area Studio e non può entrare nell’Area Cliente.';
     return;
   }
+  // Completa la richiesta salvata localmente quando Supabase richiede prima la conferma email.
+  const pendingRaw=localStorage.getItem('studio_onboarding_request_v1');
+  if(pendingRaw){
+    let pending;
+    try{pending=JSON.parse(pendingRaw)}catch(_){pending=null}
+    if(pending && pending.customer_type && pending.request_description && pending.privacy_notice_id){
+      $('loginErr').textContent='Invio della richiesta allo Studio in corso…';
+      $('loginErr').className='studio-login-error';
+      $('loginBtn').disabled=true;
+      const {error:requestError}=await sb.rpc('studio_registra_richiesta_cliente',{
+        p_customer_type:pending.customer_type,
+        p_tax_id:pending.tax_id||'',
+        p_vat_number:pending.vat_number||'',
+        p_request_description:pending.request_description,
+        p_privacy_notice_id:pending.privacy_notice_id,
+        p_terms_accepted:pending.terms_accepted===true,
+        p_privacy_notice_seen:pending.privacy_notice_seen===true
+      });
+      $('loginBtn').disabled=false;
+      if(requestError){
+        $('loginErr').textContent='Accesso effettuato, ma la richiesta non è ancora stata inviata allo Studio: '+requestError.message+'. Non ripetere la registrazione; riprova l’accesso o contatta lo Studio.';
+        return;
+      }
+      localStorage.removeItem('studio_onboarding_request_v1');
+      $('loginErr').textContent='✓ Richiesta inviata correttamente allo Studio. È in attesa di valutazione; l’invio non comporta l’accettazione dell’incarico.';
+      $('loginErr').className='studio-login-error ok';
+      setTimeout(()=>location.replace('cliente-portale.html'),1800);
+      return;
+    }
+  }
   location.replace('cliente-portale.html');
 };
 loadPrivacy();
