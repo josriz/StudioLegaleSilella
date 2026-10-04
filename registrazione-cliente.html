@@ -70,7 +70,7 @@ async function loadPrivacy(){
   if(error){console.error('Informativa privacy:',error);return}
   activePrivacyNotice=data||null;
   const el=$('privacySignupInfo');
-  if(el)el.textContent=activePrivacyNotice?'Informativa privacy vigente disponibile.':'Informativa privacy vigente non disponibile: registrazione temporaneamente sospesa.';
+  if(el)el.textContent=activePrivacyNotice?'Informativa vigente: '+activePrivacyNotice.titolo+' · versione '+activePrivacyNotice.versione+'. Leggila prima di inviare la richiesta.':'Informativa privacy vigente non disponibile: registrazione temporaneamente sospesa.';\n  const pc=$('privacyContent');if(pc)pc.textContent=activePrivacyNotice?(activePrivacyNotice.contenuto||'Contenuto non disponibile.'):'Informativa non disponibile.';\n  $('signupBtn').disabled=!activePrivacyNotice;
 }
 $('signupForm').onsubmit=async e=>{
   e.preventDefault();$('signupErr').textContent='';$('signupBtn').disabled=true;
