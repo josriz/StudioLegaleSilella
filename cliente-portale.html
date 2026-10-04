@@ -423,6 +423,16 @@ async function enterPortal(){
   if(roleError||profile?.role!=='cliente'){await sb.auth.signOut();location.replace('cliente.html');return}
   try{
     await bootstrap();
+    const pendingRaw=localStorage.getItem('studio_onboarding_request_v1');
+    if(pendingRaw){
+      try{
+        const draft=JSON.parse(pendingRaw);
+        const {error:requestError}=await sb.rpc('studio_registra_richiesta_cliente',{p_customer_type:draft.customer_type,p_tax_id:draft.tax_id||null,p_vat_number:draft.vat_number||null,p_request_description:draft.request_description,p_privacy_notice_id:draft.privacy_notice_id,p_terms_accepted:draft.terms_accepted===true,p_privacy_notice_seen:draft.privacy_notice_seen===true});
+        if(requestError)throw requestError;
+        localStorage.removeItem('studio_onboarding_request_v1');
+        await loadClient();
+      }catch(requestError){console.error('Invio richiesta onboarding:',requestError);}
+    }
     showPortal();
     await loadAll();
   }catch(e){
