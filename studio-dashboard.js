@@ -86,47 +86,10 @@
 
     const body = document.getElementById('studioPracticesBody');
     const status = document.getElementById('studioAuthStatus');
-    const loginModal = document.createElement('div');
-    loginModal.id = 'studioLoginModal';
-    loginModal.className = 'studio-login-overlay';
-    loginModal.innerHTML = `
-      <div class="studio-login-card">
-        <div class="studio-login-logo-wrap">
-          <img class="studio-login-logo" src="Logo_Studio_Silella.jpg" alt="Studio Legale Silella" onerror="this.src='Logo_Studio_Silella.webp'">
-        </div>
-        <div class="studio-login-kicker">AREA RISERVATA</div>
-        <h2>Accesso Studio</h2>
-        <p class="studio-login-subtitle">Accedi all'area professionale dello Studio Legale Silella.</p>
-        <form id="studioLoginForm">
-          <label for="studioLoginEmail">Email</label>
-          <input id="studioLoginEmail" type="email" autocomplete="username" required placeholder="La tua email">
-          <label for="studioLoginPassword">Password</label>
-          <input id="studioLoginPassword" type="password" autocomplete="current-password" required placeholder="La tua password">
-          <div id="studioLoginError" class="studio-login-error"></div>
-          <button id="studioLoginSubmit" type="submit" class="studio-login-submit">Accedi all'Area Studio</button>
-        </form>
-        <div class="studio-login-footer">Accesso riservato ai professionisti autorizzati</div>
-      </div>
-    `;
-    document.body.appendChild(loginModal);
-
     function esc(v) {
       return String(v ?? '').replace(/[&<>"']/g, c => ({
         '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
       }[c]));
-    }
-
-    let studioAccessGranted = false;
-
-    function showLogin() {
-      document.getElementById('studioLoginError').textContent = '';
-      document.getElementById('studioLoginPassword').value = '';
-      loginModal.style.display = 'flex';
-      setTimeout(() => document.getElementById('studioLoginEmail').focus(), 50);
-    }
-
-    function hideLogin() {
-      loginModal.style.display = 'none';
     }
 
     async function getAuthorizedStudioUser(user) {
@@ -148,33 +111,19 @@
     }
 
     async function ensureAuth() {
-      if (!studioAccessGranted) {
-        showLogin();
-        return null;
-      }
-
       const { data: { user }, error } = await client.auth.getUser();
-      if (user) {
-        const authorizedUser = await getAuthorizedStudioUser(user);
-        if (authorizedUser) return authorizedUser;
-
-        await client.auth.signOut();
-        studioAccessGranted = false;
-        const errorBox = document.getElementById('studioLoginError');
-        if (errorBox) errorBox.textContent = 'Questo account non è autorizzato all’Area Studio.';
-        showLogin();
+      if (error || !user) {
+        location.replace('studio.html');
         return null;
       }
-
-      // Nessuna sessione: AuthSessionMissingError è normale al primo accesso.
-      // In questo caso apriamo il login invece di trattarlo come errore applicativo.
-      if (error && error.name !== 'AuthSessionMissingError') {
-        console.error(error);
-        status.textContent = 'Errore autenticazione: ' + (error.message || error.name || 'errore sconosciuto');
+      const authorizedUser = await getAuthorizedStudioUser(user);
+      if (!authorizedUser) {
+        await client.auth.signOut();
+        location.replace('studio.html');
+        return null;
       }
-
-      showLogin();
-      return null;
+      document.body.classList.remove('studio-auth-pending');
+      return authorizedUser;
     }
 
     async function loadPractices() {
@@ -293,43 +242,6 @@
       });
     }
 
-    document.getElementById('studioLoginForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const email = document.getElementById('studioLoginEmail').value.trim();
-      const password = document.getElementById('studioLoginPassword').value;
-      const errorBox = document.getElementById('studioLoginError');
-      const button = document.getElementById('studioLoginSubmit');
-
-      errorBox.textContent = '';
-      button.disabled = true;
-      button.textContent = 'Accesso in corso…';
-
-      const { data: authData, error } = await client.auth.signInWithPassword({ email, password });
-
-      button.disabled = false;
-      button.textContent = 'Accedi';
-
-      if (error) {
-        errorBox.textContent = 'Accesso non riuscito: ' + (error?.message || error?.name || 'errore autenticazione');
-        console.error(error);
-        return;
-      }
-
-      const authorizedUser = await getAuthorizedStudioUser(authData?.user);
-      if (!authorizedUser) {
-        await client.auth.signOut();
-        studioAccessGranted = false;
-        errorBox.textContent = 'Accesso negato: questo account non è autorizzato all’Area Studio.';
-        return;
-      }
-
-      studioAccessGranted = true;
-      document.body.classList.remove('studio-auth-pending');
-      hideLogin();
-      await loadPractices();
-    });
-
     document.getElementById('studioRefresh').addEventListener('click', loadPractices);
 
     document.getElementById('studioLogout').addEventListener('click', async () => {
@@ -352,24 +264,11 @@
       await loadPractices();
     });
 
-    // Il login deve essere sempre visibile all'apertura della pagina.
-    // Non usiamo una sessione locale già presente per saltare il gate:
-    // l'accesso viene verificato esplicitamente con email e password.
-    studioAccessGranted = false;
-    document.body.classList.add('studio-auth-pending');
-    showLogin();
+    const initialUser = await ensureAuth();
+    if (initialUser) {
+      await loadPractices();
+    }
 
-    client.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        studioAccessGranted = false;
-        document.body.classList.add('studio-auth-pending');
-        showLogin();
-      }
-      if (!session && panel.classList.contains('active')) {
-        status.textContent = 'Sessione chiusa.';
-        body.innerHTML = '<tr><td colspan="8">Effettua nuovamente l’accesso per visualizzare le pratiche.</td></tr>';
-      }
-    });
   };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
