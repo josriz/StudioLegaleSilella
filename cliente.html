@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- Pages deploy: landing principale -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Portale Cliente dello Studio Legale Silella: pratiche, documenti, comunicazioni e firma.">
-<title>Studio Legale Silella | Area Cliente</title>
+<meta name="description" content="Accesso riservato all'Area Cliente dello Studio Legale Silella.">
+<title>Studio Legale Silella | Login Cliente</title>
 <style>
 :root{--navy:#0c1730;--navy2:#162746;--gold:#c7a15a;--gold2:#e4c985;--ink:#172033;--muted:#68748a;--line:#e5e9f0;--bg:#f5f7fb;--white:#fff;--ok:#137a4b;--danger:#b42318;--shadow:0 24px 70px rgba(12,23,48,.12)}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}.hidden{display:none!important}
@@ -25,7 +24,6 @@ button,input,select,textarea{font:inherit}.container{width:min(1160px,calc(100% 
 @media(max-width:850px){.brand img{width:235px;height:74px}.heroGrid,.authCard{grid-template-columns:1fr}.hero{min-height:auto}.heroGrid{padding:55px 0 75px}.cards,.steps{grid-template-columns:1fr 1fr}.heroCard{margin-top:10px}}
 @media(max-width:600px){.topbar{min-height:0;padding:10px 12px;display:grid;grid-template-columns:1fr auto;grid-template-areas:"brand tools" "info info";align-items:center;gap:8px 10px}.topbrandLogo{grid-area:brand;width:145px;height:58px}.topbrandInfo{grid-area:info;border-left:0;border-top:1px solid rgba(228,201,133,.25);padding:8px 0 0;display:flex;gap:2px;font-size:10px;line-height:1.35}.topbrandInfo strong{font-size:15px}.topbrandInfo div{max-width:none;white-space:normal;overflow-wrap:anywhere}.userTools{grid-area:tools;align-self:center;gap:6px}.userTools .btn,.userTools .iconBtn{padding:8px 10px}.brand img{width:205px;height:66px}.container{width:min(100% - 24px,1160px)}.navlinks a{display:none}.hero h1{font-size:44px}.cards,.steps,.grid2,.accessGrid{grid-template-columns:1fr}.topbrand span{display:none}.portalMain{width:calc(100% - 20px)}.welcome{padding:23px;display:block}.welcome h1{font-size:28px}.doc{align-items:flex-start;flex-direction:column}.doc .actions{margin-top:0}}
 </style>
-
 <style id="client-login-glass-final">
 .authWrap.studio-login-overlay{display:flex;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;padding:18px;overflow:auto;background:linear-gradient(135deg,rgba(8,18,36,.62),rgba(15,23,42,.34)),url('loghi_sfondi/stanza_vetro.jpg') center center/cover no-repeat}
 .authCard.studio-login-card{width:min(440px,100%);padding:24px 30px 18px;border:1px solid rgba(255,255,255,.58);border-radius:24px;background:linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.10));box-shadow:0 28px 80px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.55);backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%);color:#fff}
@@ -56,7 +54,10 @@ button,input,select,textarea{font:inherit}.container{width:min(1160px,calc(100% 
 .client-login-links{margin-top:9px}
 }
 </style>
-
+<style>
+body{margin:0}
+.authWrap{display:flex!important;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;padding:18px;overflow:auto;background:linear-gradient(135deg,rgba(8,18,36,.62),rgba(15,23,42,.34)),url('loghi_sfondi/stanza_vetro.jpg') center/cover no-repeat}
+</style>
 </head>
 <body>
 <div id="authView" class="authWrap studio-login-overlay hidden">
@@ -86,387 +87,61 @@ button,input,select,textarea{font:inherit}.container{width:min(1160px,calc(100% 
     <div class="studio-login-footer">Accesso riservato ai Clienti autorizzati</div>
   </div>
 </div>
-
-<div id="portalView" class="portal">
-<header class="topbar"><div class="topbrand"><div class="topbrandLogo"><img src="Logo_Studio_Silella.jpg" alt="Logo Studio Silella" onerror="this.src='Logo_Studio_Silella.webp'"></div><div class="topbrandInfo"><strong>Area Cliente</strong><div><b>Indirizzo:</b> <a href="https://www.google.com/maps/place//data=!4m2!3m1!1s0x1347e92071d0a127:0xdb64afce79c3e7c5?sa=X&amp;ved=1t:8290&amp;ictx=111" target="_blank" rel="noopener">Viale Antonio Salandra, 10/C, 70124 Bari BA</a></div><div><b>Telefono:</b> <a href="tel:+390809146254">080 914 6254</a></div></div></div><div class="userTools"><button class="iconBtn" id="bellBtn" title="Notifiche">🔔<span id="bellCount" class="bellCount hidden">0</span></button><button class="btn outline helpBtn" id="clientHelpBtn" title="Aiuto">?</button><button class="btn outline" id="logoutBtn">Esci</button></div></header>
-<main class="portalMain">
-<section class="welcome"><div><div class="eyebrow">Area riservata</div><h1 id="welcomeName">Benvenuto</h1><p>Qui trovi pratiche, documenti, richieste e comunicazioni dello Studio.</p></div><div><button class="btn light" id="newPracticeBtn">+ Nuova richiesta</button></div></section>
-<div class="tabs"><button class="tab active" data-tab="home">Panoramica</button><button class="tab" data-tab="practices">Le mie pratiche</button><button class="tab" data-tab="docs">Documenti</button><button class="tab" data-tab="sign">Da firmare</button><button class="tab" data-tab="personal">Dati personali</button><button class="tab" data-tab="privacy">Privacy</button><button class="tab" data-tab="practice">Nuova pratica</button></div>
-<section id="tab-home" class="tabPanel"><div class="cards" style="margin-top:0"><div class="infoCard"><div class="icon">▣</div><h3 id="statDocs">0</h3><p>Documenti nel portale</p></div><div class="infoCard"><div class="icon">✎</div><h3 id="statSign">0</h3><p>Documenti da firmare</p></div><div class="infoCard"><div class="icon">●</div><h3 id="statPractice">0</h3><p>Pratiche visibili</p></div></div><div class="panel" id="privacyClientCard"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><h2 style="margin:0">Privacy</h2><p id="privacyClientSummary" class="status" style="margin:6px 0 0">Informativa privacy vigente.</p></div><button class="btn outline" id="privacyClientView" type="button">Visualizza informativa</button></div></div><div class="panel"><h2>Ultime attività</h2><div id="recentActivity" class="fileList"><div class="empty">Nessuna attività recente.</div></div></div></section>
-<section id="tab-docs" class="tabPanel hidden"><div class="panel"><h2>Documenti</h2><p class="status">Il fascicolo personale deve contenere i documenti identificativi richiesti dallo Studio. I documenti della pratica restano collegati alla relativa pratica.</p><div class="notice" style="margin-top:14px"><b>Documenti identificativi:</b> carica carta d'identità e tessera sanitaria/codice fiscale. Per la carta d'identità sono richiesti fronte e retro.</div><div class="grid2" style="margin-top:16px"><div class="field"><label>Carta d'identità · fronte *</label><input id="identityFront" type="file" accept="application/pdf,image/jpeg,image/png,image/webp"></div><div class="field"><label>Carta d'identità · retro *</label><input id="identityBack" type="file" accept="application/pdf,image/jpeg,image/png,image/webp"></div><div class="field"><label>Numero documento *</label><input id="identityNumber" autocomplete="off"></div><div class="field"><label>Data rilascio *</label><input id="identityIssueDate" type="date"></div><div class="field"><label>Data scadenza *</label><input id="identityExpiryDate" type="date"></div><div class="field"><label>Ente / luogo di rilascio *</label><input id="identityIssuer"></div><div class="field"><label>Tessera sanitaria / codice fiscale *</label><input id="healthCardFile" type="file" accept="application/pdf,image/jpeg,image/png,image/webp"></div><div class="field"><label>Numero tessera / codice fiscale *</label><input id="healthCardNumber" autocomplete="off"></div></div><div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn gold" id="uploadIdentityBtn" type="button">Salva documenti identificativi</button><button class="btn outline" id="uploadOtherBtn" type="button">+ Invia altro documento personale</button><input id="otherPersonalFiles" type="file" multiple hidden></div><div id="identityStatus" class="status" style="margin-top:10px"></div><div id="docsList" class="fileList" style="margin-top:18px"></div></div></section>
-<section id="tab-sign" class="tabPanel hidden"><div class="panel"><h2>Documenti da firmare</h2><p class="status">Per la firma digitale qualificata o per una firma online esterna il portale potrà essere collegato al prestatore scelto dallo Studio. Non viene simulata una firma digitale.</p><div id="signList" class="fileList" style="margin-top:18px"></div></div></section>
-<section id="tab-privacy" class="tabPanel hidden"><div class="panel"><h2>Privacy</h2><p id="privacyPortalStatus" class="status">Caricamento stato privacy…</p><div id="privacyHistory" class="fileList" style="margin-top:16px"></div><div class="notice" style="margin-top:16px">L’informativa vigente viene resa disponibile dallo Studio. Quando richiesta, il documento firmato viene restituito attraverso la sezione “Da firmare”.</div></div></section>
-<section id="tab-personal" class="tabPanel hidden"><div class="panel"><h2>I tuoi dati</h2><p class="status">Completa i dati anagrafici di base del fascicolo Cliente. PEC, P.IVA e IBAN restano condizionati al caso concreto.</p><form id="profileForm"><div class="grid2"><div class="field"><label>Nome e cognome *</label><input id="pName" required></div><div class="field"><label>Codice fiscale *</label><input id="pTax" required></div><div class="field"><label>Email *</label><input id="pEmail" type="email" disabled></div><div class="field"><label>Telefono *</label><input id="pPhone" required></div><div class="field"><label>Data di nascita *</label><input id="pBirthDate" type="date" required></div><div class="field"><label>Luogo di nascita *</label><input id="pBirthPlace" required></div><div class="field"><label>Indirizzo *</label><input id="pAddress" required></div><div class="field"><label>CAP *</label><input id="pPostal" required></div><div class="field"><label>Comune *</label><input id="pCity" required></div><div class="field"><label>Provincia *</label><input id="pProvince" required></div><div class="field"><label>Stato di residenza *</label><input id="pCountry" required></div><div class="field"><label>PEC (se necessaria)</label><input id="pPec" type="email"></div><div class="field"><label>P.IVA (se applicabile)</label><input id="pVat"></div><div class="field"><label>IBAN (solo se richiesto)</label><input id="pIban"></div></div><div id="profileStatus" class="status"></div><button class="btn" id="profileSave">Salva dati</button></form></div></section>
-<section id="tab-practices" class="tabPanel hidden"><div class="panel"><h2>Le mie pratiche</h2><p class="status">Qui puoi controllare lo stato della pratica, gli aggiornamenti pubblicati dallo Studio, le udienze e le altre attività rese visibili.</p><div id="practiceStatusList" class="fileList"></div></div></section>
-<section id="tab-practice" class="tabPanel hidden"><div class="panel"><h2>Nuova pratica / richiesta</h2><p class="status">Invia allo Studio i dati essenziali e gli eventuali documenti.</p><form id="practiceForm"><div class="grid2"><div class="field"><label>Nome e cognome / Ragione sociale</label><input id="clientName" required></div><div class="field"><label>Codice fiscale / P.IVA</label><input id="taxId" required></div><div class="field"><label>Area legale</label><select id="legalArea"><option>Diritto Civile & Contenzioso</option><option>Diritto Immobiliare & Condominiale</option><option>Diritto del Lavoro & Previdenza</option><option>Recupero Crediti & Esecuzioni</option><option>Diritto di Famiglia & Successioni</option><option>Altro</option></select></div><div class="field"><label>Controparte</label><input id="counterparty"></div></div><div class="field"><label>Esposizione dei fatti / richiesta</label><textarea id="description" required></textarea></div><div class="field"><label>Documenti da allegare</label><input id="clientFiles" type="file" multiple><div class="status">PDF, immagini e Word · massimo 10 MB per file.</div></div><div id="submitStatus" class="status"></div><button class="btn" id="submitBtn">Trasmetti allo Studio</button></form></div><div class="panel"><h2>Le mie pratiche</h2><div id="practiceList" class="fileList"></div></div></section>
-</main>
-</div>
-
-<div id="notifyModal" class="modal hidden"><div class="modalBox"><div class="modalHead"><h2>Notifiche</h2><button class="iconBtn" id="closeNotify">✕</button></div><div id="notificationList" style="margin-top:15px"></div><button class="btn outline" id="markAllRead" style="margin-top:14px">Segna tutte come lette</button></div></div>
-<div id="legalModal" class="modal hidden"><div class="modalBox"><div class="modalHead"><h2 id="legalTitle">Informazioni</h2><button class="iconBtn" onclick="closeLegal()">✕</button></div><div id="legalBody" class="status" style="margin-top:15px;line-height:1.7"></div></div></div>
-<div id="clientHelpModal" class="modal helpModal hidden"><div class="modalBox"><div class="modalHead"><h2 id="clientHelpTitle">Aiuto Area Cliente</h2><button class="iconBtn" id="closeClientHelp">✕</button></div><div id="clientHelpBody" style="margin-top:15px"></div></div></div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=20261002-6"></script>
+<script src="config.js?v=20261004-6"></script>
 <script>
 const sb=supabase.createClient(window.STUDIO_SUPABASE_URL,window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-client-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-const FN=window.STUDIO_SUPABASE_URL+'/functions/v1/studio-ricevi-pratica';
-const BUCKET='studio-legale-documenti';
 const $=id=>document.getElementById(id);
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let currentUser=null, currentClient=null, portalDocs=[], notifications=[], practices=[], practiceEvents=[], privacyConsents=[];
 let activePrivacyNotice=null;
-
-function show(view){
-  ['authView','portalView'].forEach(id=>$(id).classList.add('hidden'));
-  $(view).classList.remove('hidden');
-  window.scrollTo(0,0);
-}
-function openAuth(mode='login'){show('authView');$('loginBox').classList.toggle('hidden',mode!=='login');$('registerBox').classList.toggle('hidden',mode==='login')}
-function setTab(tab){
-  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
-  document.querySelectorAll('.tabPanel').forEach(p=>p.classList.add('hidden'));
-  $('tab-'+tab).classList.remove('hidden');
-}
-function fmt(d){return d?new Date(d).toLocaleString('it-IT',{dateStyle:'short',timeStyle:'short'}):''}
-function fmtDate(d){return d?new Date(d).toLocaleDateString('it-IT'):''}
-function labelStatus(s){return ({da_firmare:'Da firmare',restituito:'Restituito',firmato:'Firmato',verificato:'Verificato',archiviato:'Archiviato',visualizzato:'Visualizzato',inviato:'Inviato',caricato:'Caricato'}[s]||s)}
-function labelMode(s){return ({download_upload:'Scarica · firma · ricarica',online:'Firma online',qualificata:'Firma qualificata',spid:'Firma con SPID',nessuna:'Nessuna firma'}[s]||s)}
-function labelPracticeStatus(s){return ({nuova:'Nuova',in_lavorazione:'In lavorazione',aperta:'Aperta',in_corso:'In corso',sospesa:'Sospesa',chiusa:'Chiusa',archiviata:'Archiviata'}[s]||s||'Non indicato')}
-function practiceStatusClass(s){return ['chiusa','archiviata'].includes(s)?'closed':(['in_lavorazione','aperta','in_corso'].includes(s)?'active':'')}
-function fmtEvent(d){return d?new Date(d).toLocaleString('it-IT',{dateStyle:'short',timeStyle:'short'}):''}
-
-async function loadActivePrivacyNotice(){
+async function loadPrivacy(){
   const today=new Date().toISOString().slice(0,10);
-  const {data,error}=await sb.from('studio_privacy_informative')
-    .select('id,titolo,versione,contenuto,valida_dal,valida_al')
-    .eq('tipo','clienti')
-    .eq('stato','attiva')
-    .or('valida_dal.is.null,valida_dal.lte.'+today)
-    .or('valida_al.is.null,valida_al.gte.'+today)
-    .order('valida_dal',{ascending:false})
-    .limit(1)
-    .maybeSingle();
-  if(error){
-    console.error('Informativa privacy vigente:',error);
-    activePrivacyNotice=null;
-  }else{
-    activePrivacyNotice=data||null;
-  }
-  const box=$('privacySignupInfo');
-  if(box){
-    box.innerHTML=activePrivacyNotice
-      ? 'Informativa vigente: <button type="button" class="btn outline" id="privacySignupView" style="padding:6px 10px;margin-left:6px">v'+esc(activePrivacyNotice.versione)+'</button>'
-      : 'Informativa privacy vigente non ancora pubblicata dallo Studio.';
-    $('privacySignupView')?.addEventListener('click',()=>showPrivacyNotice());
-  }
-  const summary=$('privacyClientSummary');
-  if(summary){
-    summary.textContent=activePrivacyNotice
-      ? 'Informativa vigente · versione '+activePrivacyNotice.versione+(activePrivacyNotice.valida_dal?' · dal '+fmtDate(activePrivacyNotice.valida_dal):'')
-      : 'Nessuna informativa privacy attiva pubblicata dallo Studio.';
-  }
-  $('privacyClientView')?.addEventListener('click',showPrivacyNotice);
+  const {data,error}=await sb.from('studio_privacy_informative').select('id,titolo,versione,contenuto,valida_dal,valida_al').eq('tipo','clienti').eq('stato','attiva').or('valida_dal.is.null,valida_dal.lte.'+today).or('valida_al.is.null,valida_al.gte.'+today).order('valida_dal',{ascending:false}).limit(1).maybeSingle();
+  if(error){console.error('Informativa privacy:',error);return}
+  activePrivacyNotice=data||null;
+  const el=$('privacySignupInfo');
+  if(el)el.textContent=activePrivacyNotice?'Informativa privacy vigente disponibile.':'Informativa privacy vigente non disponibile: registrazione temporaneamente sospesa.';
 }
-
-function repairPrivacyMojibake(value){
-  const s=String(value??'');
-  if(!/[ÃÂâð]/.test(s)) return s;
-
-  const cp1252={
-    0x20ac:0x80,0x201a:0x82,0x192:0x83,0x201e:0x84,0x2026:0x85,0x2020:0x86,
-    0x2021:0x87,0x2c6:0x88,0x2030:0x89,0x160:0x8a,0x2039:0x8b,0x152:0x8c,
-    0x17d:0x8e,0x2018:0x91,0x2019:0x92,0x201c:0x93,0x201d:0x94,0x2022:0x95,
-    0x2013:0x96,0x2014:0x97,0x2dc:0x98,0x2122:0x99,0x161:0x9a,0x203a:0x9b,
-    0x153:0x9c,0x17e:0x9e,0x178:0x9f
-  };
-  const bytes=[];
-  for(const ch of s){
-    const code=ch.codePointAt(0);
-    if(code<=0xff) bytes.push(code);
-    else if(cp1252[code]!==undefined) bytes.push(cp1252[code]);
-    else return s;
-  }
-  try{
-    const repaired=new TextDecoder('utf-8',{fatal:true}).decode(new Uint8Array(bytes));
-    return repaired;
-  }catch(_){
-    return s;
-  }
+function openAuth(mode='login'){
+  $('loginBox').classList.toggle('hidden',mode!=='login');
+  $('registerBox').classList.toggle('hidden',mode==='login');
+  $('loginErr').textContent='';
+  $('signupErr').textContent='';
 }
-
-function showPrivacyNotice(){
-  if(!activePrivacyNotice){alert('L’informativa privacy vigente non è ancora disponibile.');return;}
-  $('privacyNoticeModal')?.remove();
-  const m=document.createElement('div');
-  m.id='privacyNoticeModal';
-  m.className='modal';
-  const titolo=repairPrivacyMojibake(activePrivacyNotice.titolo);
-  const contenuto=repairPrivacyMojibake(activePrivacyNotice.contenuto);
-  m.innerHTML='<div class="modalBox" style="max-width:900px"><div class="modalHead"><div><h2 style="margin:0">'+esc(titolo)+'</h2><div class="status">Versione '+esc(activePrivacyNotice.versione)+(activePrivacyNotice.valida_dal?' · valida dal '+esc(fmtDate(activePrivacyNotice.valida_dal)):'')+'</div></div><button class="iconBtn" type="button" id="closePrivacyNotice">✕</button></div><div style="margin-top:16px;white-space:pre-wrap;line-height:1.7;max-height:65vh;overflow:auto">'+esc(contenuto)+'</div></div>';
-  document.body.appendChild(m);
-  $('closePrivacyNotice').onclick=()=>m.remove();
-}
-
-async function bootstrap(){
-  await loadActivePrivacyNotice();
-  const {data,error}=await sb.rpc('studio_bootstrap_cliente');
-  if(error) throw error;
-  const {data:userData}=await sb.auth.getUser();
-  currentUser=userData.user;
-  await loadClient();
-  return data;
-}
-async function loadClient(){
-  const {data,error}=await sb.from('studio_clienti').select('*').eq('user_id',currentUser.id).maybeSingle();
-  if(error) throw error;
-  currentClient=data;
-  const name=data?.full_name||currentUser.email?.split('@')[0]||'Cliente';
-  $('welcomeName').textContent='Benvenuto, '+name;
-  $('pName').value=data?.full_name||'';
-  $('pTax').value=data?.tax_id||'';
-  $('pEmail').value=currentUser.email||data?.email||'';
-  $('pPhone').value=data?.phone||'';
-  $('pBirthDate').value=data?.birth_date||'';
-  $('pBirthPlace').value=data?.birth_place||'';
-  $('pAddress').value=data?.address||'';
-  $('pPostal').value=data?.postal_code||'';
-  $('pCity').value=data?.city||'';
-  $('pProvince').value=data?.province||'';
-  $('pCountry').value=data?.country||'';
-  $('pPec').value=data?.pec||'';
-  $('pIban').value=data?.iban||'';
-  $('pVat').value=data?.vat_number||'';
-}
-async function recordPendingConsents(){
-  const pendingRaw=localStorage.getItem('studio_portal_consents_v1');
-  if(!pendingRaw||!currentUser)return;
-  let pending={privacy:true,terms:true};
-  try{pending=JSON.parse(pendingRaw)||pending}catch(_){pending={privacy:true,terms:true}}
-  const rows=[];
-  if(pending.privacy&&activePrivacyNotice) rows.push({user_id:currentUser.id,tipo:'privacy',versione:activePrivacyNotice.versione,informativa_id:activePrivacyNotice.id,accettato:true});
-  if(pending.terms) rows.push({user_id:currentUser.id,tipo:'terms',versione:'v1.0',accettato:true});
-  for(const row of rows){
-    const {error}=await sb.from('studio_consensi_portale').upsert(row,{onConflict:'user_id,tipo,versione'});
-    if(error) console.error('Registrazione presa visione:',error);
-  }
-  if(rows.length) localStorage.removeItem('studio_portal_consents_v1');
-}
-async function loadAll(){
-  await loadClient();
-  await recordPendingConsents();
-  const [d,n,p,pc]=await Promise.all([
-    sb.from('studio_portale_documenti').select('*').or('recipient_user_id.eq.'+currentUser.id+',sender_user_id.eq.'+currentUser.id).order('created_at',{ascending:false}),
-    sb.from('studio_notifiche').select('*').eq('recipient_user_id',currentUser.id).order('created_at',{ascending:false}).limit(50),
-    sb.from('studio_pratiche').select('id,created_at,updated_at,client_name,legal_area,counterparty,status,client_status,client_status_note,ai_status,file_names').eq('client_user_id',currentUser.id).order('created_at',{ascending:false}),
-    sb.from('studio_consensi_portale').select('id,tipo,versione,accettato,accepted_at,informativa_id').eq('user_id',currentUser.id).order('accepted_at',{ascending:false})
-  ]);
-  if(d.error) console.error(d.error); else portalDocs=d.data||[];
-  if(n.error) console.error(n.error); else notifications=n.data||[];
-  if(p.error) console.error(p.error); else practices=p.data||[];
-  const practiceIds=practices.map(x=>x.id).filter(Boolean);
-  if(practiceIds.length){
-    const ev=await sb.from('studio_agenda').select('id,pratica_id,title,type,starts_at,due_at,location,client_note,status,client_visible').in('pratica_id',practiceIds).eq('client_visible',true).order('starts_at',{ascending:true});
-    if(ev.error) console.error(ev.error); else practiceEvents=ev.data||[];
-  }else{
-    practiceEvents=[];
-  }
-  if(pc.error) console.error(pc.error); else privacyConsents=pc.data||[];
-  renderAll();
-}
-function renderAll(){
-  const sign=portalDocs.filter(d=>d.recipient_user_id===currentUser.id && d.status==='da_firmare');
-  $('statDocs').textContent=portalDocs.length;
-  $('statSign').textContent=sign.length;
-  $('statPractice').textContent=practices.length;
-  $('bellCount').textContent=notifications.filter(n=>!n.letta_at).length;
-  $('bellCount').classList.toggle('hidden',!notifications.some(n=>!n.letta_at));
-  const recent=portalDocs.slice(0,5);
-  $('recentActivity').innerHTML=recent.length?recent.map(docHtml).join(''):'<div class="empty">Nessuna attività recente.</div>';
-  $('docsList').innerHTML=portalDocs.length?portalDocs.map(docHtml).join(''):'<div class="empty">Non ci sono ancora documenti.</div>';
-  $('signList').innerHTML=sign.length?sign.map(docHtml).join(''):'<div class="empty">Non ci sono documenti in attesa di firma.</div>';
-  $('practiceList').innerHTML=practices.length?practices.map(p=>'<div class="doc"><div class="docMain"><div class="docName">📁 '+esc(p.legal_area||'Pratica')+'</div><div class="docMeta">'+fmt(p.created_at)+' · '+esc(p.counterparty||'Nessuna controparte')+'</div><div class="docMeta">'+esc(p.description||'').slice(0,180)+'</div></div><span class="badge">'+esc(p.status||'nuova')+'</span></div>').join(''):'<div class="empty">Nessuna pratica inviata.</div>';
-  renderPracticeStatus();
-  const privacyStatus=$('privacyPortalStatus'), history=$('privacyHistory');
-  const privacyRows=privacyConsents.filter(x=>x.tipo==='privacy');
-  if(privacyStatus) privacyStatus.textContent=privacyRows.length?'Presa visione registrata · versione '+privacyRows[0].versione+' · '+fmt(privacyRows[0].accepted_at):'Presa visione privacy non ancora registrata.';
-  if(history) history.innerHTML=privacyRows.length?privacyRows.map(x=>'<div class="doc"><div class="docMain"><div class="docName">Informativa privacy · v'+esc(x.versione)+'</div><div class="docMeta">Presa visione · '+fmt(x.accepted_at)+'</div></div><span class="badge green">Registrata</span></div>').join(''):'<div class="empty">Nessuna presa visione registrata.</div>';
-}
-function renderPracticeStatus(){
-  const box=$('practiceStatusList');
-  if(!box)return;
-  if(!practices.length){box.innerHTML='<div class="empty">Nessuna pratica disponibile.</div>';return}
-  box.innerHTML=practices.map(p=>{
-    const ev=practiceEvents.filter(x=>x.pratica_id===p.id);
-    const docs=portalDocs.filter(x=>x.pratica_id===p.id);
-    const next=ev.find(x=>new Date(x.starts_at||x.due_at||0)>=new Date());
-    const status=p.client_status||p.status||'nuova';
-    const eventsHtml=ev.length?'<div class="practiceEvents">'+ev.map(x=>'<div class="practiceEvent"><div class="practiceEventDot"></div><div class="practiceEventBody"><div class="practiceEventTitle">'+esc(x.title||'Aggiornamento pratica')+'</div><div class="practiceEventMeta">'+esc(x.type||'Attività')+' · '+esc(fmtEvent(x.starts_at||x.due_at))+(x.location?' · '+esc(x.location):'')+'</div>'+(x.client_note?'<div class="practiceNote">'+esc(x.client_note)+'</div>':'')+'</div></div>').join('')+'</div>':'<div class="empty" style="margin-top:12px;padding:18px">Nessuna udienza o attività resa ancora visibile.</div>';
-    const docsHtml=docs.length?'<div class="practiceDocs">'+docs.map(d=>'<span class="badge">'+esc(d.file_name)+'</span>').join('')+'</div>':'';
-    return '<div class="practiceCard"><div class="practiceHead"><div><div class="practiceTitle">📁 '+esc(p.legal_area||'Pratica')+'</div><div class="practiceMeta">'+esc(p.client_name||'')+(p.counterparty?' · Controparte: '+esc(p.counterparty):'')+'</div><div class="practiceMeta">Ultimo aggiornamento: '+esc(fmt(p.updated_at||p.created_at))+(next?' · Prossimo evento: '+esc(fmtEvent(next.starts_at||next.due_at)):'')+'</div></div><span class="practiceStatus '+practiceStatusClass(status)+'">'+esc(labelPracticeStatus(status))+'</span></div>'+(p.client_status_note?'<div class="practiceNote"><b>Aggiornamento dello Studio:</b> '+esc(p.client_status_note)+'</div>':'')+eventsHtml+docsHtml+'</div>';
-  }).join('');
-}
-function docHtml(d){
-  const sign=d.status==='da_firmare'&&d.recipient_user_id===currentUser.id;
-  const returned=d.status==='restituito';
-  const direction=d.direction==='studio_to_client'?'Studio → Tu':'Tu → Studio';
-  return '<div class="doc"><div class="docMain"><div class="docName">📄 '+esc(d.file_name)+'</div><div class="docMeta">'+direction+' · '+fmt(d.created_at)+' · '+esc(d.document_kind)+' · '+labelMode(d.signature_mode)+'</div></div><div class="actions">'+(sign?'<button class="btn gold" onclick="prepareSign(\''+d.id+'\')">Apri / firma</button>':'')+(returned?'<span class="badge green">Restituito</span>':'')+'<button class="btn outline" onclick="downloadDoc(\''+d.id+'\')">Scarica</button></div></div>';
-}
-async function downloadDoc(id){
-  const d=portalDocs.find(x=>x.id===id); if(!d)return;
-  const {data,error}=await sb.storage.from(BUCKET).download(d.storage_path);
-  if(error){alert('Download non disponibile: '+error.message);return}
-  const url=URL.createObjectURL(data); const a=document.createElement('a');a.href=url;a.download=d.file_name;a.click();URL.revokeObjectURL(url);
-  if(d.recipient_user_id===currentUser.id && !d.viewed_at) await sb.from('studio_portale_documenti').update({viewed_at:new Date().toISOString(),status:d.status==='inviato'?'visualizzato':d.status}).eq('id',d.id);
-}
-async function prepareSign(id){
-  const d=portalDocs.find(x=>x.id===id); if(!d)return;
-  if(d.signature_mode==='download_upload'){
-    const {data,error}=await sb.storage.from(BUCKET).download(d.storage_path);
-    if(error){alert(error.message);return}
-    const url=URL.createObjectURL(data);const a=document.createElement('a');a.href=url;a.download=d.file_name;a.click();URL.revokeObjectURL(url);
-    $('signModal')?.remove();
-    const m=document.createElement('div');m.id='signModal';m.className='modal';m.innerHTML='<div class="modalBox"><div class="modalHead"><h2>Restituisci documento firmato</h2><button class="iconBtn" onclick="document.getElementById(\'signModal\').remove()">✕</button></div><p class="status">Hai scaricato <b>'+esc(d.file_name)+'</b>. Dopo averlo firmato, seleziona qui il PDF firmato.</p><input id="signedFile" type="file" accept="application/pdf"><div id="signErr" class="err" style="margin-top:10px"></div><button class="btn gold" style="margin-top:10px" onclick="returnSigned(\''+d.id+'\')">Invia allo Studio</button></div>';document.body.appendChild(m);
-  }else if(d.signature_url){
-    window.open(d.signature_url,'_blank','noopener');
-  }else{
-    alert('Per questo documento è prevista la modalità: '+labelMode(d.signature_mode)+'. La firma online/qualificata viene eseguita tramite un prestatore esterno integrato dallo Studio.');
-  }
-}
-async function returnSigned(id){
-  const d=portalDocs.find(x=>x.id===id), file=$('signedFile')?.files?.[0]; if(!d||!file)return;
-  if(file.type!=='application/pdf'){ $('signErr').textContent='Seleziona un PDF firmato.';return }
-  if(file.size>10*1024*1024){$('signErr').textContent='Il file supera 10 MB.';return}
-  const path=currentUser.id+'/restituiti/'+d.id+'/'+crypto.randomUUID()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-  const up=await sb.storage.from(BUCKET).upload(path,file,{contentType:file.type,upsert:false});
-  if(up.error){$('signErr').textContent=up.error.message;return}
-  const ins=await sb.from('studio_portale_documenti').insert({pratica_id:d.pratica_id,cliente_id:currentClient?.id,sender_user_id:currentUser.id,recipient_user_id:null,file_name:file.name,storage_path:path,mime_type:file.type,size_bytes:file.size,direction:'client_to_studio',document_kind:d.document_kind,status:'restituito',signature_mode:d.signature_mode,parent_document_id:d.id,version:(d.version||1)+1}).select().single();
-  if(ins.error){$('signErr').textContent=ins.error.message;return}
-  await sb.from('studio_portale_documenti').update({status:'restituito',returned_at:new Date().toISOString()}).eq('id',d.id);
-  await sb.from('studio_audit').insert({pratica_id:d.pratica_id,actor_user_id:currentUser.id,event_type:'documento_firmato_restituito',details:{documento_id:d.id,file_name:file.name}});
-  if(d.document_kind==='privacy_informativa'){
-    const {data:privacyResult,error:privacyError}=await sb.functions.invoke('studio-privacy-portal',{body:{action:'confirm',original_document_id:d.id,returned_document_id:ins.data?.id}});
-    if(privacyError||!privacyResult?.ok){$('signErr').textContent='Documento restituito, ma la presa visione privacy non è stata registrata: '+(privacyError?.message||privacyResult?.error||'errore');return}
-  }
-  document.getElementById('signModal')?.remove();await loadAll();setTab('docs');
-}
-async function saveProfile(e){
-  e.preventDefault();$('profileSave').disabled=true;$('profileStatus').textContent='Salvataggio…';
-  const upd={full_name:$('pName').value.trim(),tax_id:$('pTax').value.trim()||null,phone:$('pPhone').value.trim()||null,birth_date:$('pBirthDate').value||null,birth_place:$('pBirthPlace').value.trim()||null,address:$('pAddress').value.trim()||null,postal_code:$('pPostal').value.trim()||null,city:$('pCity').value.trim()||null,province:$('pProvince').value.trim()||null,country:$('pCountry').value.trim()||null,pec:$('pPec').value.trim()||null,iban:$('pIban').value.trim()||null,vat_number:$('pVat').value.trim()||null,updated_at:new Date().toISOString()};
-  const {error}=await sb.from('studio_clienti').update(upd).eq('user_id',currentUser.id);
-  $('profileSave').disabled=false;$('profileStatus').textContent=error?'Errore: '+error.message:'Dati salvati correttamente.';$('profileStatus').className=error?'err':'status ok';if(!error)await loadClient();
-}
-async function uploadOnePersonal(file,kind,meta={}){
-  if(!currentClient)return 'Profilo cliente non disponibile.';
-  if(!file)return 'File mancante.';
-  if(file.size>10*1024*1024)return file.name+' supera 10 MB.';
-  const allowed=['application/pdf','image/jpeg','image/png','image/webp'];
-  if(!allowed.includes(file.type))return 'Tipo non consentito: '+file.name;
-  const path=currentUser.id+'/personali/'+crypto.randomUUID()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-  const up=await sb.storage.from(BUCKET).upload(path,file,{contentType:file.type,upsert:false});
-  if(up.error)return up.error.message;
-  const ins=await sb.from('studio_portale_documenti').insert({cliente_id:currentClient.id,sender_user_id:currentUser.id,recipient_user_id:null,file_name:file.name,storage_path:path,mime_type:file.type,size_bytes:file.size,direction:'client_to_studio',document_kind:kind,status:'caricato',signature_mode:'nessuna',version:1,document_side:meta.side||'unico',document_number:meta.number||null,document_issue_date:meta.issueDate||null,document_expiry_date:meta.expiryDate||null,document_issuer:meta.issuer||null});
-  if(ins.error)return ins.error.message;
-  return null;
-}
-async function uploadIdentity(){
-  const front=$('identityFront').files?.[0],back=$('identityBack').files?.[0],health=$('healthCardFile').files?.[0];
-  const checks=[['identityNumber','Numero documento'],['identityIssueDate','Data rilascio'],['identityExpiryDate','Data scadenza'],['identityIssuer','Ente / luogo di rilascio'],['healthCardNumber','Numero tessera / codice fiscale']];
-  for(const x of checks){if(!$(''+x[0]).value.trim()){ $('identityStatus').textContent=x[1]+' è obbligatorio.';$('identityStatus').className='err';return}}
-  if(!front||!back||!health){$('identityStatus').textContent='Sono obbligatori fronte e retro della carta d’identità e il documento della tessera sanitaria/codice fiscale.';$('identityStatus').className='err';return}
-  $('uploadIdentityBtn').disabled=true;$('identityStatus').textContent='Salvataggio documenti identificativi…';$('identityStatus').className='status';
-  try{
-    let e=await uploadOnePersonal(front,'carta_identita',{side:'fronte',number:$('identityNumber').value.trim(),issueDate:$('identityIssueDate').value,expiryDate:$('identityExpiryDate').value,issuer:$('identityIssuer').value.trim()});if(e)throw Error(e);
-    e=await uploadOnePersonal(back,'carta_identita',{side:'retro',number:$('identityNumber').value.trim(),issueDate:$('identityIssueDate').value,expiryDate:$('identityExpiryDate').value,issuer:$('identityIssuer').value.trim()});if(e)throw Error(e);
-    e=await uploadOnePersonal(health,'tessera_sanitaria',{side:'unico',number:$('healthCardNumber').value.trim()});if(e)throw Error(e);
-    $('identityStatus').textContent='Documenti identificativi salvati correttamente.';$('identityStatus').className='status ok';await loadAll();
-  }catch(err){$('identityStatus').textContent=err.message;$('identityStatus').className='err'}finally{$('uploadIdentityBtn').disabled=false}
-}
-async function uploadOtherPersonal(){
-  const files=[...$('otherPersonalFiles').files];if(!files.length)return;
-  for(const file of files){const e=await uploadOnePersonal(file,'documento_personale');if(e)alert(e)}
-  $('otherPersonalFiles').value='';await loadAll();
-}
-async function submitPractice(e){
-  e.preventDefault();$('submitBtn').disabled=true;$('submitStatus').textContent='Trasmissione in corso…';
-  try{
-    const fd=new FormData();
-    fd.append('clientName',$('clientName').value.trim());
-    fd.append('taxId',$('taxId').value.trim());
-    fd.append('legalArea',$('legalArea').value);
-    fd.append('counterparty',$('counterparty').value.trim());
-    fd.append('description',$('description').value.trim());
-    for(const f of $('clientFiles').files)fd.append('files',f,f.name);
-    const {data:out,error}=await sb.functions.invoke('studio-ricevi-pratica',{body:fd});
-    if(error)throw Error(error.message||'Trasmissione non riuscita');
-    if(!out?.ok)throw Error(out?.error||'Trasmissione non riuscita');
-    $('submitStatus').textContent='Richiesta trasmessa correttamente allo Studio.';$('submitStatus').className='status ok';$('practiceForm').reset();await loadAll();setTab('home');
-  }catch(err){$('submitStatus').textContent=err.message;$('submitStatus').className='err'}finally{$('submitBtn').disabled=false}
-}
-async function loadNotifications(){
-  const {data,error}=await sb.from('studio_notifiche').select('*').eq('recipient_user_id',currentUser.id).order('created_at',{ascending:false}).limit(50);
-  if(error)return;
-  notifications=data||[];$('notificationList').innerHTML=notifications.length?notifications.map(n=>'<div class="notification '+(!n.letta_at?'unread':'')+'"><strong>'+esc(n.titolo)+'</strong><div>'+esc(n.messaggio||'')+'</div><small>'+fmt(n.created_at)+'</small></div>').join(''):'<div class="empty">Nessuna notifica.</div>';
-  renderAll();
-}
-async function markAllRead(){await sb.from('studio_notifiche').update({letta_at:new Date().toISOString()}).eq('recipient_user_id',currentUser.id).is('letta_at',null);await loadNotifications()}
-function openLegal(type){const data={privacy:['Privacy','Il portale tratta i dati necessari alla gestione dell’accesso, delle pratiche, dei documenti e delle comunicazioni. Il testo definitivo della Privacy Policy dovrà essere completato con i dati del Titolare, sede e riferimenti dello Studio.'],cookie:['Cookie','Il portale utilizza esclusivamente i cookie e le tecnologie strettamente necessarie al funzionamento, salvo eventuali strumenti ulteriori che saranno indicati nella policy definitiva.'],terms:['Termini di utilizzo','Il portale è un ambiente riservato destinato alla gestione del rapporto tra cliente e Studio. I documenti e le comunicazioni restano soggetti alle regole e agli incarichi professionali applicabili.']};$('legalTitle').textContent=data[type][0];$('legalBody').textContent=data[type][1];$('legalModal').classList.remove('hidden')}
-function closeLegal(){$('legalModal').classList.add('hidden')}
-const CLIENT_HELP={
-  home:{title:'Panoramica',intro:'Qui controlli rapidamente lo stato del tuo rapporto con lo Studio: documenti, firme e pratiche.',steps:['Apri Panoramica per vedere i conteggi aggiornati.','Controlla Ultime attività per sapere quali documenti sono stati inviati o ricevuti.','Se devi aprire una nuova richiesta, usa “+ Nuova richiesta”.'],note:'La Panoramica è un riepilogo: le operazioni vere si eseguono nelle sezioni Documenti, Da firmare, Dati personali e Nuova pratica.'},
-  docs:{title:'Documenti',intro:'Qui trovi i documenti scambiati con lo Studio e puoi inviare nuovi documenti personali.',steps:['Apri Documenti e controlla l’elenco dei file disponibili.','Per inviare un documento allo Studio, premi “+ Invia documento allo Studio”.','Seleziona uno o più file e attendi il completamento dell’operazione.','Usa “Scarica” per aprire o conservare un documento ricevuto.'],note:'Sono ammessi PDF, immagini e documenti Word entro 10 MB per file.'},
-  sign:{title:'Da firmare',intro:'Qui trovi i documenti che lo Studio ti ha inviato e che richiedono una firma.',steps:['Apri Da firmare e verifica quali documenti sono in attesa.','Premi “Apri / firma” sul documento interessato.','Se la modalità è scarica/firma/ricarica, scarica il documento, firmalo e carica il PDF firmato.','Dopo l’invio, il documento viene restituito allo Studio e il portale registra il passaggio.'],note:'Le firme digitali qualificate o online non vengono simulate dal portale: quando previste, seguono il prestatore o la procedura indicata dallo Studio.'},
-  privacy:{title:'Privacy',intro:'Qui controlli l’informativa privacy e lo storico della presa visione registrata dal Portale.',steps:['Apri Privacy per vedere lo stato della presa visione.','Visualizza l’informativa vigente dalla Panoramica.','Se lo Studio ti ha inviato un documento da firmare, apri Da firmare.','Scarica, firma e restituisci il PDF quando richiesto.','Dopo la restituzione verifica che la presa visione risulti registrata.'],note:'Lo storico conserva la versione dell’informativa a cui hai dato presa visione.'},
-  personal:{title:'Dati personali',intro:'Qui puoi mantenere aggiornati i dati anagrafici e di contatto utilizzati dallo Studio.',steps:['Controlla i dati già presenti.','Modifica solo le informazioni che devono essere aggiornate.','Lascia invariata l’email se non devi cambiarla: è collegata al tuo account di accesso.','Premi “Salva dati” e verifica il messaggio di conferma.'],note:'Inserisci dati corretti e aggiornati. Alcuni dati, come PEC o IBAN, vanno compilati solo quando richiesti dallo Studio.'},
-  practices:{title:'Le mie pratiche',intro:'Qui controlli lo stato delle pratiche, gli aggiornamenti pubblicati dallo Studio, le udienze e le attività rese visibili.',steps:['Apri Le mie pratiche per vedere i fascicoli collegati al tuo account.','Controlla lo stato e la data dell’ultimo aggiornamento.','Consulta udienze, scadenze e attività che lo Studio ha scelto di rendere visibili.','Apri i documenti collegati alla pratica nelle sezioni Documenti o nell’elenco della pratica.'],note:'L’Area Cliente mostra solo le informazioni che lo Studio ha scelto di rendere visibili. Note interne, strategie e attività riservate non vengono pubblicate automaticamente.'},
-  practice:{title:'Nuova pratica / richiesta',intro:'Qui trasmetti allo Studio una nuova richiesta completa dei dati essenziali e degli eventuali allegati.',steps:['Inserisci nome e cognome oppure ragione sociale.','Inserisci codice fiscale o P.IVA.','Scegli l’area legale e indica, se disponibile, la controparte.','Descrivi con precisione i fatti e ciò che chiedi allo Studio.','Allega i documenti utili alla valutazione della richiesta.','Premi “Trasmetti allo Studio” e attendi il messaggio di conferma.','Dopo l’invio, controlla “Le mie pratiche” per verificare che la richiesta sia presente.'],note:'La trasmissione crea una pratica collegata al tuo account Cliente. Non inviare password, credenziali o dati non necessari.'}
+$('showRegister').onclick=()=>openAuth('register');
+$('showLogin').onclick=()=>openAuth('login');
+$('forgotBtn').onclick=async()=>{
+  const email=$('loginEmail').value.trim();
+  if(!email){$('loginErr').textContent='Inserisci prima l’email.';return}
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.href});
+  $('loginErr').textContent=error?error.message:'Controlla la posta per il link di recupero.';
+  $('loginErr').className=error?'studio-login-error':'studio-login-error ok';
 };
-function openClientHelp(){
-  const active=document.querySelector('.tab.active')?.dataset.tab||'home';
-  const h=CLIENT_HELP[active]||CLIENT_HELP.home;
-  $('clientHelpTitle').textContent='Aiuto · '+h.title;
-  $('clientHelpBody').innerHTML='<p class="helpIntro">'+esc(h.intro)+'</p><h3 style="color:var(--navy);margin:0 0 9px">Come fare</h3><ol class="helpSteps">'+h.steps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol><div class="helpNote"><b>Nota:</b> '+esc(h.note)+'</div>';
-  $('clientHelpModal').classList.remove('hidden');
-}
-function closeClientHelp(){$('clientHelpModal').classList.add('hidden')}
-window.openLegal=openLegal;window.closeLegal=closeLegal;window.downloadDoc=downloadDoc;window.prepareSign=prepareSign;window.returnSigned=returnSigned;
-
-$('clientHelpBtn').onclick=openClientHelp;$('closeClientHelp').onclick=closeClientHelp;
-$('clientHelpModal').addEventListener('click',e=>{if(e.target.id==='clientHelpModal')closeClientHelp()});
-$('backLanding').onclick=()=>location.replace('./');$('showRegister').onclick=()=>openAuth('register');$('showLogin').onclick=()=>openAuth('login');
-$('loginForm').onsubmit=async e=>{e.preventDefault();$('loginErr').textContent='';$('loginBtn').disabled=true;const {data:authData,error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});$('loginBtn').disabled=false;if(error){$('loginErr').textContent=error.message;return}const {data:profile,error:roleError}=await sb.from('studio_utenti').select('role').eq('user_id',authData.user.id).maybeSingle();if(roleError){await sb.auth.signOut();$('loginErr').textContent='Impossibile verificare il tipo di account.';return}if(profile?.role!=='cliente'){await sb.auth.signOut();$('loginErr').textContent='Questo account è abilitato all’Area Studio e non può entrare nell’Area Cliente.';return}await enterPortal()};
-$('signupForm').onsubmit=async e=>{e.preventDefault();$('signupErr').textContent='';$('signupBtn').disabled=true;try{if(!activePrivacyNotice)throw Error('L’informativa privacy vigente non è ancora stata pubblicata dallo Studio. Registrazione non disponibile.');const {data,error}=await sb.auth.signUp({email:$('signupEmail').value.trim(),password:$('signupPassword').value,options:{data:{full_name:$('signupName').value.trim()}}});if(error)throw error;if(data.session){localStorage.setItem('studio_portal_consents_v1',JSON.stringify({privacy:!!$('privacyConsent').checked,terms:!!$('termsConsent').checked}));await bootstrap();await saveNewName($('signupName').value.trim());await enterPortal()}else{localStorage.setItem('studio_portal_consents_v1',JSON.stringify({privacy:!!$('privacyConsent').checked,terms:!!$('termsConsent').checked}));$('signupErr').className='err ok';$('signupErr').textContent='Account creato. Controlla la posta, conferma l’email e poi accedi.'}}catch(err){$('signupErr').textContent=err.message}finally{$('signupBtn').disabled=false}};
-async function saveNewName(name){if(currentUser)await sb.from('studio_clienti').update({full_name:name}).eq('user_id',currentUser.id)}
-$('forgotBtn').onclick=async()=>{const email=$('loginEmail').value.trim();if(!email){$('loginErr').textContent='Inserisci prima l’email.';return}const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});$('loginErr').textContent=error?error.message:'Controlla la posta per il link di recupero.';$('loginErr').className=error?'err':'status ok'};
-$('logoutBtn').onclick=async()=>{await sb.auth.signOut();currentUser=null;currentClient=null;location.replace('./')};
-$('profileForm').onsubmit=saveProfile;$('uploadIdentityBtn').onclick=uploadIdentity;$('uploadOtherBtn').onclick=()=>$('otherPersonalFiles').click();$('otherPersonalFiles').onchange=uploadOtherPersonal;$('practiceForm').onsubmit=submitPractice;$('newPracticeBtn').onclick=()=>setTab('practice');
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
-$('bellBtn').onclick=async()=>{await loadNotifications();$('notifyModal').classList.remove('hidden')};$('closeNotify').onclick=()=>$('notifyModal').classList.add('hidden');$('markAllRead').onclick=markAllRead;
-async function enterPortal(){
-  const {data:{session}}=await sb.auth.getSession();
-  if(!session){openAuth('login');return}
-  const {data:profile,error:roleError}=await sb.from('studio_utenti').select('role').eq('user_id',session.user.id).maybeSingle();
-  if(roleError||profile?.role!=='cliente'){await sb.auth.signOut();location.replace('./');return}
-  try{
-    await bootstrap();
-    show('portalView');
-    await loadAll();
-  }catch(e){
-    console.error('Accesso Area Cliente:',e);
+$('loginForm').onsubmit=async e=>{
+  e.preventDefault();$('loginErr').textContent='';$('loginBtn').disabled=true;
+  const {data,error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});
+  $('loginBtn').disabled=false;
+  if(error){$('loginErr').textContent=error.message;return}
+  const {data:profile,error:roleError}=await sb.from('studio_utenti').select('role').eq('user_id',data.user.id).maybeSingle();
+  if(roleError||profile?.role!=='cliente'){
     await sb.auth.signOut();
-    location.replace('./');
+    $('loginErr').textContent=roleError?'Impossibile verificare il tipo di account.':'Questo account è abilitato all’Area Studio e non può entrare nell’Area Cliente.';
+    return;
   }
-}
-// Area Cliente: questa pagina contiene esclusivamente il portale autenticato.
-// Se non esiste una sessione valida, si torna alla landing pubblica per il login.
-sb.auth.onAuthStateChange((event,session)=>{
-  if(event==='SIGNED_OUT'){
-    currentUser=null;
-    currentClient=null;
-    location.replace('./');
-  }
-});
-(async()=>{await loadActivePrivacyNotice();await enterPortal();})();
+  location.replace('cliente-portale.html');
+};
+$('signupForm').onsubmit=async e=>{
+  e.preventDefault();$('signupErr').textContent='';$('signupBtn').disabled=true;
+  try{
+    if(!activePrivacyNotice)throw Error('L’informativa privacy vigente non è disponibile. Registrazione non disponibile.');
+    const {data,error}=await sb.auth.signUp({email:$('signupEmail').value.trim(),password:$('signupPassword').value,options:{data:{full_name:$('signupName').value.trim()}}});
+    if(error)throw error;
+    localStorage.setItem('studio_portal_consents_v1',JSON.stringify({privacy:!!$('privacyConsent').checked,terms:!!$('termsConsent').checked}));
+    if(data.session)location.replace('cliente-portale.html');
+    else{$('signupErr').className='studio-login-error';$('signupErr').textContent='Account creato. Controlla la posta, conferma l’email e poi accedi.'}
+  }catch(err){$('signupErr').textContent=err.message}
+  finally{$('signupBtn').disabled=false}
+};
+loadPrivacy();
 </script>
 </body>
 </html>
