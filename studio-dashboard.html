@@ -2052,6 +2052,48 @@
             document.getElementById('closeClientDetail').onclick=()=>detail.style.display='none';
         }
 
+        async function runClientOnboardingAction(index, action) {
+            const cl=(window.__studioClients||[])[index], client=getStudioClient();
+            if(!cl||!client)return;
+            const out=document.getElementById('onboardingActionStatus');
+            if(out)out.textContent='Aggiornamento stato in corso…';
+            const {error}=await client.rpc('studio_gestisci_onboarding_cliente',{p_client_id:cl.id,p_action:action,p_note:null});
+            if(error){if(out)out.textContent='Operazione non completata: '+error.message;return;}
+            await loadClients();
+            await showClientDetail(index);
+        }
+
+        async function sendClientPrivacy(index) {
+            const cl=(window.__studioClients||[])[index], client=getStudioClient();
+            if(!cl||!client)return;
+            const out=document.getElementById('onboardingActionStatus');
+            if(out)out.textContent='Caricamento informativa vigente…';
+            const today=new Date().toISOString().slice(0,10);
+            const {data:notice,error:noticeError}=await client.from('studio_privacy_informative')
+              .select('id').eq('tipo','clienti').eq('stato','attiva')
+              .or('valida_dal.is.null,valida_dal.lte.'+today)
+              .or('valida_al.is.null,valida_al.gte.'+today)
+              .order('valida_dal',{ascending:false}).limit(1).maybeSingle();
+            if(noticeError||!notice){if(out)out.textContent='Informativa vigente non disponibile.';return;}
+            const {data,error}=await client.functions.invoke('studio-privacy-portal',{body:{action:'send',informative_id:notice.id,client_id:cl.id}});
+            if(error||!data?.ok){if(out)out.textContent='Invio non riuscito: '+(data?.error||error?.message||'errore');return;}
+            if(out)out.textContent='Informativa inviata al cliente.';
+            await loadClients();
+            await showClientDetail(index);
+        }
+
+        async function verifyClientDocument(documentId) {
+            const client=getStudioClient();
+            if(!client)return;
+            const out=document.getElementById('onboardingActionStatus');
+            if(out)out.textContent='Verifica documento in corso…';
+            const {error}=await client.rpc('studio_verifica_documento_cliente',{p_document_id:documentId});
+            if(error){if(out)out.textContent='Verifica non riuscita: '+error.message;return;}
+            const index=window.__currentClientDetailIndex;
+            await loadClients();
+            if(Number.isInteger(index))await showClientDetail(index);
+        }
+
         function openMatterFromClient(practiceId) {
             const idx=(window.__studioMatters||[]).findIndex(m=>m.id===practiceId);
             if(idx<0){alert('Il fascicolo non è disponibile nella lista Fascicoli.');return;}
@@ -2061,6 +2103,14 @@
         window.openMatterFromClient=openMatterFromClient;
 
         document.addEventListener('click',e=>{const b=e.target.closest('.client-detail-btn');if(b)showClientDetail(Number(b.dataset.clientIndex));});
+        document.addEventListener('click',e=>{
+            const action=e.target.closest('.onboarding-action');
+            if(action){runClientOnboardingAction(Number(action.dataset.clientIndex),action.dataset.clientAction);return;}
+            const privacy=e.target.closest('.send-client-privacy');
+            if(privacy){sendClientPrivacy(Number(privacy.dataset.clientIndex));return;}
+            const verify=e.target.closest('.verify-client-doc');
+            if(verify){verifyClientDocument(verify.dataset.documentId);}
+        });
         document.getElementById('clientsRefresh')?.addEventListener('click',loadClients);
         document.querySelector('[onclick="switchTab(\'clients\', this)"]')?.addEventListener('click',()=>setTimeout(loadClients,0));
         loadClients();
