@@ -5,6 +5,12 @@ window.STUDIO_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_aVF8u7kXdbznCYQakC3NqQ_
   let client = null;
   let initTimer = null;
   let attempts = 0;
+  let resolveReady;
+  let rejectReady;
+  window.studioSupabaseReady = new Promise((resolve, reject) => {
+    resolveReady = resolve;
+    rejectReady = reject;
+  });
 
   function initStudioSupabase() {
     if (client) return client;
@@ -16,7 +22,9 @@ window.STUDIO_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_aVF8u7kXdbznCYQakC3NqQ_
         clearTimeout(initTimer);
         initTimer = setTimeout(initStudioSupabase, 100);
       } else {
-        console.error('[Studio Auth] Supabase JS non disponibile dopo il caricamento.');
+        const error = new Error('Supabase JS non disponibile dopo il caricamento.');
+        console.error('[Studio Auth]', error.message);
+        rejectReady(error);
       }
       return null;
     }
@@ -38,10 +46,14 @@ window.STUDIO_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_aVF8u7kXdbznCYQakC3NqQ_
       window.getStudioSupabaseClient = function () {
         return client;
       };
+      window.__STUDIO_SUPABASE_READY = true;
+      resolveReady(client);
+      window.dispatchEvent(new CustomEvent('studio:supabase-ready'));
       console.info('[Studio Auth] Client Supabase Studio inizializzato correttamente.');
       return client;
     } catch (error) {
       console.error('[Studio Auth] Errore durante createClient().', error);
+      rejectReady(error);
       return null;
     }
   }
