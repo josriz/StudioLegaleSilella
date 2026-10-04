@@ -87,9 +87,11 @@ body{margin:0}
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=20261004-8"></script>
+
 <script>
-const sb=supabase.createClient(window.STUDIO_SUPABASE_URL,window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-client-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const STUDIO_SUPABASE_URL='https://dscinvstqizfxwrovsbb.supabase.co';
+const STUDIO_SUPABASE_PUBLISHABLE_KEY='sb_publishable_aVF8u7kXdbznCYQakC3NqQ_fJQkBZQ9';
+const sb=supabase.createClient(STUDIO_SUPABASE_URL,STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-client-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 let activePrivacyNotice=null;
 async function loadPrivacy(){
