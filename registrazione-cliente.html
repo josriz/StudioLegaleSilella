@@ -19,7 +19,7 @@ h1{margin:0;text-align:center;font:600 26px Georgia,serif;text-shadow:0 2px 12px
 .subtitle{margin:5px 0 16px;text-align:center;color:rgba(255,255,255,.84);font-size:12.5px;line-height:1.45}
 form{display:grid;gap:9px}
 label{color:rgba(255,255,255,.92);font-size:12px;font-weight:700}
-input{width:100%;padding:10px 13px;border:1px solid rgba(255,255,255,.48);border-radius:12px;outline:none;background:rgba(255,255,255,.82);color:#0f172a;font-size:14px}
+input,select,textarea{width:100%;padding:10px 13px;border:1px solid rgba(255,255,255,.48);border-radius:12px;outline:none;background:rgba(255,255,255,.82);color:#0f172a;font-size:14px}
 input:focus{background:rgba(255,255,255,.96);border-color:rgba(255,255,255,.92);box-shadow:0 0 0 3px rgba(255,255,255,.16)}
 .check{display:flex;gap:9px;align-items:flex-start;color:rgba(255,255,255,.84);font-size:12px;line-height:1.5;font-weight:400}
 .check input{width:auto;margin-top:3px}
@@ -30,7 +30,7 @@ input:focus{background:rgba(255,255,255,.96);border-color:rgba(255,255,255,.92);
 .btn.outline{margin-top:12px;background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.38)}
 .footer{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.22);text-align:center;color:rgba(255,255,255,.68);font-size:9px;letter-spacing:.03em}
 @media(max-width:600px){.authWrap{padding:12px}.authCard{padding:20px 17px 15px;border-radius:20px}.logo{height:68px}h1{font-size:23px}}
-</style>
+textarea{min-height:88px;resize:vertical}summary{cursor:pointer;font-size:12px}details{font-size:12px;line-height:1.5}</style>
 </head>
 <body>
 <main class="authWrap">
@@ -41,7 +41,7 @@ input:focus{background:rgba(255,255,255,.96);border-color:rgba(255,255,255,.92);
     <p class="subtitle">Registrati per accedere al portale dello Studio Legale Silella.</p>
     <form id="signupForm">
       <label for="customerType">Tipologia cliente</label><select id="customerType" required><option value="persona_fisica">Persona fisica</option><option value="azienda">Azienda / professionista</option></select>\n      <label for="signupName">Nome e cognome</label>
-      <input id="signupName" type="text" autocomplete="name" required placeholder="Nome e cognome">
+      <input id="signupName" type="text" autocomplete="name" required placeholder="Nome e cognome">\n      <label for="signupTaxId" id="taxLabel">Codice fiscale</label><input id="signupTaxId" type="text" required placeholder="Codice fiscale">\n      <label for="signupVat" id="vatLabel" hidden>Partita IVA</label><input id="signupVat" type="text" placeholder="Partita IVA" hidden>\n      <label for="requestDescription">Descrizione del problema o motivo del contatto</label><textarea id="requestDescription" required maxlength="4000" placeholder="Descrivi brevemente la questione per cui chiedi assistenza."></textarea>
       <label for="signupEmail">Email</label>
       <input id="signupEmail" type="email" autocomplete="email" required placeholder="La tua email">
       <label for="signupPassword">Password</label>
