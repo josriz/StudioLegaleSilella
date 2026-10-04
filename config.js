@@ -1,42 +1,51 @@
 window.STUDIO_SUPABASE_URL = 'https://dscinvstqizfxwrovsbb.supabase.co';
 window.STUDIO_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_aVF8u7kXdbznCYQakC3NqQ_fJQkBZQ9';
 
-let __studioSupabaseClient = null;
+(function () {
+  let client = null;
+  let initTimer = null;
+  let attempts = 0;
 
-window.getStudioSupabaseClient = function () {
-  if (__studioSupabaseClient) return __studioSupabaseClient;
+  function initStudioSupabase() {
+    if (client) return client;
 
-  const sdk = window.supabase || window.Supabase;
-
-  if (!sdk || typeof sdk.createClient !== 'function') {
-    console.error('[Studio Auth] Supabase JS non disponibile quando viene richiesto il client.', {
-      hasSupabase: !!window.supabase,
-      hasSupabaseUpper: !!window.Supabase
-    });
-    return null;
-  }
-
-  try {
-    __studioSupabaseClient = sdk.createClient(
-      window.STUDIO_SUPABASE_URL,
-      window.STUDIO_SUPABASE_PUBLISHABLE_KEY,
-      {
-        auth: {
-          storageKey: 'silella-studio-auth',
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true
-        }
+    const sdk = window.supabase || window.Supabase;
+    if (!sdk || typeof sdk.createClient !== 'function') {
+      attempts += 1;
+      if (attempts < 50) {
+        clearTimeout(initTimer);
+        initTimer = setTimeout(initStudioSupabase, 100);
+      } else {
+        console.error('[Studio Auth] Supabase JS non disponibile dopo il caricamento.');
       }
-    );
-    window.STUDIO_SUPABASE_CLIENT = __studioSupabaseClient;
-    return __studioSupabaseClient;
-  } catch (error) {
-    console.error('[Studio Auth] Errore durante createClient().', error);
-    return null;
-  }
-};
+      return null;
+    }
 
-// Un solo client condiviso per tutta l'Area Studio.
-// Il client viene creato una sola volta, anche se un modulo lo richiede prima.
-window.getStudioSupabaseClient();
+    try {
+      client = sdk.createClient(
+        window.STUDIO_SUPABASE_URL,
+        window.STUDIO_SUPABASE_PUBLISHABLE_KEY,
+        {
+          auth: {
+            storageKey: 'silella-studio-auth',
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true
+          }
+        }
+      );
+      window.STUDIO_SUPABASE_CLIENT = client;
+      window.getStudioSupabaseClient = function () {
+        return client;
+      };
+      console.info('[Studio Auth] Client Supabase Studio inizializzato correttamente.');
+      return client;
+    } catch (error) {
+      console.error('[Studio Auth] Errore durante createClient().', error);
+      return null;
+    }
+  }
+
+  window.getStudioSupabaseClient = initStudioSupabase;
+  initStudioSupabase();
+})();
