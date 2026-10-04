@@ -77,7 +77,7 @@ $('signupForm').onsubmit=async e=>{
   try{
     const name=$('signupName').value.trim(),email=$('signupEmail').value.trim(),password=$('signupPassword').value;\n    const customerType=$('customerType').value,taxId=$('signupTaxId').value.trim().toUpperCase(),vat=$('signupVat').value.trim().toUpperCase(),description=$('requestDescription').value.trim();
     if(!activePrivacyNotice)throw Error('L’informativa privacy vigente non è disponibile. Registrazione non disponibile.');
-    if(password.length<8)throw Error('La password deve contenere almeno 8 caratteri.');
+    if(password.length<8)throw Error('La password deve contenere almeno 8 caratteri.');\n    if(!name||!description)throw Error('Compila tutti i campi obbligatori.');\n    if(customerType==='persona_fisica'&&!taxId)throw Error('Il codice fiscale è obbligatorio.');\n    if(customerType==='azienda'&&!vat)throw Error('La Partita IVA è obbligatoria.');\n    if(!$('privacyConsent').checked||!$('termsConsent').checked)throw Error('Conferma la presa visione dell’informativa e accetta i Termini di utilizzo.');
     const {data,error}=await sb.auth.signUp({email,password,options:{data:{full_name:name}}});
     if(error)throw error;
     localStorage.setItem('studio_portal_consents_v1',JSON.stringify({privacy:!!$('privacyConsent').checked,terms:!!$('termsConsent').checked}));
