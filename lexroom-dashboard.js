@@ -1,6 +1,9 @@
 (() => {
 const init=async()=>{
- const sb=window.getStudioSupabaseClient ? window.getStudioSupabaseClient() : window.STUDIO_SUPABASE_CLIENT;
+ let sb=window.getStudioSupabaseClient ? window.getStudioSupabaseClient() : window.STUDIO_SUPABASE_CLIENT;
+ if(!sb && window.studioSupabaseReady){
+  try{ sb=await window.studioSupabaseReady; }catch(error){ console.error('[Lexroom] Client Supabase Studio non disponibile.',error); return; }
+ }
  if(!sb){ console.error('[Lexroom] Client Supabase Studio non disponibile.'); return; }
  const {data:{user}}=await sb.auth.getUser();
  if(!user){
