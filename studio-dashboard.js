@@ -1,7 +1,21 @@
 (() => {
+  const showStartupError = (message) => {
+    document.body.classList.add('studio-auth-pending');
+    let overlay = document.getElementById('studioStartupError');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'studioStartupError';
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(15,23,42,.94);color:#0f172a;font-family:Segoe UI,Tahoma,sans-serif';
+      overlay.innerHTML = '<div style="width:min(520px,100%);padding:28px;border-radius:18px;background:#fff;box-shadow:0 24px 80px #0006"><h2 style="margin:0 0 12px">Area Studio non disponibile</h2><p id="studioStartupErrorMessage" style="line-height:1.55"></p><p style="margin-top:14px;font-size:13px;color:#475569">La pagina non è stata aperta per proteggere i dati riservati. Ricarica la pagina; se il problema persiste, serve correggere il caricamento tecnico.</p><button type="button" onclick="location.reload()" style="margin-top:18px;padding:10px 16px;border:0;border-radius:8px;background:#1e293b;color:#fff;cursor:pointer">Riprova</button></div>';
+      document.body.appendChild(overlay);
+    }
+    document.getElementById('studioStartupErrorMessage').textContent = message;
+  };
+
   const init = async () => {
     if (!window.supabase || !window.STUDIO_SUPABASE_URL || !window.STUDIO_SUPABASE_PUBLISHABLE_KEY) {
       console.error('Configurazione Supabase non disponibile.');
+      showStartupError('Configurazione Supabase non caricata. Nessun dato dello Studio è stato mostrato.');
       return;
     }
 
@@ -9,10 +23,15 @@
     if (!client && window.studioSupabaseReady) {
       try { client = await window.studioSupabaseReady; } catch (error) {
         console.error('[Studio Auth] Impossibile inizializzare il client Supabase Studio.', error);
+        showStartupError('Il servizio di accesso non è stato inizializzato. Dettaglio: ' + (error?.message || 'errore non specificato'));
         return;
       }
     }
-    if (!client) { console.error('[Studio Auth] Client Supabase Studio non disponibile.'); return; }
+    if (!client) {
+      console.error('[Studio Auth] Client Supabase Studio non disponibile.');
+      showStartupError('Il client di accesso non è disponibile. Nessun dato dello Studio è stato mostrato.');
+      return;
+    }
 
     const menu = document.querySelector('.sidebar-menu');
     const contentArea = document.querySelector('.content-area');
