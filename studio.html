@@ -1053,7 +1053,7 @@
             <!-- 6. RAG -->
             <div id="panel-jurisprudence" class="panel">
                 <div class="card">
-                    <h3>🔍 Ricerca RAG & Conoscenza dello Studio</h3>
+                    <h3>🔍 Ricerca interna dello Studio</h3>
                     <div class="form-group">
                         <label>Quesito / Parola chiave:</label>
                         <input type="text" id="ragQuery" placeholder="Es. condominio, revoca amministratore, risarcimento...">
@@ -1408,7 +1408,7 @@
             if(pRows.length) blocks.push('<div class="card"><h4>📁 Pratiche corrispondenti ('+pRows.length+')</h4>'+pRows.map(p=>'<div style="padding:10px 0;border-bottom:1px solid #e2e8f0;"><strong>'+escRag(p.client_name||'Cliente non indicato')+'</strong><div style="font-size:12px;color:#64748b;">'+escRag(p.legal_area||'')+' · '+escRag(p.status||'')+' · '+escRag(p.counterparty||'')+'</div><div style="margin-top:5px;font-size:13px;white-space:pre-wrap;">'+escRag(p.description||'')+'</div></div>').join('')+'</div>');
             if(aRows.length) blocks.push('<div class="card"><h4>🧠 Analisi archiviate ('+aRows.length+')</h4>'+aRows.map(a=>'<div style="padding:10px 0;border-bottom:1px solid #e2e8f0;"><strong>'+escRag(a.provider||'Analisi')+' · '+escRag(a.model||'')+'</strong><div style="margin-top:5px;font-size:13px;white-space:pre-wrap;">'+escRag(a.summary||'')+'</div></div>').join('')+'</div>');
             if(bRows.length) blocks.push('<div class="card"><h4>📝 Bozze archiviate ('+bRows.length+')</h4>'+bRows.map(b=>'<div style="padding:10px 0;border-bottom:1px solid #e2e8f0;"><strong>Stato: '+escRag(b.status||'')+'</strong><div style="margin-top:5px;font-size:13px;white-space:pre-wrap;">'+escRag(b.content||'')+'</div></div>').join('')+'</div>');
-            blocks.push('<div style="margin-top:8px;font-size:12px;color:#64748b;">Questa è una ricerca RAG interna sui contenuti dello Studio. Non costituisce una banca dati giurisprudenziale esterna e non sostituisce la verifica professionale delle fonti.</div>');
+            blocks.push('<div style="margin-top:8px;font-size:12px;color:#64748b;">Questa è una ricerca interna sui contenuti realmente presenti nello Studio. Non è una banca dati giurisprudenziale esterna e non sostituisce la verifica professionale delle fonti.</div>');
             result.innerHTML = blocks.join('');
         }
 
