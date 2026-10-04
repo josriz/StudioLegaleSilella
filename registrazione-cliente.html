@@ -101,12 +101,16 @@ $('signupForm').onsubmit=async e=>{
       const {error:requestError}=await sb.rpc('studio_registra_richiesta_cliente',{p_customer_type:customerType,p_tax_id:taxId,p_vat_number:vat,p_request_description:description,p_privacy_notice_id:activePrivacyNotice.id,p_terms_accepted:!!$('termsConsent').checked,p_privacy_notice_seen:!!$('privacyConsent').checked});
       if(requestError)throw requestError;
       localStorage.removeItem('studio_onboarding_request_v1');
-      $('signupErr').textContent='Richiesta inviata allo Studio. L’accesso operativo resta sospeso fino alla valutazione e verifica.';
+      $('signupErr').textContent='✓ Richiesta di registrazione inviata correttamente allo Studio Legale Silella. La richiesta è ora in attesa di valutazione: attendi una comunicazione dello Studio. L’invio non comporta l’accettazione dell’incarico né abilita subito l’accesso operativo.';
       $('signupErr').className='status';
-      setTimeout(()=>location.replace('cliente-portale.html'),1800);
+      $('signupErr').style.cssText='padding:14px;border:1px solid rgba(228,201,133,.65);border-radius:12px;background:rgba(10,25,45,.72);color:#fff;font-weight:700;text-align:center;';
+      $('signupForm').querySelectorAll('input,select,textarea,button').forEach(el=>el.disabled=true);
+      $('showLogin').textContent='Vai all’accesso cliente';
+      $('showLogin').onclick=()=>location.href='cliente.html';
     }else{
-      $('signupErr').textContent='Account creato. Conferma l’email dal messaggio ricevuto, poi accedi dall’Area Cliente usando questo stesso browser per inviare la richiesta salvata. La registrazione non equivale all’accettazione dell’incarico.';
+      $('signupErr').textContent='ACCOUNT CREATO, MA RICHIESTA NON ANCORA INVIATA. Conferma l’indirizzo e-mail dal messaggio ricevuto; poi accedi dall’Area Cliente con questo stesso browser. Il sistema proverà a completare l’invio della richiesta. Fino alla conferma dell’invio, lo Studio non può ancora valutarla.';
       $('signupErr').className='status';
+      $('signupErr').style.cssText='padding:14px;border:1px solid rgba(228,201,133,.65);border-radius:12px;background:rgba(10,25,45,.72);color:#fff;font-weight:700;text-align:center;';
     }
   }catch(err){$('signupErr').textContent=err.message}
   finally{$('signupBtn').disabled=false}
