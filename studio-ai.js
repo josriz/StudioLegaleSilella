@@ -1,13 +1,5 @@
 (() => {
-  const getClient = () => {
-    if (window.STUDIO_SUPABASE_CLIENT) return window.STUDIO_SUPABASE_CLIENT;
-    if (!window.supabase || !window.STUDIO_SUPABASE_URL || !window.STUDIO_SUPABASE_PUBLISHABLE_KEY) return null;
-    return window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(
-      window.STUDIO_SUPABASE_URL,
-      window.STUDIO_SUPABASE_PUBLISHABLE_KEY,
-      {auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
-    );
-  };
+  const getClient = () => window.STUDIO_SUPABASE_CLIENT;
   const esc = v => String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const fn = () => (window.STUDIO_SUPABASE_URL || '') + '/functions/v1/studio-lexroom';
 
