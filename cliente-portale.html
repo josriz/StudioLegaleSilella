@@ -219,6 +219,14 @@ async function loadClient(){
   $('pPec').value=data?.pec||'';
   $('pIban').value=data?.iban||'';
   $('pVat').value=data?.vat_number||'';
+  const company=data?.customer_type==='azienda';
+  $('pName').parentElement.querySelector('label').textContent=company?'Ragione sociale *':'Nome e cognome *';
+  $('pTax').required=!company;$('pVat').required=company;
+  $('pTax').parentElement.querySelector('label').textContent=company?'Codice fiscale (se applicabile)':'Codice fiscale *';
+  $('pVat').parentElement.querySelector('label').textContent=company?'P.IVA *':'P.IVA (se applicabile)';
+  $('pBirthDate').required=!company;$('pBirthPlace').required=!company;
+  $('pBirthDate').parentElement.querySelector('label').textContent=company?'Data di nascita del referente (se richiesta)':'Data di nascita *';
+  $('pBirthPlace').parentElement.querySelector('label').textContent=company?'Luogo di nascita del referente (se richiesto)':'Luogo di nascita *';
 }
 async function recordPendingConsents(){
   const pendingRaw=localStorage.getItem('studio_portal_consents_v1');
