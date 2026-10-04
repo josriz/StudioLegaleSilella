@@ -40,7 +40,7 @@ input:focus{background:rgba(255,255,255,.96);border-color:rgba(255,255,255,.92);
     <h1>Crea il tuo accesso</h1>
     <p class="subtitle">Registrati per accedere al portale dello Studio Legale Silella.</p>
     <form id="signupForm">
-      <label for="signupName">Nome e cognome</label>
+      <label for="customerType">Tipologia cliente</label><select id="customerType" required><option value="persona_fisica">Persona fisica</option><option value="azienda">Azienda / professionista</option></select>\n      <label for="signupName">Nome e cognome</label>
       <input id="signupName" type="text" autocomplete="name" required placeholder="Nome e cognome">
       <label for="signupEmail">Email</label>
       <input id="signupEmail" type="email" autocomplete="email" required placeholder="La tua email">
