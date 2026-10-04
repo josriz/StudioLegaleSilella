@@ -1,6 +1,7 @@
 (() => {
 const init=async()=>{
- const sb=window.STUDIO_SUPABASE_CLIENT;
+ const sb=window.getStudioSupabaseClient ? window.getStudioSupabaseClient() : window.STUDIO_SUPABASE_CLIENT;
+ if(!sb){ console.error('[Lexroom] Client Supabase Studio non disponibile.'); return; }
  const {data:{user}}=await sb.auth.getUser();
  if(!user){
   if(!window.__lexroomLabAuthListener){
