@@ -121,10 +121,30 @@ $('loginForm').onsubmit=async e=>{
   const {data,error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});
   $('loginBtn').disabled=false;
   if(error){$('loginErr').textContent=error.message;return}
-  const {data:profile,error:roleError}=await sb.from('studio_utenti').select('role').eq('user_id',data.user.id).maybeSingle();
-  if(roleError||profile?.role!=='cliente'){
+  let {data:profile,error:roleError}=await sb.from('studio_utenti').select('role').eq('user_id',data.user.id).maybeSingle();
+  if(roleError){
     await sb.auth.signOut();
-    $('loginErr').textContent=roleError?'Impossibile verificare il tipo di account.':'Questo account è abilitato all’Area Studio e non può entrare nell’Area Cliente.';
+    $('loginErr').textContent='Impossibile verificare il tipo di account.';
+    return;
+  }
+  if(!profile){
+    const {data:boot,error:bootError}=await sb.rpc('studio_bootstrap_cliente');
+    if(bootError){
+      await sb.auth.signOut();
+      $('loginErr').textContent=bootError.message||'Impossibile completare l’attivazione dell’Area Cliente.';
+      return;
+    }
+    const {data:profileAfter,error:profileAfterError}=await sb.from('studio_utenti').select('role').eq('user_id',data.user.id).maybeSingle();
+    if(profileAfterError||profileAfter?.role!=='cliente'){
+      await sb.auth.signOut();
+      $('loginErr').textContent='Profilo Cliente non attivato.';
+      return;
+    }
+    profile=profileAfter;
+  }
+  if(profile.role!=='cliente'){
+    await sb.auth.signOut();
+    $('loginErr').textContent='Questo account è abilitato all’Area Studio e non può entrare nell’Area Cliente.';
     return;
   }
   location.replace('cliente-portale.html');
