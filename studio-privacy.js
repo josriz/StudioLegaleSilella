@@ -1,6 +1,7 @@
 (function(){
   'use strict';
-  const sb=window.STUDIO_SUPABASE_CLIENT || (window.STUDIO_SUPABASE_CLIENT=window.supabase.createClient(window.STUDIO_SUPABASE_URL,window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}));
+  const sb=window.STUDIO_SUPABASE_CLIENT;
+  if(!sb){ console.error('Client Supabase Studio non inizializzato da config.js.'); return; }
   let user=null, clients=[], informatives=[], treatments=[];
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
