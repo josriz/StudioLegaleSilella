@@ -246,11 +246,7 @@
 
     document.getElementById('studioLogout').addEventListener('click', async () => {
       await client.auth.signOut();
-      studioAccessGranted = false;
-      document.body.classList.add('studio-auth-pending');
-      status.textContent = 'Sessione chiusa.';
-      showLogin();
-      body.innerHTML = '<tr><td colspan="8">Effettua nuovamente l’accesso per visualizzare le pratiche.</td></tr>';
+      location.replace('studio.html');
     });
 
     item.addEventListener('click', async (e) => {
