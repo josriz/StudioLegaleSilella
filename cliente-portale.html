@@ -321,8 +321,8 @@ async function returnSigned(id){
   if(up.error){$('signErr').textContent=up.error.message;return}
   const ins=await sb.from('studio_portale_documenti').insert({pratica_id:d.pratica_id,cliente_id:currentClient?.id,sender_user_id:currentUser.id,recipient_user_id:null,file_name:file.name,storage_path:path,mime_type:file.type,size_bytes:file.size,direction:'client_to_studio',document_kind:d.document_kind,status:'restituito',signature_mode:d.signature_mode,parent_document_id:d.id,version:(d.version||1)+1}).select().single();
   if(ins.error){$('signErr').textContent=ins.error.message;return}
-  await sb.from('studio_portale_documenti').update({status:'restituito',returned_at:new Date().toISOString()}).eq('id',d.id);
-  await sb.from('studio_audit').insert({pratica_id:d.pratica_id,actor_user_id:currentUser.id,event_type:'documento_firmato_restituito',details:{documento_id:d.id,file_name:file.name}});
+  const {data:returnResult,error:returnError}=await sb.rpc('studio_registra_restituzione_documento',{p_original_document_id:d.id,p_returned_document_id:ins.data?.id});
+  if(returnError||!returnResult?.ok){$('signErr').textContent='Documento caricato, ma aggiornamento della restituzione non riuscito: '+(returnError?.message||'errore');return}
   if(d.document_kind==='privacy_informativa'){
     const {data:privacyResult,error:privacyError}=await sb.functions.invoke('studio-privacy-portal',{body:{action:'confirm',original_document_id:d.id,returned_document_id:ins.data?.id}});
     if(privacyError||!privacyResult?.ok){$('signErr').textContent='Documento restituito, ma la presa visione privacy non è stata registrata: '+(privacyError?.message||privacyResult?.error||'errore');return}
