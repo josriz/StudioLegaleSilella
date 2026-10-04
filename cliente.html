@@ -178,7 +178,14 @@ $('loginForm').onsubmit=async e=>{
       });
       $('loginBtn').disabled=false;
       if(requestError){
-        $('loginErr').textContent='Accesso effettuato, ma la richiesta non è ancora stata inviata allo Studio: '+requestError.message+'. Non ripetere la registrazione; riprova l’accesso o contatta lo Studio.';
+        const msg=String(requestError.message||'');
+        if(/già abilitato|gia abilitato|non può inviare una nuova richiesta|non puo inviare una nuova richiesta/i.test(msg)){
+          // La richiesta locale è obsoleta: l'account risulta già abilitato. Non ripetere l'onboarding.
+          localStorage.removeItem('studio_onboarding_request_v1');
+          location.replace('cliente-portale.html');
+          return;
+        }
+        $('loginErr').textContent='Accesso effettuato, ma la richiesta non è ancora stata inviata allo Studio: '+msg+'. Non ripetere la registrazione; riprova l’accesso o contatta lo Studio.';
         return;
       }
       localStorage.removeItem('studio_onboarding_request_v1');
