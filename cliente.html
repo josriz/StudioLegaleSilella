@@ -27,24 +27,34 @@ button,input,select,textarea{font:inherit}.container{width:min(1160px,calc(100% 
 </style>
 
 <style id="client-login-glass-final">
-.authWrap.studio-login-overlay{display:flex;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;padding:24px;overflow:auto;background:linear-gradient(135deg,rgba(8,18,36,.62),rgba(15,23,42,.34)),url('loghi_sfondi/stanza_vetro.jpg') center center/cover no-repeat}
-.authCard.studio-login-card{width:min(440px,100%);padding:30px 32px 24px;border:1px solid rgba(255,255,255,.58);border-radius:24px;background:linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.10));box-shadow:0 28px 80px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.55);backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%);color:#fff}
-.authIntro{padding:0!important;background:transparent!important;border:0!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
-.authIntro .studio-login-logo-wrap{display:flex;justify-content:center;align-items:center;margin:0 0 18px;padding:0;width:100%;height:96px;box-sizing:border-box;border:1px solid rgba(255,255,255,.42);border-radius:18px;background:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 10px 30px rgba(0,0,0,.12);overflow:hidden}
-.authIntro .studio-login-logo{display:block;width:100%;height:100%;max-width:none;max-height:none;object-fit:fill;object-position:center;filter:drop-shadow(0 5px 12px rgba(0,0,0,.22))}
-.authIntro .studio-login-kicker{text-align:center;font-size:10px;font-weight:800;letter-spacing:.22em;color:rgba(255,255,255,.78);margin-bottom:6px}
-.authIntro h2{margin:0;text-align:center;font-size:28px;letter-spacing:.01em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.28)}
-.authIntro .studio-login-subtitle{margin:7px 0 22px;text-align:center;color:rgba(255,255,255,.84);font-size:13px;line-height:1.5}
-.authForm{padding:0!important;background:transparent!important;color:#fff!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
-.authForm form{display:grid;gap:7px}
-.authForm label{color:rgba(255,255,255,.92);font-size:12px;font-weight:700;margin-top:4px}
-.authForm input{width:100%;box-sizing:border-box;margin:0 0 6px;padding:12px 14px;border:1px solid rgba(255,255,255,.48);border-radius:12px;outline:none;background:rgba(255,255,255,.82);color:#0f172a;font-size:14px;box-shadow:inset 0 1px 3px rgba(15,23,42,.08),0 5px 18px rgba(0,0,0,.08);transition:border-color .2s,box-shadow .2s,background .2s}
-.authForm input::placeholder{color:#64748b}.authForm input:focus{background:rgba(255,255,255,.96);border-color:rgba(255,255,255,.92);box-shadow:0 0 0 3px rgba(255,255,255,.16),0 8px 24px rgba(0,0,0,.12)}
-.authForm .studio-login-submit{width:100%;margin-top:3px;padding:12px 16px;border:1px solid rgba(255,255,255,.58);border-radius:12px;cursor:pointer;color:#fff;font-size:13px;font-weight:800;letter-spacing:.01em;background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.16));box-shadow:0 10px 28px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.42);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-.authForm .err{min-height:20px;color:#ffe4e6;font-size:12px;line-height:1.4;margin:1px 0 3px;text-shadow:0 1px 3px rgba(0,0,0,.25)}
-.authForm .btn.outline{width:100%;margin-top:8px;padding:12px 16px;border:1px solid rgba(255,255,255,.38);border-radius:12px;color:#fff;background:rgba(255,255,255,.10);box-shadow:0 10px 28px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.24);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-.authCard:after{content:'Accesso riservato ai Clienti autorizzati';display:block;margin-top:18px;padding-top:13px;border-top:1px solid rgba(255,255,255,.22);text-align:center;color:rgba(255,255,255,.68);font-size:10px;letter-spacing:.03em}
-@media(max-width:600px){.authWrap.studio-login-overlay{padding:14px}.authCard.studio-login-card{padding:22px 18px 18px;border-radius:20px}.authIntro .studio-login-logo-wrap{min-height:72px;margin-bottom:14px}.authIntro .studio-login-logo{height:62px}.authIntro h2{font-size:24px}}
+.authWrap.studio-login-overlay{display:flex;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;padding:18px;overflow:auto;background:linear-gradient(135deg,rgba(8,18,36,.62),rgba(15,23,42,.34)),url('loghi_sfondi/stanza_vetro.jpg') center center/cover no-repeat}
+.authCard.studio-login-card{width:min(440px,100%);padding:24px 30px 18px;border:1px solid rgba(255,255,255,.58);border-radius:24px;background:linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.10));box-shadow:0 28px 80px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.55);backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%);color:#fff}
+.authCard .studio-login-logo-wrap{display:flex;justify-content:center;align-items:center;margin:0 0 14px;padding:0;width:100%;height:78px;box-sizing:border-box;border:1px solid rgba(255,255,255,.42);border-radius:18px;background:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 10px 30px rgba(0,0,0,.12);overflow:hidden}
+.authCard .studio-login-logo{display:block;width:100%;height:100%;max-width:none;max-height:none;object-fit:fill;object-position:center;filter:drop-shadow(0 5px 12px rgba(0,0,0,.22))}
+.authCard .studio-login-kicker{text-align:center;font-size:10px;font-weight:800;letter-spacing:.22em;color:rgba(255,255,255,.78);margin-bottom:4px}
+.authCard h2{margin:0;text-align:center;font-size:26px;letter-spacing:.01em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.28)}
+.authCard .studio-login-subtitle{margin:5px 0 16px;text-align:center;color:rgba(255,255,255,.84);font-size:12.5px;line-height:1.45}
+.authCard #loginForm{display:grid;gap:5px}
+.authCard #loginForm label{color:rgba(255,255,255,.92);font-size:12px;font-weight:700;margin-top:3px}
+.authCard #loginForm input{width:100%;box-sizing:border-box;margin:0 0 4px;padding:10px 13px;border:1px solid rgba(255,255,255,.48);border-radius:12px;outline:none;background:rgba(255,255,255,.82);color:#0f172a;font-size:14px;box-shadow:inset 0 1px 3px rgba(15,23,42,.08),0 5px 18px rgba(0,0,0,.08);transition:border-color .2s,box-shadow .2s,background .2s}
+.authCard #loginForm input::placeholder{color:#64748b}
+.authCard #loginForm input:focus{background:rgba(255,255,255,.96);border-color:rgba(255,255,255,.92);box-shadow:0 0 0 3px rgba(255,255,255,.16),0 8px 24px rgba(0,0,0,.12)}
+.authCard .studio-login-error{min-height:17px;color:#ffe4e6;font-size:12px;line-height:1.35;margin:0;text-shadow:0 1px 3px rgba(0,0,0,.25)}
+.authCard .studio-login-submit{width:100%;margin-top:2px;padding:11px 16px;border:1px solid rgba(255,255,255,.58);border-radius:12px;cursor:pointer;color:#fff;font-size:13px;font-weight:800;letter-spacing:.01em;background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.16));box-shadow:0 10px 28px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.42);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .2s,background .2s,box-shadow .2s}
+.authCard .studio-login-submit:hover{transform:translateY(-1px);background:linear-gradient(135deg,rgba(255,255,255,.46),rgba(255,255,255,.22));box-shadow:0 14px 32px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.52)}
+.client-login-links{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:10px}
+.client-login-links button{border:0;background:none;padding:0;color:rgba(255,255,255,.82);font-size:11px;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.client-login-links button:hover{color:#fff}
+.client-login-links span{color:rgba(255,255,255,.45);font-size:11px}
+.authCard .studio-login-footer{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.22);text-align:center;color:rgba(255,255,255,.68);font-size:9px;letter-spacing:.03em}
+@media(max-width:600px){
+.authWrap.studio-login-overlay{padding:12px}
+.authCard.studio-login-card{padding:20px 17px 15px;border-radius:20px}
+.authCard .studio-login-logo-wrap{height:68px;margin-bottom:12px}
+.authCard h2{font-size:23px}
+.authCard .studio-login-subtitle{font-size:12px;margin-bottom:14px}
+.client-login-links{margin-top:9px}
+}
 </style>
 <style id="client-login-exact-studio">
 .authWrap.studio-login-overlay{display:flex!important;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;padding:24px;overflow:auto;background:linear-gradient(135deg,rgba(8,18,36,.62),rgba(15,23,42,.34)),url('loghi_sfondi/stanza_vetro.jpg') center center/cover no-repeat}
@@ -86,16 +96,13 @@ button,input,select,textarea{font:inherit}.container{width:min(1160px,calc(100% 
         <div id="loginErr" class="studio-login-error"></div>
         <button id="loginBtn" type="submit" class="studio-login-submit">Accedi all'Area Cliente</button>
       </form>
-      <div class="client-login-actions">
-        <button class="btn outline" id="showRegister" type="button">Sono un nuovo cliente</button>
-        <button class="btn outline" id="forgotBtn" type="button">Ho dimenticato la password</button>
-        <button class="btn outline" id="backLanding" type="button">Torna alla pagina iniziale</button>
+      <div class="client-login-links">
+        <button id="showRegister" type="button">Sono un nuovo cliente</button>
+        <span aria-hidden="true">·</span>
+        <button id="forgotBtn" type="button">Ho dimenticato la password</button>
       </div>
     </div>
-    <div id="registerBox" class="hidden"><h2>CREA IL TUO ACCESSO</h2><p class="status">Dopo la registrazione potrà essere richiesta la conferma dell'email.</p><form id="signupForm"><div class="field"><label>Nome e cognome</label><input id="signupName" type="text" required></div><div class="field"><label>Email</label><input id="signupEmail" type="email" autocomplete="email" required></div><div class="field"><label>Password</label><input id="signupPassword" type="password" minlength="8" autocomplete="new-password" required></div><label class="check"><input id="privacyConsent" type="checkbox" required><span>Dichiaro di aver preso visione dell’informativa privacy vigente dello Studio.</span></label><div id="privacySignupInfo" class="status" style="margin-top:8px">Caricamento informativa privacy vigente…</div><label class="check" style="margin-top:10px"><input id="termsConsent" type="checkbox" required><span>Accetto i Termini di utilizzo del portale.</span></label><div id="signupErr" class="err" style="margin-top:10px"></div><button class="btn gold" id="signupBtn">Crea accesso</button></form><button class="btn outline" style="margin-top:12px" id="showLogin">Ho già un accesso</button></div>
-  </div>
-</div>
-</div>
+    <div id="registerBox" class="hidden"><h2>CREA IL TUO ACCESSO</h2><p class="status">Dopo la registrazione potrà essere richiesta la conferma dell'email.</p><form id="signupForm"><div class="field"><label>Nome e cognome</label><input id="signupName" type="text" required></div><div class="field"><label>Email</label><input id="signupEmail" type="email" autocomplete="email" required></div><div class="field"><label>Password</label><input id="signupPassword" type="password" minlength="8" autocomplete="new-password" required></div><label class="check"><input id="privacyConsent" type="checkbox" required><span>Dichiaro di aver preso visione dell’informativa privacy vigente dello Studio.</span></label><div id="privacySignupInfo" class="status" style="margin-top:8px">Caricamento informativa privacy vigente…</div><label class="check" style="margin-top:10px"><input id="termsConsent" type="checkbox" required><span>Accetto i Termini di utilizzo del portale.</span></label><div id="signupErr" class="err" style="margin-top:10px"></div><button class="btn gold" id="signupBtn">Crea accesso</button></form><button class="btn outline" style="margin-top:12px" id="showLogin">Ho già un accesso</button>
     <div class="studio-login-footer">Accesso riservato ai Clienti autorizzati</div>
   </div>
 </div>
