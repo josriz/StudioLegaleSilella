@@ -132,12 +132,22 @@ $('loginForm').onsubmit=async e=>{
 $('signupForm').onsubmit=async e=>{
   e.preventDefault();$('signupErr').textContent='';$('signupBtn').disabled=true;
   try{
+    const name=$('signupName').value.trim(),email=$('signupEmail').value.trim(),password=$('signupPassword').value;
     if(!activePrivacyNotice)throw Error('L’informativa privacy vigente non è disponibile. Registrazione non disponibile.');
-    const {data,error}=await sb.auth.signUp({email:$('signupEmail').value.trim(),password:$('signupPassword').value,options:{data:{full_name:$('signupName').value.trim()}}});
+    if(password.length<8)throw Error('La password deve contenere almeno 8 caratteri.');
+    const {data,error}=await sb.auth.signUp({email,password,options:{data:{full_name:name}}});
     if(error)throw error;
     localStorage.setItem('studio_portal_consents_v1',JSON.stringify({privacy:!!$('privacyConsent').checked,terms:!!$('termsConsent').checked}));
-    if(data.session)location.replace('cliente-portale.html');
-    else{$('signupErr').className='studio-login-error';$('signupErr').textContent='Account creato. Controlla la posta, conferma l’email e poi accedi.'}
+    if(data.session){
+      const {error:bootError}=await sb.rpc('studio_bootstrap_cliente');
+      if(bootError)throw bootError;
+      const {data:userData}=await sb.auth.getUser();
+      if(userData?.user)await sb.from('studio_clienti').update({full_name:name}).eq('user_id',userData.user.id);
+      location.replace('cliente-portale.html');
+    }else{
+      $('signupErr').className='studio-login-error';
+      $('signupErr').textContent='Account creato. Controlla la posta, conferma l’email e poi accedi all’Area Cliente.';
+    }
   }catch(err){$('signupErr').textContent=err.message}
   finally{$('signupBtn').disabled=false}
 };
