@@ -262,7 +262,7 @@ async function saveInformative(id){try{const row={titolo:$('piTitolo').value.tri
         sb.from('studio_impostazioni').select('*').eq('config_key','default').maybeSingle()
       ]);
       for(const x of [t,r,b,i,c,pc,p,d,cl,si])if(x.error)throw x.error;
-      clients=cl.data||[];studioIdentity=si.data||{};
+      clients=cl.data||[];studioIdentity=si.data||{}; if(studioIdentity.logo_storage_path){const {data:signed}=await sb.storage.from('studio-legale-documenti').createSignedUrl(studioIdentity.logo_storage_path,3600);if(signed)studioIdentity.logo_signed_url=signed.signedUrl;}
       const clientByUser=new Map(clients.map(x=>[x.user_id,x]));
       const portalPrivacy=(pc.data||[]).map(x=>({...x,_portal:true,client_name:clientByUser.get(x.user_id)?.full_name||x.user_id}));
       renderTreatments(t.data||[]);renderRequests(r.data||[]);renderBreaches(b.data||[]);renderInformative(i.data||[]);renderConsensi([...(c.data||[]),...portalPrivacy]);renderProcessors(p.data||[]);renderDpia(d.data||[]);
