@@ -1301,9 +1301,7 @@
             result.style.display = 'block';
             result.innerHTML = '<strong>🔍 Verifica in corso…</strong>';
 
-            const client = window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
-                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}))
-                : null);
+            const client = window.STUDIO_SUPABASE_CLIENT;
 
             if(!client) {
                 result.innerHTML = '<strong style="color:#b91c1c;">⚠️ Servizio di verifica non disponibile.</strong>';
@@ -1367,9 +1365,7 @@
             result.style.display = 'block';
             result.innerHTML = '<div class="card"><strong>🔎 Ricerca in corso…</strong></div>';
 
-            const client = window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
-                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}))
-                : null);
+            const client = window.STUDIO_SUPABASE_CLIENT;
             if(!client) {
                 result.innerHTML = '<div class="card"><strong style="color:#b91c1c;">⚠️ Servizio di ricerca non disponibile.</strong></div>';
                 return;
@@ -1749,9 +1745,7 @@
         }
 
         function getStudioClient() {
-            return window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
-                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}))
-                : null);
+            return window.STUDIO_SUPABASE_CLIENT;
         }
 
         async function loadClients() {
@@ -2031,9 +2025,7 @@
 
             outputBox.value = "Elaborazione della bozza IA in corso...";
 
-            const client = window.STUDIO_SUPABASE_CLIENT || (window.supabase && window.STUDIO_SUPABASE_URL && window.STUDIO_SUPABASE_PUBLISHABLE_KEY
-                ? (window.STUDIO_SUPABASE_CLIENT = window.supabase.createClient(window.STUDIO_SUPABASE_URL, window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}))
-                : null);
+            const client = window.STUDIO_SUPABASE_CLIENT;
 
             if(!client) {
                 outputBox.value = "Servizio Supabase non disponibile.";
@@ -2095,11 +2087,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     btn.disabled=true;
     btn.textContent='Uscita…';
     try{
-      const client=window.STUDIO_SUPABASE_CLIENT || (window.STUDIO_SUPABASE_CLIENT=window.supabase.createClient(
-        window.STUDIO_SUPABASE_URL,
-        window.STUDIO_SUPABASE_PUBLISHABLE_KEY,
-        {auth:{storageKey:'silella-studio-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
-      ));
+      const client=window.STUDIO_SUPABASE_CLIENT;
       await client.auth.signOut();
     }catch(e){console.error('Logout Studio:',e);}
     window.location.href='index.html';
