@@ -34,7 +34,8 @@
   const docsFor=id=>state.docs.filter(d=>d.pratica_id===id);
   const practiceOptions=()=>'<option value="">— seleziona —</option>'+state.practices.map(p=>'<option value="'+p.id+'">'+esc(p.client_name)+' · '+esc(p.legal_area||'')+'</option>').join('');
   const isAdmin=()=>state.profile && ['studio','admin'].includes(state.profile.role);
-  const auditLabel=t=>({gemini_bozza_generata:'Bozza generata con IA',bozza_approvata:'Bozza approvata dallo Studio',lab_comunicazione_preparata:'Comunicazione LAB preparata',test_flow_created:'Flusso di test creato'}[t]||t||'Attivita');
+  const auditLabel=t=>({gemini_bozza_generata:'Bozza generata con IA',
+  ai_comunicazione_generata:'Comunicazione generata con IA',bozza_approvata:'Bozza approvata dallo Studio',lab_comunicazione_preparata:'Comunicazione LAB preparata',test_flow_created:'Flusso di test creato'}[t]||t||'Attivita');
   const auditText=a=>{const d=a&&a.details||{};if(a.event_type==='gemini_bozza_generata')return 'Modalita LAB gratuita · Modello: '+(d.model||'IA gratuita');if(a.event_type==='bozza_approvata')return 'Bozza approvata · ID: '+(d.bozza_id||'—');if(a.event_type==='lab_comunicazione_preparata')return 'Destinatario: '+(d.recipient||'—')+' · Nessun invio reale';if(a.event_type==='test_flow_created')return 'Flusso Cliente → Studio · Cliente: '+(d.client_email||'—');return Object.keys(d).length?Object.entries(d).map(([k,v])=>k+': '+String(v)).join(' · '):'—'};
   const auditPractice=a=>{const p=state.practices.find(x=>x.id===a.pratica_id);return p?(p.client_name||'Fascicolo')+' · '+(p.legal_area||''):(a.pratica_id?'Fascicolo di test':'—')};
 
