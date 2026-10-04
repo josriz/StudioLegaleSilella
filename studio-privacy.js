@@ -91,13 +91,64 @@
   async function saveBreach(id){try{const row={titolo:$('pbTitolo').value.trim(),rilevato_at:$('pbRilevato').value?new Date($('pbRilevato').value).toISOString():new Date().toISOString(),descrizione:$('pbDescrizione').value.trim(),categorie_dati:$('pbDati').value.trim(),interessati_coinvolti:$('pbInteressati').value.trim(),valutazione_rischio:$('pbValutazione').value.trim(),azioni_intrapprese:$('pbAzioni').value.trim(),misure_preventive:$('pbMisure').value.trim(),rischio:$('pbRischio').value,stato:$('pbStato').value,notifica_garante:$('pbGarante').checked,notifica_interessati:$('pbNotificaInteressati').checked,notifica_garante_at:$('pbGaranteAt').value?new Date($('pbGaranteAt').value).toISOString():null,notifica_interessati_at:$('pbInteressatiAt').value?new Date($('pbInteressatiAt').value).toISOString():null,riferimento_garante:$('pbRiferimento').value.trim(),decisione_notifica:$('pbDecisione').value.trim(),data_chiusura:$('pbChiusura').value?new Date($('pbChiusura').value).toISOString():null,updated_at:new Date().toISOString()};if(!row.titolo)throw Error('Inserisci il titolo dell’evento.');await save('studio_privacy_breach',row,id);$('privacyBreachForm').style.display='none'}catch(e){alert(e.message)}}
   async function sendPrivacyInformative(id){
     const informative=informatives.find(x=>x.id===id);
-    if(!informative||informative.stato!=='attiva'){alert('Attiva prima l’informativa da inviare.');return}
+    if(!informative||informative.stato!=='attiva'){alert('Attiva prima l’informativa da preparare.');return}
     const options=clients.filter(x=>x.user_id).map(x=>'<option value="'+x.id+'">'+esc(x.full_name||x.user_id)+'</option>').join('');
     if(!options){alert('Nessun cliente con accesso attivo al Portale.');return}
-    const m=document.createElement('div');m.className='modal';m.innerHTML='<div class="modalBox"><div class="modalHead"><h2>Invia informativa al cliente</h2><button class="iconBtn" type="button" id="closePrivacySend">✕</button></div><p class="status">Il sistema genera il PDF dalla versione attiva, lo collega al cliente e lo mette nella sezione “Da firmare”.</p><div class="form-group"><label>Cliente</label><select id="privacySendClient"><option value="">Seleziona cliente</option>'+options+'</select></div><div id="privacySendStatus" class="status"></div><div class="actions"><button class="btn outline" type="button" id="cancelPrivacySend">Annulla</button><button class="btn gold" type="button" id="confirmPrivacySend">Invia</button></div></div>';document.body.appendChild(m);
-    const close=()=>m.remove();m.querySelector('#closePrivacySend').onclick=close;m.querySelector('#cancelPrivacySend').onclick=close;
-    m.querySelector('#confirmPrivacySend').onclick=async()=>{const clientId=m.querySelector('#privacySendClient').value,s=m.querySelector('#privacySendStatus'),b=m.querySelector('#confirmPrivacySend');if(!clientId){s.textContent='Seleziona un cliente.';return}b.disabled=true;s.textContent='Generazione PDF e invio…';try{const {data,error}=await sb.functions.invoke('studio-privacy-portal',{body:{action:'send',informative_id:id,client_id:clientId}});if(error)throw error;if(!data?.ok)throw Error(data?.error||'Invio non riuscito.');s.textContent='Documento inviato al Portale Cliente.';setTimeout(()=>{close();loadAll()},500)}catch(e){b.disabled=false;s.textContent=e.message||'Errore invio.'}};
-}
+
+    const m=document.createElement('div');
+    m.className='modal';
+    m.innerHTML='<div class="modalBox"><div class="modalHead"><h2>Prepara informativa per il cliente</h2><button class="iconBtn" type="button" id="closePrivacySend">✕</button></div>'+
+      '<p class="status">Il sistema compila automaticamente i dati già disponibili del cliente, genera il PDF e lo prepara per la verifica dello Studio. Il cliente non riceverà nulla finché non approvi l’invio.</p>'+
+      '<div class="form-group"><label>Cliente</label><select id="privacySendClient"><option value="">Seleziona cliente</option>'+options+'</select></div>'+
+      '<div id="privacyPrepareStatus" class="status"></div>'+
+      '<div id="privacyPreparePreview" style="display:none;margin-top:12px;padding:12px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0"></div>'+
+      '<div class="actions"><button class="btn outline" type="button" id="cancelPrivacySend">Annulla</button><button class="btn gold" type="button" id="preparePrivacy">Prepara documento</button><button class="btn btn-success" type="button" id="approvePrivacy" style="display:none">Approva e invia al cliente</button></div></div>';
+    document.body.appendChild(m);
+
+    const close=()=>m.remove();
+    m.querySelector('#closePrivacySend').onclick=close;
+    m.querySelector('#cancelPrivacySend').onclick=close;
+
+    m.querySelector('#preparePrivacy').onclick=async()=>{
+      const clientId=m.querySelector('#privacySendClient').value;
+      const s=m.querySelector('#privacyPrepareStatus'),preview=m.querySelector('#privacyPreparePreview'),b=m.querySelector('#preparePrivacy'),approve=m.querySelector('#approvePrivacy');
+      if(!clientId){s.textContent='Seleziona un cliente.';return}
+      b.disabled=true;approve.style.display='none';preview.style.display='none';s.textContent='Compilazione dati e generazione PDF…';
+      try{
+        const {data,error}=await sb.functions.invoke('studio-privacy-portal',{body:{action:'prepare',informative_id:id,client_id:clientId}});
+        if(error)throw error;
+        if(!data?.ok)throw Error(data?.error||'Preparazione non riuscita.');
+        const snap=data.client_snapshot||{};
+        preview.innerHTML='<b>Documento pronto per verifica</b><div style="margin-top:8px;line-height:1.55">'+
+          '<div><b>Cliente:</b> '+esc(snap.full_name||'Da completare')+'</div>'+
+          '<div><b>Codice fiscale:</b> '+esc(snap.tax_id||'Da completare')+'</div>'+
+          '<div><b>Partita IVA:</b> '+esc(snap.vat_number||'Da completare')+'</div>'+
+          '<div><b>Email:</b> '+esc(snap.email||'Da completare')+'</div>'+
+          '<div><b>Telefono:</b> '+esc(snap.phone||'Da completare')+'</div>'+
+          '<div><b>Indirizzo:</b> '+esc([snap.address,snap.postal_code,snap.city,snap.province].filter(Boolean).join(', ')||'Da completare')+'</div>'+
+          '</div><div style="margin-top:10px"><a class="btn outline" target="_blank" rel="noopener" href="'+esc(data.signed_url||'#')+'">Apri PDF per verifica</a></div>';
+        preview.style.display='block';
+        s.textContent='Verifica il PDF generato. Il cliente non lo vede ancora.';
+        approve.style.display='inline-block';
+        approve.dataset.preparedId=data.prepared_id;
+      }catch(e){b.disabled=false;s.textContent=e.message||'Errore nella preparazione.'}
+    };
+
+    m.querySelector('#approvePrivacy').onclick=async()=>{
+      const preparedId=m.querySelector('#approvePrivacy').dataset.preparedId;
+      const s=m.querySelector('#privacyPrepareStatus'),b=m.querySelector('#approvePrivacy');
+      if(!preparedId)return;
+      if(!confirm('Confermi che hai verificato il PDF e vuoi inviarlo al cliente?'))return;
+      b.disabled=true;s.textContent='Invio al Portale Cliente…';
+      try{
+        const {data,error}=await sb.functions.invoke('studio-privacy-portal',{body:{action:'approve_send',prepared_id:preparedId}});
+        if(error)throw error;
+        if(!data?.ok)throw Error(data?.error||'Invio non riuscito.');
+        s.textContent='Documento approvato e inviato al Portale Cliente.';
+        setTimeout(()=>{close();loadAll()},700);
+      }catch(e){b.disabled=false;s.textContent=e.message||'Errore nell’invio.'}
+    };
+  }
 async function saveInformative(id){try{const row={titolo:$('piTitolo').value.trim(),tipo:$('piTipo').value.trim(),versione:$('piVersione').value.trim(),contenuto:$('piContenuto').value.trim(),stato:$('piStato').value,valida_dal:$('piDal').value||null,valida_al:$('piAl').value||null,note:$('piNote').value.trim(),updated_by:user.id,updated_at:new Date().toISOString()};if(!row.titolo||!row.contenuto)throw Error('Titolo e testo informativa sono obbligatori.');await save('studio_privacy_informative',row,id);$('privacyInformativeForm').style.display='none'}catch(e){alert(e.message)}}
   async function saveConsent(id){try{const row={cliente_id:$('pcCliente').value||null,user_id:null,informativa_id:$('pcInformativa').value||null,tipo_azione:$('pcAzione').value,finalita:$('pcFinalita').value.trim(),registrato_at:$('pcData').value?new Date($('pcData').value).toISOString():new Date().toISOString(),fonte:$('pcFonte').value.trim(),evidenza:$('pcEvidenza').value.trim(),note:$('pcNote').value.trim()};if(!row.cliente_id||!row.informativa_id)throw Error('Seleziona cliente e informativa.');const c=clients.find(x=>x.id===row.cliente_id);row.user_id=c?.user_id||null;row.esito=row.tipo_azione==='revoca'?'revocato':'registrato';await save('studio_privacy_consensi',row,id);$('privacyConsentForm').style.display='none'}catch(e){alert(e.message)}}
   async function saveProcessor(id){try{const row={denominazione:$('ppNome').value.trim(),servizio:$('ppServizio').value.trim(),ruolo:$('ppRuolo').value.trim(),contratto_stato:$('ppStato').value,contratto_data:$('ppData').value||null,scadenza_data:$('ppScadenza').value||null,paesi_trattamento:$('ppPaesi').value.trim(),subresponsabili:$('ppSub').value.trim(),contatto:$('ppContatto').value.trim(),note:$('ppNote').value.trim(),updated_by:user.id,updated_at:new Date().toISOString()};if(!row.denominazione)throw Error('Inserisci la denominazione.');await save('studio_privacy_responsabili',row,id);$('privacyProcessorForm').style.display='none'}catch(e){alert(e.message)}}
