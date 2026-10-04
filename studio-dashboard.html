@@ -2104,7 +2104,6 @@
               notes:'Documentazione onboarding inviata dallo Studio'
             }).select('id').single();
             if(error){await client.storage.from('studio-legale-documenti').remove([path]);if(out)out.textContent='Registrazione documento non riuscita: '+error.message;return;}
-            await client.from('studio_notifiche').insert({recipient_user_id:cl.user_id,tipo:'documento_studio',titolo:'Nuovi documenti da firmare',messaggio:'Lo Studio ha inviato il documento: '+file.name,documento_id:doc.id});
             if(out)out.textContent='PDF inviato al cliente.';
             await loadClients();
             await showClientDetail(index);
