@@ -78,12 +78,11 @@ body{margin:0}
         <button id="loginBtn" type="submit" class="studio-login-submit">Accedi all'Area Cliente</button>
       </form>
       <div class="client-login-links">
-        <button id="showRegister" type="button" onclick="document.getElementById('loginBox').style.display='none';document.getElementById('registerBox').classList.remove('hidden');document.getElementById('registerBox').style.display='block';return false;">Sono un nuovo cliente</button>
+        <button id="showRegister" type="button" onclick="location.href='registrazione-cliente.html'">Sono un nuovo cliente</button>
         <span aria-hidden="true">·</span>
         <button id="forgotBtn" type="button">Ho dimenticato la password</button>
       </div>
     </div>
-    <div id="registerBox" class="hidden"><h2>CREA IL TUO ACCESSO</h2><p class="status">Dopo la registrazione potrà essere richiesta la conferma dell'email.</p><form id="signupForm"><div class="field"><label>Nome e cognome</label><input id="signupName" type="text" required></div><div class="field"><label>Email</label><input id="signupEmail" type="email" autocomplete="email" required></div><div class="field"><label>Password</label><input id="signupPassword" type="password" minlength="8" autocomplete="new-password" required></div><label class="check"><input id="privacyConsent" type="checkbox" required><span>Dichiaro di aver preso visione dell’informativa privacy vigente dello Studio.</span></label><div id="privacySignupInfo" class="status" style="margin-top:8px">Caricamento informativa privacy vigente…</div><label class="check" style="margin-top:10px"><input id="termsConsent" type="checkbox" required><span>Accetto i Termini di utilizzo del portale.</span></label><div id="signupErr" class="err" style="margin-top:10px"></div><button class="btn gold" id="signupBtn">Crea accesso</button></form><button class="btn outline" style="margin-top:12px" id="showLogin" type="button" onclick="document.getElementById('registerBox').style.display='none';document.getElementById('registerBox').classList.add('hidden');document.getElementById('loginBox').style.display='block';return false;">Ho già un accesso</button></div>
     <div class="studio-login-footer">Accesso riservato ai Clienti autorizzati</div>
   </div>
 </div>
@@ -165,28 +164,6 @@ $('loginForm').onsubmit=async e=>{
     return;
   }
   location.replace('cliente-portale.html');
-};
-$('signupForm').onsubmit=async e=>{
-  e.preventDefault();$('signupErr').textContent='';$('signupBtn').disabled=true;
-  try{
-    const name=$('signupName').value.trim(),email=$('signupEmail').value.trim(),password=$('signupPassword').value;
-    if(!activePrivacyNotice)throw Error('L’informativa privacy vigente non è disponibile. Registrazione non disponibile.');
-    if(password.length<8)throw Error('La password deve contenere almeno 8 caratteri.');
-    const {data,error}=await sb.auth.signUp({email,password,options:{data:{full_name:name}}});
-    if(error)throw error;
-    localStorage.setItem('studio_portal_consents_v1',JSON.stringify({privacy:!!$('privacyConsent').checked,terms:!!$('termsConsent').checked}));
-    if(data.session){
-      const {error:bootError}=await sb.rpc('studio_bootstrap_cliente');
-      if(bootError)throw bootError;
-      const {data:userData}=await sb.auth.getUser();
-      if(userData?.user)await sb.from('studio_clienti').update({full_name:name}).eq('user_id',userData.user.id);
-      location.replace('cliente-portale.html');
-    }else{
-      $('signupErr').className='studio-login-error';
-      $('signupErr').textContent='Account creato. Controlla la posta, conferma l’email e poi accedi all’Area Cliente.';
-    }
-  }catch(err){$('signupErr').textContent=err.message}
-  finally{$('signupBtn').disabled=false}
 };
 loadPrivacy();
 </script>
