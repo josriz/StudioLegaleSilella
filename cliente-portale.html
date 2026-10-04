@@ -252,6 +252,7 @@ async function loadAll(){
   }
   if(pc.error) console.error(pc.error); else privacyConsents=pc.data||[];
   renderAll();
+  applyOnboardingGate();
 }
 function renderAll(){
   const sign=portalDocs.filter(d=>d.recipient_user_id===currentUser.id && d.status==='da_firmare');
