@@ -15,7 +15,7 @@
       c.from('studio_documenti').select('id,pratica_id,file_name,size_bytes,created_at').order('created_at',{ascending:false}),
       c.from('studio_audit').select('*').order('created_at',{ascending:false}).limit(100),
       c.from('studio_comunicazioni').select('*').order('sent_at',{ascending:false}).limit(100),
-      c.from('studio_utenti').select('user_id,role,full_name,created_at').order('created_at',{ascending:true}),
+      c.from('studio_utenti').select('user_id,role,full_name,created_at').in('role',['studio','admin']).order('created_at',{ascending:true}),
       c.from('studio_agenda').select('*').order('starts_at',{ascending:true}),
       c.from('studio_pct_depositi').select('*').order('created_at',{ascending:false}),
       c.from('studio_time_entries').select('*').order('started_at',{ascending:false}).limit(200),
