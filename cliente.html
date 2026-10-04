@@ -182,7 +182,7 @@ $('loginForm').onsubmit=async e=>{
         if(/già abilitato|gia abilitato|non può inviare una nuova richiesta|non puo inviare una nuova richiesta/i.test(msg)){
           // La richiesta locale è obsoleta: l'account risulta già abilitato. Non ripetere l'onboarding.
           localStorage.removeItem('studio_onboarding_request_v1');
-          location.replace('cliente-portale.html');
+          location.replace('cliente-portale.html?v=20261005-1');
           return;
         }
         $('loginErr').textContent='Accesso effettuato, ma la richiesta non è ancora stata inviata allo Studio: '+msg+'. Non ripetere la registrazione; riprova l’accesso o contatta lo Studio.';
@@ -191,11 +191,11 @@ $('loginForm').onsubmit=async e=>{
       localStorage.removeItem('studio_onboarding_request_v1');
       $('loginErr').textContent='✓ Richiesta inviata correttamente allo Studio. È in attesa di valutazione; l’invio non comporta l’accettazione dell’incarico.';
       $('loginErr').className='studio-login-error ok';
-      setTimeout(()=>location.replace('cliente-portale.html'),1800);
+      setTimeout(()=>location.replace('cliente-portale.html?v=20261005-1'),1800);
       return;
     }
   }
-  location.replace('cliente-portale.html');
+  location.replace('cliente-portale.html?v=20261005-1');
 };
 async function showPasswordRecovery(){
   $('loginBox').classList.add('hidden');
