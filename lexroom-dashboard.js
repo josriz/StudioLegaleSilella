@@ -59,7 +59,10 @@ const init=async()=>{
    <div id="commHistory" style="font-size:12px;color:#64748b">Caricamento…</div>
  </div>`;
  area.appendChild(commPanel);
- menu.appendChild(commItem);
+ const aiSection=Array.from(menu.querySelectorAll('.menu-section-title')).find(x=>x.textContent.trim()==='Intelligenza Artificiale');
+ if(!aiSection){const s=document.createElement('div');s.className='menu-section-title';s.textContent='Intelligenza Artificiale';if(controlSection)menu.insertBefore(s,controlSection);else menu.appendChild(s);}
+ const aiSectionNow=Array.from(menu.querySelectorAll('.menu-section-title')).find(x=>x.textContent.trim()==='Intelligenza Artificiale');
+ if(aiSectionNow)menu.insertBefore(commItem,aiSectionNow.nextSibling);else menu.appendChild(commItem);
 
  const commEsc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const commPractice=commPanel.querySelector('#commPractice');
@@ -104,7 +107,7 @@ const init=async()=>{
  commPanel.querySelector('#commHelp')?.addEventListener('click',()=>window.openStudioHelp&&window.openStudioHelp('communications'));
  commPanel.querySelector('#commGenerate').onclick=generateCommunication;
  commItem.onclick=async e=>{e.preventDefault();document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));commItem.classList.add('active');commPanel.classList.add('active');const t=document.getElementById('headerTitle');if(t)t.innerText='Lettere & Comunicazioni AI';await loadCommunicationData();};
- area.appendChild(panel);menu.appendChild(item);
+ area.appendChild(panel);const controlSection=Array.from(menu.querySelectorAll('.menu-section-title')).find(x=>x.textContent.trim()==='Controllo e conformità');if(controlSection)menu.insertBefore(item,controlSection);else menu.appendChild(item);
  const body=panel.querySelector('#lxBody'),status=panel.querySelector('#lxStatus'),detail=panel.querySelector('#lxDetail');
  panel.querySelector('#lxHelp')?.addEventListener('click',()=>window.openStudioHelp&&window.openStudioHelp('lexroom'));
  const fn=window.STUDIO_SUPABASE_URL+'/functions/v1/studio-lexroom';
