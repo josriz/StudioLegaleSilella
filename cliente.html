@@ -83,6 +83,18 @@ body{margin:0}
         <button id="forgotBtn" type="button">Ho dimenticato la password</button>
       </div>
     </div>
+    <div id="resetBox" class="hidden" style="margin-top:18px">
+      <div style="text-align:center;font-size:11px;font-weight:800;letter-spacing:.16em;color:rgba(255,255,255,.78);margin-bottom:8px">RECUPERO PASSWORD</div>
+      <p style="margin:0 0 12px;text-align:center;color:rgba(255,255,255,.82);font-size:12px;line-height:1.45">Imposta una nuova password per il tuo accesso all’Area Cliente.</p>
+      <form id="resetForm" style="display:grid;gap:8px">
+        <label for="newPassword" style="color:rgba(255,255,255,.92);font-size:12px;font-weight:700">Nuova password</label>
+        <input id="newPassword" type="password" minlength="8" autocomplete="new-password" required placeholder="Almeno 8 caratteri">
+        <label for="newPasswordConfirm" style="color:rgba(255,255,255,.92);font-size:12px;font-weight:700">Conferma nuova password</label>
+        <input id="newPasswordConfirm" type="password" minlength="8" autocomplete="new-password" required placeholder="Ripeti la password">
+        <div id="resetErr" class="studio-login-error"></div>
+        <button id="resetBtn" type="submit" class="studio-login-submit">Salva nuova password</button>
+      </form>
+    </div>
     <div class="studio-login-footer">Accesso riservato ai Clienti autorizzati</div>
   </div>
 </div>
@@ -105,8 +117,14 @@ async function loadPrivacy(){
 $('forgotBtn').onclick=async()=>{
   const email=$('loginEmail').value.trim();
   if(!email){$('loginErr').textContent='Inserisci prima l’email.';return}
-  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.href});
-  $('loginErr').textContent=error?error.message:'Controlla la posta per il link di recupero.';
+  $('forgotBtn').disabled=true;
+  const resetRedirect=new URL(location.href);
+  resetRedirect.hash='';
+  resetRedirect.search='';
+  resetRedirect.pathname=resetRedirect.pathname.replace(/[^/]+$/,'cliente.html');
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:resetRedirect.toString()});
+  $('forgotBtn').disabled=false;
+  $('loginErr').textContent=error?error.message:'Controlla la posta: troverai il link per impostare una nuova password.';
   $('loginErr').className=error?'studio-login-error':'studio-login-error ok';
 };
 $('loginForm').onsubmit=async e=>{
@@ -172,6 +190,40 @@ $('loginForm').onsubmit=async e=>{
   }
   location.replace('cliente-portale.html');
 };
+async function showPasswordRecovery(){
+  $('loginBox').classList.add('hidden');
+  $('resetBox').classList.remove('hidden');
+  $('loginErr').textContent='';
+  $('resetErr').textContent='';
+  $('newPassword').focus();
+}
+$('resetForm').onsubmit=async e=>{
+  e.preventDefault();
+  const password=$('newPassword').value;
+  const confirm=$('newPasswordConfirm').value;
+  $('resetErr').textContent='';
+  if(password.length<8){$('resetErr').textContent='La password deve contenere almeno 8 caratteri.';return}
+  if(password!==confirm){$('resetErr').textContent='Le due password non coincidono.';return}
+  $('resetBtn').disabled=true;
+  const {error}=await sb.auth.updateUser({password});
+  $('resetBtn').disabled=false;
+  if(error){$('resetErr').textContent=error.message;return}
+  $('resetErr').textContent='✓ Password aggiornata correttamente. Ora puoi accedere con la nuova password.';
+  $('resetErr').className='studio-login-error ok';
+  $('newPassword').value='';
+  $('newPasswordConfirm').value='';
+  setTimeout(()=>{
+    $('resetBox').classList.add('hidden');
+    $('loginBox').classList.remove('hidden');
+    $('loginErr').textContent='Password aggiornata. Inserisci la nuova password per accedere.';
+    $('loginErr').className='studio-login-error ok';
+    $('loginPassword').value='';
+    $('loginPassword').focus();
+  },1400);
+};
+sb.auth.onAuthStateChange((event)=>{
+  if(event==='PASSWORD_RECOVERY') showPasswordRecovery();
+});
 loadPrivacy();
 </script>
 </body>
