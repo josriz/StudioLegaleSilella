@@ -12,7 +12,7 @@ body{margin:0;min-height:100vh;font-family:'Segoe UI',Tahoma,sans-serif;backgrou
 .studio-login-subtitle{text-align:center;color:rgba(255,255,255,.84);font-size:12px;line-height:1.5;margin:8px 0 16px}
 .studio-login-card label{display:block;color:rgba(255,255,255,.92);font-size:12px;font-weight:700;margin:8px 0 5px}
 .studio-login-card input{width:100%;padding:12px 14px;border:1px solid rgba(255,255,255,.48);border-radius:12px;background:rgba(255,255,255,.82);color:#0f172a;outline:none}
-.studio-login-error{min-height:18px;margin:8px 0;color:#ffe4e6;font-size:12px}
+.studio-login-error{min-height:18px;margin:8px 0;color:#ffe4e6;font-size:12px}.studio-login-links{text-align:center;margin-top:10px}.studio-login-links button{border:0;background:none;color:rgba(255,255,255,.82);font-size:11px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}.studio-login-links button:hover{color:#fff}.studio-recovery-box{margin-top:6px}
 .studio-login-submit{width:100%;margin-top:4px;padding:12px 16px;border:1px solid rgba(255,255,255,.58);border-radius:12px;color:#fff;font-weight:800;background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.16));box-shadow:0 10px 28px rgba(0,0,0,.18);cursor:pointer}
 .studio-login-submit:disabled{opacity:.6}
 .studio-login-footer{margin-top:18px;padding-top:13px;border-top:1px solid rgba(255,255,255,.22);text-align:center;color:rgba(255,255,255,.68);font-size:10px}
@@ -22,11 +22,35 @@ body{margin:0;min-height:100vh;font-family:'Segoe UI',Tahoma,sans-serif;backgrou
 <div class="studio-login-logo-wrap"><img class="studio-login-logo" src="Logo_Studio_Silella.jpg" alt="Studio Legale Silella" onerror="this.src='Logo_Studio_Silella.webp'"></div>
 <div class="studio-login-kicker">AREA RISERVATA</div><h2>Accesso Studio</h2><p class="studio-login-subtitle">Accedi all'area professionale dello Studio Legale Silella.</p>
 <form id="studioLoginForm"><label for="studioLoginEmail">Email</label><input id="studioLoginEmail" type="email" autocomplete="username" required placeholder="La tua email"><label for="studioLoginPassword">Password</label><input id="studioLoginPassword" type="password" autocomplete="current-password" required placeholder="La tua password"><div id="studioLoginError" class="studio-login-error"></div><button id="studioLoginSubmit" type="submit" class="studio-login-submit">Accedi all'Area Studio</button></form>
+<div class="studio-login-links"><button id="studioForgotBtn" type="button">Ho dimenticato la password</button></div>
+<div id="studioRecoveryBox" class="studio-recovery-box" style="display:none"><div class="studio-login-kicker">RECUPERO ACCESSO</div><h2>Reimposta password</h2><p class="studio-login-subtitle">Inserisci una nuova password per il tuo accesso Studio.</p><form id="studioRecoveryForm"><label for="studioNewPassword">Nuova password</label><input id="studioNewPassword" type="password" minlength="8" autocomplete="new-password" required placeholder="Nuova password"><label for="studioNewPassword2">Conferma password</label><input id="studioNewPassword2" type="password" minlength="8" autocomplete="new-password" required placeholder="Ripeti la password"><div id="studioRecoveryError" class="studio-login-error"></div><button type="submit" class="studio-login-submit">Salva nuova password</button></form></div>
 <div class="studio-login-footer">Accesso riservato ai professionisti autorizzati</div>
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.76.0"></script><script src="config.js?v=20261004-6"></script>
 <script>
 const sb=window.getStudioSupabaseClient?window.getStudioSupabaseClient():window.STUDIO_SUPABASE_CLIENT;
+const loginForm=document.getElementById('studioLoginForm');
+const recoveryBox=document.getElementById('studioRecoveryBox');
+const recoveryForm=document.getElementById('studioRecoveryForm');
+function isRecoveryLink(){return /(^|[&#?])type=recovery(?:&|#|$)/i.test(location.hash+location.search)}
+function showRecovery(){loginForm.style.display='none';document.getElementById('studioForgotBtn').style.display='none';recoveryBox.style.display='block'}
+document.getElementById('studioForgotBtn').addEventListener('click',async()=>{
+ const email=document.getElementById('studioLoginEmail').value.trim(),err=document.getElementById('studioLoginError');
+ err.textContent='';err.className='studio-login-error';
+ if(!email){err.textContent='Inserisci prima l’email dello Studio.';return}
+ const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.href.split('#')[0]});
+ err.textContent=error?error.message:'Controlla la posta: ti abbiamo inviato il link per reimpostare la password.';
+ if(!error)err.className='studio-login-error ok';
+});
+recoveryForm.addEventListener('submit',async e=>{
+ e.preventDefault();const err=document.getElementById('studioRecoveryError');err.textContent='';
+ const p1=document.getElementById('studioNewPassword').value,p2=document.getElementById('studioNewPassword2').value;
+ if(p1!==p2){err.textContent='Le password non coincidono.';return}
+ const {error}=await sb.auth.updateUser({password:p1});
+ if(error){err.textContent=error.message;return}
+ await sb.auth.signOut();recoveryBox.style.display='none';loginForm.style.display='block';document.getElementById('studioForgotBtn').style.display='block';err.className='studio-login-error ok';err.textContent='Password aggiornata. Ora puoi accedere con la nuova password.';
+});
+if(isRecoveryLink())showRecovery();
 async function authorized(user){
  if(!user)return false;
  const {data,error}=await sb.from('studio_utenti').select('role').eq('user_id',user.id).maybeSingle();
