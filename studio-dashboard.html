@@ -151,6 +151,26 @@
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(203, 213, 225, 0.6); }
         th { background-color: rgba(255, 255, 255, 0.8); color: var(--primary); font-weight: 600; }
 
+        .privacy-informative-table th,
+        .privacy-informative-table td {
+            display: table-cell !important;
+            position: static !important;
+            writing-mode: horizontal-tb !important;
+            transform: none !important;
+            letter-spacing: normal !important;
+            word-break: normal !important;
+            overflow: visible !important;
+            vertical-align: top !important;
+        }
+        .privacy-informative-table th:not(:first-child),
+        .privacy-informative-table td:not(:first-child) {
+            white-space: nowrap !important;
+        }
+        .privacy-informative-table td:first-child {
+            white-space: normal !important;
+            min-width: 320px;
+        }
+
         /* FORMS & BUTTONS */
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; color: var(--primary); }
