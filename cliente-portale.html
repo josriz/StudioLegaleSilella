@@ -89,7 +89,8 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 let currentUser=null, currentClient=null, portalDocs=[], notifications=[], practices=[], practiceEvents=[], privacyConsents=[];
 let activePrivacyNotice=null;
 
-function showPortal(){ $('portalView').classList.remove('hidden'); window.scrollTo(0,0); }\nfunction applyOnboardingGate(){
+function showPortal(){ $('portalView').classList.remove('hidden'); window.scrollTo(0,0); }
+function applyOnboardingGate(){
   const c=currentClient, enabled=c?.operational_enabled===true&&c?.onboarding_status==='abilitato';
   const documentationOpen=enabled||['documentazione_da_completare','in_verifica'].includes(c?.onboarding_status);
   const banner=$('onboardingBanner');
