@@ -159,6 +159,43 @@
     }catch(e){status.textContent=e.message||'Errore nella rimozione del logo.'}
   }
 
+  function studioPrivacyModelForm(data={}){
+    const content=String(data.contenuto||'');
+    const source=data.source_file_name?'<div style="margin-top:8px;font-size:12px;color:#475569"><b>File originale:</b> '+esc(data.source_file_name)+'</div>':'';
+    return '<div class="form-group"><label>Nome modello</label><input id="spmNome" value="'+esc(data.nome||'Modello Privacy dello Studio')+'"></div>'+
+      '<div class="grid-2"><div class="form-group"><label>Versione</label><input id="spmVersione" value="'+esc(data.versione||'1.0')+'"></div><div class="form-group"><label>File originale del modulo (opzionale)</label><input id="spmFile" type="file" accept=".pdf,.docx,.txt,.html,.htm"><small style="display:block;margin-top:5px;color:#64748b">Il file viene conservato privatamente. Per la compilazione automatica il testo modificabile qui sotto resta la fonte operativa.</small>'+source+'</div></div>'+
+      '<div class="form-group"><label>Testo del modello</label><textarea id="spmContenuto" rows="22" style="font-family:ui-monospace,SFMono-Regular,Consolas,monospace;line-height:1.45">'+esc(content)+'</textarea><small style="display:block;margin-top:5px;color:#64748b">Campi disponibili: {{CLIENTE_NOME}}, {{CLIENTE_CODICE_FISCALE}}, {{CLIENTE_PARTITA_IVA}}, {{CLIENTE_EMAIL}}, {{CLIENTE_TELEFONO}}, {{CLIENTE_INDIRIZZO}}, {{CLIENTE_CAP}}, {{CLIENTE_COMUNE}}, {{CLIENTE_PROVINCIA}}, {{CLIENTE_PAESE}}, {{CLIENTE_PEC}}, {{CLIENTE_DATA_NASCITA}}, {{CLIENTE_LUOGO_NASCITA}}.</small></div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-success" type="button" id="savePrivacyModel">Salva modello</button></div>';
+  }
+  async function loadPrivacyModel(){
+    const {data,error}=await sb.from('studio_privacy_modelli').select('*').eq('stato','attivo').order('updated_at',{ascending:false}).limit(1).maybeSingle();
+    if(error)throw error;
+    if($('privacyModelForm'))$('privacyModelForm').innerHTML=studioPrivacyModelForm(data||{});
+    if($('savePrivacyModel'))$('savePrivacyModel').onclick=()=>savePrivacyModel(data?.id||null);
+  }
+  async function savePrivacyModel(id){
+    const status=$('privacyModelStatus'),file=$('spmFile');
+    status.textContent='Salvataggio…';
+    try{
+      const content=$('spmContenuto').value.trim(),name=$('spmNome').value.trim(),versione=$('spmVersione').value.trim()||'1.0';
+      if(!name||!content)throw Error('Nome e testo del modello sono obbligatori.');
+      const f=file?.files?.[0]; let source={};
+      if(f){
+        if(f.size>10*1024*1024)throw Error('Il file originale non può superare 10 MB.');
+        const safe=f.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+        const path='studio/settings/privacy-model-'+Date.now()+'-'+crypto.randomUUID()+'-'+safe;
+        const {error:ue}=await sb.storage.from('studio-legale-documenti').upload(path,f,{contentType:f.type||'application/octet-stream',upsert:false});
+        if(ue)throw ue;
+        source={source_file_path:path,source_file_name:f.name,source_file_mime_type:f.type||null};
+      }
+      const row={nome:name,versione,contenuto:content,stato:'attivo',updated_by:user.id,...source};
+      if(id){const {error}=await sb.from('studio_privacy_modelli').update(row).eq('id',id);if(error)throw error}
+      else {row.created_by=user.id;const {error}=await sb.from('studio_privacy_modelli').insert(row);if(error)throw error}
+      status.textContent='Modello Privacy salvato correttamente.';
+      await loadPrivacyModel();
+    }catch(e){console.error(e);status.textContent=e.message||'Errore nel salvataggio del modello.'}
+  }
+
   window.sendPrivacyInformative = async function sendPrivacyInformative(id){
     const existing=document.getElementById('privacySendModal');
     if(existing) existing.remove();
@@ -266,18 +303,18 @@ async function saveInformative(id){try{const row={titolo:$('piTitolo').value.tri
       const clientByUser=new Map(clients.map(x=>[x.user_id,x]));
       const portalPrivacy=(pc.data||[]).map(x=>({...x,_portal:true,client_name:clientByUser.get(x.user_id)?.full_name||x.user_id}));
       renderTreatments(t.data||[]);renderRequests(r.data||[]);renderBreaches(b.data||[]);renderInformative(i.data||[]);renderConsensi([...(c.data||[]),...portalPrivacy]);renderProcessors(p.data||[]);renderDpia(d.data||[]);
-      if($('privacyStudioIdentityForm')){ $('privacyStudioIdentityForm').innerHTML=studioIdentityForm(studioIdentity); bindStudioIdentityForm(); } msg('Gestione Privacy aggiornata.',true);
+      if($('privacyStudioIdentityForm')){ $('privacyStudioIdentityForm').innerHTML=studioIdentityForm(studioIdentity); bindStudioIdentityForm(); } if($('privacyModelForm')) await loadPrivacyModel(); msg('Gestione Privacy aggiornata.',true);
     }catch(e){console.error(e);msg(e.message||'Errore caricamento Privacy.')}
   }
 
   if(typeof STUDIO_HELP!=='undefined')STUDIO_HELP.privacy={title:'Gestione Privacy',intro:'Modulo operativo per organizzare i principali adempimenti privacy dello Studio.',steps:['Registro trattamenti: finalità, base giuridica, dati, interessati, destinatari, conservazione e sicurezza.','Informative: testo, versione, validità e stato. Solo le informative attive di tipo clienti vengono rese visibili nel Portale Clienti.','Consensi/prese visione: collega il cliente alla versione dell’informativa e conserva l’evidenza.','Responsabili: censisci fornitori e stato della nomina/contratto.','Richieste interessati: traccia identità, scadenze, risposta, proroghe ed evidenze.','DPIA: documenta necessità, rischi, misure, rischio residuo e riesami quando richiesto.','Data breach: documenta valutazione, decisione di notifica, notifiche e misure correttive.'],studio:'Strumento organizzativo: i testi delle informative, le basi giuridiche e le valutazioni devono essere parametrizzati ai trattamenti reali dello Studio e verificati professionalmente.',client:'Il Portale Clienti gestisce pratiche, documenti, comunicazioni e registra la presa visione dell’informativa privacy attiva.'};
 
-  const tabs=[['privacyTabTreatments','privacyTreatmentBox'],['privacyTabStudioIdentity','privacyStudioIdentityBox'],['privacyTabRequests','privacyRequestBox'],['privacyTabBreaches','privacyBreachBox'],['privacyTabInformative','privacyInformativeBox'],['privacyTabConsensi','privacyConsensiBox'],['privacyTabResponsabili','privacyResponsabiliBox'],['privacyTabDpia','privacyDpiaBox']];
+  const tabs=[['privacyTabTreatments','privacyTreatmentBox'],['privacyTabModel','privacyModelBox'],['privacyTabStudioIdentity','privacyStudioIdentityBox'],['privacyTabRequests','privacyRequestBox'],['privacyTabBreaches','privacyBreachBox'],['privacyTabInformative','privacyInformativeBox'],['privacyTabConsensi','privacyConsensiBox'],['privacyTabResponsabili','privacyResponsabiliBox'],['privacyTabDpia','privacyDpiaBox']];
   tabs.forEach(([a,b])=>{if($(a))$(a).onclick=()=>showBox(b)});
   if($('privacyNewTreatment'))$('privacyNewTreatment').onclick=()=>{showBox('privacyTreatmentBox');openForm('treatment')};
   if($('privacyNewRequest'))$('privacyNewRequest').onclick=()=>{showBox('privacyRequestBox');openForm('request')};
   if($('privacyNewBreach'))$('privacyNewBreach').onclick=()=>{showBox('privacyBreachBox');openForm('breach')};
-  if($('privacyNewInformative'))$('privacyNewInformative').onclick=()=>{showBox('privacyInformativeBox');openForm('informative')};
+  if($('privacyModelRefresh'))$('privacyModelRefresh').onclick=loadPrivacyModel;
   if($('privacyNewConsent'))$('privacyNewConsent').onclick=()=>{showBox('privacyConsensiBox');openForm('consent')};
   if($('privacyNewProcessor'))$('privacyNewProcessor').onclick=()=>{showBox('privacyResponsabiliBox');openForm('processor')};
   if($('privacyNewDpia'))$('privacyNewDpia').onclick=()=>{showBox('privacyDpiaBox');openForm('dpia')};
