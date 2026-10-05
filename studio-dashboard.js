@@ -33,6 +33,26 @@
       return;
     }
 
+    // Gate di sicurezza anticipato: la dashboard resta nascosta finché l'utente non è autenticato e autorizzato.
+    {
+      const { data: { user }, error: authError } = await client.auth.getUser();
+      if (authError || !user) {
+        location.replace('studio.html');
+        return;
+      }
+      const { data: profile, error: roleError } = await client
+        .from('studio_utenti')
+        .select('role')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (roleError || !['studio','admin'].includes(profile?.role)) {
+        await client.auth.signOut();
+        location.replace('studio.html');
+        return;
+      }
+      document.body.classList.remove('studio-auth-pending');
+    }
+
     const menu = document.querySelector('.sidebar-menu');
     const contentArea = document.querySelector('.content-area');
     if (!menu || !contentArea || document.getElementById('panel-studio-pratiche')) return;
