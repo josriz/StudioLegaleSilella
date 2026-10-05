@@ -1404,25 +1404,440 @@
         window.demoNavigate=demoNavigate;
 
         const STUDIO_HELP = {
-            dashboard:{title:'Dashboard',intro:'È la schermata di controllo generale dello Studio. Mostra il riepilogo dei fascicoli, delle scadenze, delle comunicazioni e delle attività recenti.',steps:['Apri Dashboard dopo l’accesso per controllare la situazione generale.','Controlla il numero dei fascicoli e delle scadenze aperte.','Apri Attività recenti per verificare gli eventi registrati.','Controlla le prossime scadenze e usa i relativi menu per intervenire.'],studio:'Non richiede inserimenti obbligatori: serve soprattutto per controllo e monitoraggio.',client:'Il Cliente non opera direttamente in questa schermata.'},
-            team:{title:'Team & Professionisti',intro:'Gestisce i professionisti autorizzati a lavorare nell’Area Studio e mostra i fascicoli assegnati.',steps:['Apri Team & Professionisti.','Per aggiungere un professionista usa il modulo Aggiungi professionista.','Inserisci nome, email e ruolo.','Premi Invia invito.','Attendi l’attivazione tramite email e poi verifica che il professionista compaia nell’elenco.'],studio:'Il ruolo determina il livello operativo previsto dal sistema. Verifica sempre l’email prima dell’invio.',client:'Il Cliente non deve eseguire operazioni in questa sezione.'},
-            conflict:{title:'Conflict Check',intro:'Cerca nei dati delle pratiche dello Studio eventuali corrispondenze relative a una controparte o a un Codice Fiscale/P.IVA.',steps:['Inserisci nome o denominazione della controparte.','Se disponibile, inserisci anche CF/P.IVA.','Premi Esegui Verifica Incrociata.','Leggi le pratiche corrispondenti eventualmente trovate.','Prima di accettare o rifiutare un incarico, esegui la valutazione professionale del risultato.'],studio:'La ricerca attuale interroga i dati delle pratiche presenti nello Studio. Un risultato negativo non sostituisce la valutazione professionale.',client:'Il Cliente non deve usare questo menu.'},
-            clients:{title:'Anagrafica Clienti',intro:'È la Rubrica principale dei clienti dello Studio e il punto di partenza per portale, privacy, pratiche e documenti.',steps:['Crea o apri il cliente nella Rubrica.','Verifica i dati anagrafici e l’email.','Apri il dettaglio per controllare accesso Portale e stato privacy.','Se il Portale non è attivo, invita il cliente e invia l’informativa privacy attiva.','Crea dal dettaglio il fascicolo quando lo Studio apre una nuova pratica.','Controlla pratiche, documenti restituiti e presa visione privacy dello stesso cliente.','Usa Aggiorna per ricaricare i dati reali da Supabase.'],studio:'Il cliente registrato dal Portale deve rimanere nella Rubrica e non deve essere ricreato come nuovo cliente solo perché apre una nuova pratica.',client:'Il Cliente fornisce e aggiorna i propri dati tramite la propria Area Cliente; lo Studio li consulta qui.'},
-            matters:{title:'Fascicoli & Contenzioso',intro:'È il punto centrale del lavoro dello Studio: qui si apre il fascicolo e da qui si controllano cliente, documenti, analisi, bozze e attività collegate.',steps:['Apri Fascicoli & Contenzioso.','Cerca il cliente o la pratica interessata.','Premi Apri sul fascicolo.','Controlla prima i dati della pratica e i documenti ricevuti.','Se devi capire il contenuto dei documenti, usa la funzione di analisi AI collegata al fascicolo.','Se devi preparare un atto, passa a Redazione Atti AI.','Se devi preparare una lettera o una diffida, passa a Lettere & Comunicazioni AI.','Dopo la generazione, torna al fascicolo per controllare bozze e attività archiviate.'],studio:'Il fascicolo è il contenitore operativo della pratica. Evita di creare duplicati per lo stesso procedimento.',client:'Il Cliente vede solo le attività/documenti che il Portale gli rende disponibili; la gestione interna del fascicolo resta allo Studio.'},
-            jurisprudence:{title:'Ricerca interna',intro:'Esegue una ricerca interna sui contenuti realmente presenti nello Studio: pratiche, analisi IA archiviate e bozze.',steps:['Inserisci una parola chiave o un quesito.','Premi Cerca nei dati dello Studio.','Controlla separatamente pratiche, analisi archiviate e bozze trovate.','Verifica sempre le fonti e i documenti originali prima di usare il risultato.'],studio:'È una ricerca interna: non è una banca dati giurisprudenziale esterna e non sostituisce la verifica professionale delle fonti.',client:'Il Cliente non usa direttamente questa funzione.'},
-            'ai-generator':{title:'Redazione Atti AI',intro:'Prepara una bozza tramite il servizio IA collegato al progetto e la mostra nell’area di redazione.',steps:['Inserisci nelle Istruzioni Redazione ciò che vuoi ottenere.','Premi Genera Bozza con IA.','Il sistema usa la pratica più recente disponibile come riferimento.','Leggi e verifica integralmente il testo prodotto.','Modifica la bozza secondo le esigenze professionali prima di utilizzarla.','La funzione Firma e Invia non esegue attualmente una firma FEQ reale né un invio PEC reale.'],studio:'La bozza IA deve essere sempre controllata da un professionista. Non inserire una firma o dichiarare un invio come eseguito se non è stato realmente eseguito da un servizio collegato.',client:'Il Cliente riceve un documento solo attraverso un flusso effettivamente attivato dallo Studio/Portale.'},
-            agenda:{title:'Agenda & Scadenze',intro:'Registra e controlla udienze, termini, depositi, adempimenti e appuntamenti collegati alle pratiche.',steps:['Inserisci il titolo della scadenza.','Collega la pratica quando disponibile.','Scegli il tipo di attività.','Inserisci data e ora.','Imposta la priorità.','Salva.','Quando l’attività è terminata, usa Completa; elimina solo le voci inserite per errore.'],studio:'Le scadenze sono dati persistenti dello Studio. Verifica sempre data, ora e pratica collegata.',client:'Il Cliente non modifica direttamente l’agenda dello Studio.'},
-            'pec-client':{title:'Registro Comunicazioni',intro:'Registra le comunicazioni dello Studio per conservarne traccia e collegarle, quando necessario, a una pratica.',steps:['Scegli il canale: Email, PEC o PCT.','Collega la pratica se pertinente.','Inserisci il destinatario.','Inserisci oggetto/contenuto.','Premi Registra.','Controlla l’elenco delle comunicazioni registrate.'],studio:'Il modulo attuale registra la comunicazione ma non dispone di una casella PEC automatica collegata: registrare non significa che una PEC sia stata realmente spedita.',client:'Il Cliente non deve interpretare una voce registrata come prova di invio PEC se non esiste una ricevuta del servizio PEC.'},
-            'pct-deposit':{title:'Registro Depositi PCT',intro:'Prepara e tiene traccia delle attività di deposito telematico collegate a una pratica.',steps:['Seleziona la pratica.','Inserisci il tipo di atto.','Inserisci ufficio o destinatario.','Crea il deposito.','Controlla lo stato: preparazione, pronto, inviato, ricevuto, rifiutato o annullato.','Aggiorna lo stato solo quando corrisponde all’operazione realmente eseguita.'],studio:'Il modulo attuale gestisce il registro del deposito ma non effettua un invio ministeriale reale. Non considerare “inviato” un deposito finché non è stato realmente trasmesso tramite il canale competente.',client:'Il Cliente deve ricevere l’esito/documentazione effettiva dello Studio, non uno stato inserito solo manualmente.'},
-            'time-tracker':{title:'Time Tracker',intro:'Registra il tempo lavorato dal professionista su una pratica o su un’attività.',steps:['Seleziona la pratica se pertinente.','Inserisci la descrizione dell’attività.','Premi Avvia sessione.','Quando hai terminato, premi Ferma.','Controlla la durata registrata nell’elenco.'],studio:'Il tempo registrato può essere utilizzato per il controllo interno e come base informativa per la fatturazione; non equivale automaticamente a una fattura.',client:'Il Cliente non avvia né ferma il cronometro dello Studio.'},
-            billing:{title:'Fatturazione',intro:'Registra le fatture dello Studio e le conserva come dati persistenti.',steps:['Seleziona il cliente.','Collega la pratica se pertinente.','Inserisci la descrizione.','Inserisci imponibile e IVA.','Premi Salva.','Controlla che la fattura risulti in stato bozza e con SDI non collegato, finché non esiste un collegamento reale.'],studio:'Il modulo attuale salva una fattura in bozza e non trasmette automaticamente allo SDI.',client:'Il Cliente deve considerare definitiva una fattura solo quando lo Studio ha completato il reale processo di emissione/trasmissione.'},
-            'client-portal':{title:'Portale Clienti',intro:'È il punto di collegamento operativo tra Studio e Cliente per inviti, documenti e richieste di firma.',steps:['Seleziona un cliente con accesso attivo oppure invitalo tramite il modulo Invita/attiva.','Per inviare un documento seleziona il cliente.','Scegli una pratica oppure Documento non collegato a pratica.','Scegli il tipo di firma richiesto, se necessario.','Seleziona il file e premi Invia.','Verifica che il documento compaia negli Ultimi documenti portale.','Il Cliente riceve la notifica nella propria Area Cliente.'],studio:'Il documento viene collegato direttamente al cliente e, se selezionata, anche alla pratica. Il limite attuale per il file è 10 MB. I servizi di firma esterni non sono automaticamente integrati solo perché compaiono nel menu.',client:'Il Cliente riceve la notifica, apre il documento e può eseguire le operazioni previste dal flusso. I documenti inviati dal Cliente allo Studio vengono registrati con direzione client_to_studio.'},
-            demo:{title:'Demo — Una giornata nello Studio',intro:'Guida dimostrativa completa del lavoro dello Studio attraverso il caso di Mario Rossi.',steps:['Leggi la storia in ordine.','Usa i pulsanti per aprire le schermate reali del gestionale.','Racconta al professionista cosa viene fatto, perché e cosa succede dopo.','Ricorda che l’AI prepara supporti e bozze: la verifica e la decisione finale restano al professionista.'],studio:'Questa pagina è una guida dimostrativa. Non crea automaticamente clienti, pratiche, documenti o comunicazioni: accompagna l’operatore nelle schermate reali.',client:'Il Cliente non utilizza questa demo. La demo serve a presentare il percorso operativo dello Studio.'},
-            archive:{title:'Archivio & Audit',intro:'Mostra gli eventi registrati dal sistema per mantenere una traccia delle operazioni dello Studio.',steps:['Apri Archivio & Audit.','Controlla data e ora dell’evento.','Controlla il tipo di operazione.','Controlla la pratica e l’utente coinvolto quando presenti.','Usa Aggiorna per ottenere i dati più recenti.'],studio:'L’Audit è uno strumento di controllo: non deve essere modificato manualmente per simulare un’operazione non avvenuta.',client:'Il Cliente non modifica l’Audit dello Studio.'},
-            'studio-pratiche':{title:'Pratiche ricevute dal Portale Clienti',intro:'Mostra le pratiche che i Clienti hanno inviato attraverso il Portale Clienti e permette allo Studio di controllare i dati ricevuti e gli allegati.',steps:['Apri Pratiche ricevute dal Portale Clienti.','Effettua l’accesso richiesto con l’account autorizzato dello Studio.','Controlla cliente, area legale, controparte, richiesta e allegati della pratica ricevuta.','Apri la gestione della pratica per esaminare i dati e i documenti disponibili.','Verifica che la pratica sia associata al cliente corretto prima di proseguire con le attività dello Studio.','Aggiorna l’elenco dopo nuove ricezioni dal Portale.'],studio:'Questa sezione è il punto di ingresso delle pratiche inviate dai Clienti. La ricezione non significa che l’incarico sia già accettato: lo Studio deve verificare dati, documenti e condizioni prima di procedere.',client:'Il Cliente compila la propria richiesta nell’Area Cliente, inserisce i dati richiesti, allega i documenti necessari e invia la pratica. Dopo l’invio deve attendere la presa in carico dello Studio.'},
-            lexroom:{title:'Lexroom LAB',intro:'È il laboratorio IA gratuito dello Studio per analizzare pratiche, preparare bozze e lavorare sui modelli interni, senza API IA a pagamento.',steps:['Apri Lexroom LAB dal menu laterale.','Controlla l’elenco delle pratiche disponibili.','Per una pratica premi Analisi LAB per avviare l’analisi oppure Bozza LAB per preparare una bozza.','Leggi il risultato restituito e verifica i dati della pratica e il testo prodotto.','Per usare un modello interno, inserisci nome, materia e contenuto e premi Salva modello.','Usa Aggiorna per ricaricare pratiche e risultati.','Se viene proposta la preparazione di una comunicazione LAB, ricorda che il sistema prepara l’operazione ma non invia una email reale.'],studio:'Il LAB è gratuito e non deve essere presentato come un servizio professionale autonomo. Ogni analisi o bozza IA deve essere verificata dal professionista prima dell’uso.',client:'Il Cliente non utilizza direttamente il LAB. I risultati destinati al Cliente devono essere verificati e inviati dallo Studio tramite un canale realmente attivo.'},
-            communications:{title:'Lettere & Comunicazioni AI',intro:'È lo strumento operativo per creare bozze di lettere e comunicazioni professionali usando un fascicolo, i modelli dello Studio e le istruzioni dell’avvocato.',steps:['Apri Lettere & Comunicazioni AI dal menu laterale.','Seleziona il fascicolo a cui la comunicazione deve essere collegata.','Scegli il tipo di comunicazione, ad esempio lettera al cliente, diffida o sollecito.','Indica destinatario e oggetto se già disponibili; altrimenti l’AI può proporre l’oggetto.','Scrivi in modo preciso ciò che vuoi comunicare nelle Istruzioni dell’avvocato.','Premi Genera comunicazione con AI. Il sistema prepara e salva una bozza nello storico.','Leggi integralmente la bozza e controlla nomi, date, importi, fatti, riferimenti e tono.','Solo dopo la revisione professionale si potrà procedere, in futuro, verso un canale di invio realmente attivo.'],studio:'Questa funzione serve alla redazione operativa delle comunicazioni. La bozza non è un atto definitivo e non viene inviata automaticamente. La responsabilità della verifica finale resta al professionista.',client:'Il Cliente non genera direttamente queste comunicazioni. Lo Studio prepara, verifica e decide se e come comunicare.'}
-        };
+  "dashboard": {
+    "title": "Dashboard",
+    "status": "operativo",
+    "intro": "Schermata di controllo generale dello Studio. Riassume fascicoli, scadenze, comunicazioni e attività recenti.",
+    "steps": [
+      "Apri la Dashboard dopo l'accesso.",
+      "Controlla i contatori di fascicoli, scadenze e comunicazioni.",
+      "Controlla Attività recenti per verificare gli eventi registrati.",
+      "Controlla le prossime scadenze e usa i menu dedicati per intervenire."
+    ],
+    "studio": "È soprattutto una schermata di monitoraggio; non sostituisce i menu operativi.",
+    "client": "Il Cliente non accede a questa schermata."
+  },
+  "demo": {
+    "title": "Demo — Una giornata nello Studio",
+    "status": "operativo / dimostrativo",
+    "intro": "Guida dimostrativa del percorso completo Studio: cliente, fascicolo, documenti, AI, revisione e audit.",
+    "steps": [
+      "Leggi i passaggi in ordine.",
+      "Usa i pulsanti della demo per aprire le schermate reali.",
+      "Usa la demo per presentare il gestionale, non come procedura automatica.",
+      "Ricorda sempre che l'AI prepara supporti e bozze; il professionista verifica e decide."
+    ],
+    "studio": "La demo non crea automaticamente dati solo perché viene consultata.",
+    "client": "Non è una funzione del Cliente."
+  },
+  "team": {
+    "title": "Professionisti & Team",
+    "status": "operativo",
+    "intro": "Gestisce i professionisti autorizzati all'Area Studio e gli inviti al team.",
+    "steps": [
+      "Apri Professionisti & Team.",
+      "Inserisci nome, email e ruolo nel modulo Aggiungi professionista.",
+      "Premi Invia invito.",
+      "Attendi l'attivazione tramite il flusso di invito.",
+      "Controlla l'elenco dei professionisti registrati."
+    ],
+    "studio": "Assegna il ruolo con attenzione e verifica sempre l'indirizzo email prima dell'invito.",
+    "client": "Il Cliente non usa questo menu."
+  },
+  "clients": {
+    "title": "Anagrafica Clienti",
+    "status": "operativo",
+    "intro": "È il contenitore principale del cliente: anagrafica, accesso Portale, privacy, pratiche e documenti.",
+    "steps": [
+      "Crea oppure apri il cliente.",
+      "Verifica nome, CF/P.IVA, email e telefono disponibili.",
+      "Apri il dettaglio del cliente.",
+      "Controlla se il Portale è attivo e lo stato privacy.",
+      "Se necessario invita il cliente al Portale.",
+      "Dal dettaglio crea il fascicolo quando lo Studio apre una pratica.",
+      "Controlla pratiche, documenti e registrazioni privacy del cliente.",
+      "Usa Aggiorna per ricaricare i dati."
+    ],
+    "studio": "Un cliente esistente deve essere riutilizzato per le nuove pratiche; evita duplicati.",
+    "client": "Il Cliente aggiorna i propri dati nell'Area Cliente quando previsto."
+  },
+  "client-portal": {
+    "title": "Portale Clienti",
+    "status": "operativo / integrazioni in LAB",
+    "intro": "Collega Studio e Cliente per inviti, documenti, notifiche e restituzioni.",
+    "steps": [
+      "Seleziona un cliente con accesso attivo oppure attiva/invita il cliente.",
+      "Per inviare un documento seleziona cliente e, se pertinente, pratica.",
+      "Scegli il tipo di documento e l'eventuale modalità prevista.",
+      "Seleziona il file e premi Invia.",
+      "Controlla che il documento compaia nell'elenco del Portale.",
+      "Il Cliente riceve la notifica nella propria Area Cliente.",
+      "Quando un documento viene restituito, lo Studio lo verifica e lo convalida quando previsto."
+    ],
+    "studio": "Inviare un documento al Portale non equivale a inviarlo via email o PEC. Il flusso di firma digitale non è attivo nel LAB.",
+    "client": "Il Cliente visualizza/scarica i documenti disponibili e restituisce quelli richiesti attraverso il Portale."
+  },
+  "conflict": {
+    "title": "Conflict Check",
+    "status": "operativo / controllo informativo",
+    "intro": "Cerca nei dati delle pratiche dello Studio possibili corrispondenze per controparte o CF/P.IVA.",
+    "steps": [
+      "Inserisci il nome/denominazione della controparte.",
+      "Se disponibile inserisci CF/P.IVA.",
+      "Premi Esegui Verifica Incrociata.",
+      "Esamina le eventuali pratiche corrispondenti.",
+      "Valuta professionalmente il risultato prima di accettare un incarico."
+    ],
+    "studio": "Un risultato negativo non certifica l'assenza assoluta di conflitto: è un controllo sui dati disponibili.",
+    "client": "Il Cliente non usa questo menu."
+  },
+  "matters": {
+    "title": "Fascicoli & Contenzioso",
+    "status": "operativo",
+    "intro": "È il contenitore centrale della pratica: dati, documenti, analisi AI, bozze e attività collegate.",
+    "steps": [
+      "Apri Fascicoli & Contenzioso.",
+      "Cerca e apri il fascicolo.",
+      "Controlla cliente, area, controparte, descrizione e stato.",
+      "Controlla i documenti collegati.",
+      "Usa Analisi AI quando vuoi un supporto alla comprensione del materiale.",
+      "Passa a Redazione Atti AI per un atto oppure a Lettere & Comunicazioni AI per una comunicazione.",
+      "Dopo ogni attività controlla che il risultato sia collegato al fascicolo corretto."
+    ],
+    "studio": "Evita fascicoli duplicati per lo stesso procedimento.",
+    "client": "Il Cliente non gestisce internamente il fascicolo dello Studio."
+  },
+  "jurisprudence": {
+    "title": "Ricerca interna",
+    "status": "operativo / ricerca interna",
+    "intro": "Cerca nei dati interni disponibili: pratiche, analisi AI archiviate e bozze.",
+    "steps": [
+      "Inserisci una parola chiave o un quesito.",
+      "Premi Cerca nei dati dello Studio.",
+      "Esamina pratiche, analisi e bozze trovate.",
+      "Apri e verifica sempre il documento o la fonte originale prima dell'utilizzo."
+    ],
+    "studio": "Non è una banca dati giurisprudenziale esterna e non sostituisce la verifica professionale delle fonti.",
+    "client": "Il Cliente non usa direttamente questa funzione."
+  },
+  "agenda": {
+    "title": "Agenda & Scadenze",
+    "status": "operativo",
+    "intro": "Gestisce scadenze, udienze, termini, appuntamenti e attività dello Studio.",
+    "steps": [
+      "Inserisci titolo e descrizione dell'attività.",
+      "Collega la pratica quando disponibile.",
+      "Inserisci data e ora.",
+      "Imposta tipo e priorità.",
+      "Salva.",
+      "Quando l'attività è realmente terminata usa Completa.",
+      "Elimina solo elementi inseriti per errore, quando previsto."
+    ],
+    "studio": "Controlla sempre data, ora e pratica collegata. La registrazione non sostituisce il controllo professionale delle scadenze.",
+    "client": "Il Cliente non modifica l'agenda interna dello Studio."
+  },
+  "pct-deposit": {
+    "title": "Registro Depositi PCT",
+    "status": "registro / LAB",
+    "intro": "Tiene traccia delle attività di deposito telematico collegate alle pratiche.",
+    "steps": [
+      "Seleziona la pratica.",
+      "Inserisci il tipo di atto e i dati del deposito.",
+      "Crea la registrazione.",
+      "Aggiorna lo stato solo quando corrisponde a un'operazione realmente eseguita.",
+      "Conserva/controlla l'esito effettivo del deposito fuori dal semplice registro quando necessario."
+    ],
+    "studio": "Il registro non deve essere interpretato come connessione ministeriale reale. Non segnare 'inviato' se il deposito non è stato realmente trasmesso.",
+    "client": "Il Cliente deve ricevere esiti/documenti reali, non soltanto uno stato manuale del registro."
+  },
+  "time-tracker": {
+    "title": "Time Tracker",
+    "status": "operativo",
+    "intro": "Registra il tempo lavorato su pratiche e attività.",
+    "steps": [
+      "Seleziona la pratica se pertinente.",
+      "Inserisci la descrizione dell'attività.",
+      "Premi Avvia Cronometro.",
+      "Quando termini premi Ferma & Salva Ore.",
+      "Controlla la durata registrata."
+    ],
+    "studio": "Il tempo registrato è un dato gestionale e può supportare la fatturazione, ma non genera automaticamente una fattura.",
+    "client": "Il Cliente non gestisce il cronometro dello Studio."
+  },
+  "ai-generator": {
+    "title": "Redazione Atti AI",
+    "status": "LAB / IA gratuita",
+    "intro": "Prepara bozze di atti sulla base del fascicolo e delle istruzioni del professionista.",
+    "steps": [
+      "Seleziona il fascicolo di riferimento.",
+      "Inserisci istruzioni chiare nella Redazione.",
+      "Premi Genera Bozza con IA.",
+      "Leggi integralmente il risultato.",
+      "Controlla fatti, nomi, date, importi, norme, domande e riferimenti ai documenti.",
+      "Modifica la bozza secondo le esigenze professionali.",
+      "Usa Approva bozza solo dopo la revisione professionale.",
+      "Non considerare Firma e Invia via PEC come un invio reale nel LAB."
+    ],
+    "studio": "L'AI è assistiva. La responsabilità della verifica, modifica e approvazione resta al professionista.",
+    "client": "Il Cliente non genera direttamente gli atti dello Studio."
+  },
+  "pec-client": {
+    "title": "Registro Comunicazioni",
+    "status": "registro / LAB",
+    "intro": "Registra le comunicazioni dello Studio e ne conserva la traccia gestionale.",
+    "steps": [
+      "Scegli il canale previsto.",
+      "Collega la pratica quando pertinente.",
+      "Inserisci destinatario e oggetto.",
+      "Inserisci o registra il contenuto.",
+      "Salva/Registra la comunicazione.",
+      "Controlla lo storico."
+    ],
+    "studio": "Una registrazione nel gestionale non costituisce prova di invio PEC. Per un invio reale deve esistere il relativo servizio e la relativa ricevuta.",
+    "client": "Il Cliente non deve interpretare una voce di registro come ricevuta PEC."
+  },
+  "billing": {
+    "title": "Fatturazione",
+    "status": "gestionale / LAB",
+    "intro": "Registra dati di fatturazione e fatture dello Studio.",
+    "steps": [
+      "Seleziona il cliente.",
+      "Collega la pratica se pertinente.",
+      "Inserisci descrizione, imponibile e IVA.",
+      "Salva la fattura.",
+      "Controlla stato e dati registrati."
+    ],
+    "studio": "La funzione attuale è gestionale: non equivale automaticamente a emissione e trasmissione SDI reale.",
+    "client": "Il Cliente considera definitiva la fattura secondo il reale processo fiscale dello Studio, non soltanto in base alla registrazione interna."
+  },
+  "archive": {
+    "title": "Archivio & Audit",
+    "status": "operativo",
+    "intro": "Mostra lo storico degli eventi registrati dal sistema.",
+    "steps": [
+      "Apri Archivio & Audit.",
+      "Controlla data e ora.",
+      "Controlla evento e dettagli.",
+      "Controlla il fascicolo e l'utente quando presenti.",
+      "Usa Aggiorna per ricaricare lo storico."
+    ],
+    "studio": "L'Audit documenta eventi registrati dal sistema; non deve essere usato per simulare manualmente operazioni mai avvenute.",
+    "client": "Il Cliente non modifica l'Audit dello Studio."
+  },
+  "privacy": {
+    "title": "Gestione Privacy",
+    "status": "operativo / configurazione Studio",
+    "intro": "Raccoglie le funzioni con cui lo Studio gestisce trattamenti, modello privacy, informativa pubblicata, consensi, responsabili, diritti, DPIA e data breach.",
+    "steps": [
+      "Apri Gestione Privacy.",
+      "Usa Trattamenti per descrivere i trattamenti dello Studio.",
+      "Usa Modello Privacy dello Studio per mantenere il modello che il sistema utilizza per preparare il documento personalizzato.",
+      "Usa Studio e logo per intestazione, recapiti e logo utilizzati nella generazione del documento.",
+      "Usa Informativa pubblicata per controllare l'informativa attiva resa disponibile al Portale.",
+      "Usa Consensi / prese visione per controllare le evidenze registrate.",
+      "Usa Responsabili per censire i fornitori/responsabili.",
+      "Usa Diritti interessati per registrare le richieste degli interessati.",
+      "Usa DPIA / rischio per le valutazioni d'impatto quando necessarie.",
+      "Usa Data breach per registrare e seguire gli eventi di violazione."
+    ],
+    "studio": "Il modulo privacy è uno strumento gestionale. I testi e le valutazioni devono essere verificati dal professionista e adattati ai trattamenti reali dello Studio.",
+    "client": "Il Cliente interagisce con la privacy attraverso il Portale e le comunicazioni/documenti predisposti dallo Studio."
+  },
+  "privacyModel": {
+    "title": "Modello Privacy dello Studio",
+    "status": "operativo / modello configurabile",
+    "intro": "È il modello sorgente utilizzato dal sistema per preparare il PDF privacy personalizzato per un cliente.",
+    "steps": [
+      "Apri Gestione Privacy → Modello Privacy dello Studio.",
+      "Controlla Nome modello e Versione.",
+      "Modifica il testo del modello quando necessario.",
+      "Puoi usare i segnaposto disponibili per i dati del cliente.",
+      "Se necessario carica anche il file originale come riferimento dello Studio.",
+      "Premi Salva modello.",
+      "Quando lo Studio prepara la privacy di un cliente, il sistema usa il modello attivo e sostituisce i dati disponibili."
+    ],
+    "studio": "Questa è la sorgente del documento personalizzato. Il modello deve essere validato professionalmente prima dell'uso. La generazione del PDF non equivale a certificazione legale.",
+    "client": "Il Cliente non modifica il modello dello Studio."
+  },
+  "privacyStudioIdentity": {
+    "title": "Studio e logo",
+    "status": "operativo / configurazione",
+    "intro": "Gestisce i dati identificativi e il logo usati nella preparazione dei documenti privacy.",
+    "steps": [
+      "Apri Gestione Privacy → Studio e logo.",
+      "Controlla nome Studio e recapiti.",
+      "Controlla o aggiorna indirizzo, telefono, email, PEC e sito quando presenti.",
+      "Carica il logo nel formato previsto e salva.",
+      "Verifica l'anteprima e che i dati siano corretti."
+    ],
+    "studio": "I dati inseriti qui vengono utilizzati come identità dello Studio nei documenti privacy generati. Evita dati di prova in un ambiente reale.",
+    "client": "Il Cliente visualizza questi dati solo quando sono inseriti nei documenti/comunicazioni pubblicati."
+  },
+  "privacyInformative": {
+    "title": "Informativa pubblicata",
+    "status": "operativo",
+    "intro": "Gestisce la versione dell'informativa privacy attiva resa disponibile al Portale e utilizzata per la presa visione.",
+    "steps": [
+      "Apri Gestione Privacy → Informativa pubblicata.",
+      "Controlla titolo, versione, stato e validità.",
+      "Mantieni una sola versione attiva quando il flusso lo richiede.",
+      "Usa il testo pubblicato come riferimento per la presa visione del Cliente.",
+      "Prima di modificare una versione già utilizzata, valuta la gestione della nuova versione."
+    ],
+    "studio": "L'informativa pubblicata è distinta dal Modello Privacy dello Studio: il modello serve alla preparazione del documento personalizzato; l'informativa pubblicata serve al flusso di presa visione.",
+    "client": "Il Cliente visualizza/prende visione dell'informativa attiva attraverso il Portale secondo il flusso predisposto."
+  },
+  "privacyTreatments": {
+    "title": "Trattamenti",
+    "status": "operativo",
+    "intro": "Censisce i trattamenti di dati personali dello Studio con finalità, basi giuridiche, categorie di interessati/dati, destinatari, conservazione e sicurezza.",
+    "steps": [
+      "Apri Trattamenti.",
+      "Premi + Nuovo trattamento.",
+      "Inserisci nome e finalità.",
+      "Indica base giuridica e categorie di interessati/dati.",
+      "Inserisci destinatari, conservazione e misure di sicurezza.",
+      "Imposta lo stato e salva.",
+      "Aggiorna l'elenco per verificare il record."
+    ],
+    "studio": "I dati devono riflettere i trattamenti reali dello Studio. Non scegliere basi giuridiche in modo automatico o generico.",
+    "client": "Il Cliente non gestisce il registro interno dei trattamenti."
+  },
+  "privacyConsensi": {
+    "title": "Consensi / prese visione",
+    "status": "operativo",
+    "intro": "Conserva le evidenze relative alla presa visione e alle azioni privacy registrate dal Portale.",
+    "steps": [
+      "Apri Consensi / prese visione.",
+      "Controlla cliente, informativa/versione e data dell'evidenza.",
+      "Usa il record per verificare quale versione è stata presa in visione.",
+      "Confronta l'evidenza con il documento/informativa effettivamente pubblicato."
+    ],
+    "studio": "Una presa visione non deve essere confusa con un consenso: il significato dell'azione dipende dalla base giuridica e dal trattamento.",
+    "client": "Il Cliente compie le azioni previste dal Portale e riceve evidenza della registrazione quando il flusso la produce."
+  },
+  "privacyResponsabili": {
+    "title": "Responsabili",
+    "status": "operativo",
+    "intro": "Censisce soggetti/fornitori che trattano dati per conto dello Studio e lo stato della relativa gestione.",
+    "steps": [
+      "Apri Responsabili.",
+      "Premi + Nuovo responsabile.",
+      "Inserisci soggetto e informazioni richieste.",
+      "Indica stato della nomina/contratto.",
+      "Salva e aggiorna l'elenco.",
+      "Mantieni i dati allineati ai fornitori realmente utilizzati."
+    ],
+    "studio": "La registrazione gestionale non sostituisce la verifica contrattuale e privacy della nomina.",
+    "client": "Il Cliente non modifica l'elenco dei responsabili dello Studio."
+  },
+  "privacyRequests": {
+    "title": "Diritti interessati",
+    "status": "operativo",
+    "intro": "Registra le richieste degli interessati e ne segue stato e scadenze.",
+    "steps": [
+      "Apri Diritti interessati.",
+      "Premi + Nuova richiesta.",
+      "Registra l'interessato, il tipo di richiesta e la data.",
+      "Imposta scadenza/stato secondo il caso.",
+      "Registra risposta, note ed eventuali proroghe/evidenze.",
+      "Aggiorna e verifica le richieste aperte."
+    ],
+    "studio": "Le richieste devono essere gestite secondo le scadenze e le valutazioni applicabili; il registro non sostituisce la verifica professionale.",
+    "client": "Il Cliente può esercitare i propri diritti attraverso i canali messi a disposizione dallo Studio."
+  },
+  "privacyDpia": {
+    "title": "DPIA / rischio",
+    "status": "operativo / valutazione",
+    "intro": "Documenta valutazioni d'impatto e rischio quando il trattamento lo richiede.",
+    "steps": [
+      "Apri DPIA / rischio.",
+      "Premi + Nuova valutazione.",
+      "Descrivi trattamento, necessità e rischi.",
+      "Indica misure, rischio residuo e riesame.",
+      "Salva la valutazione.",
+      "Aggiorna lo storico e verifica le valutazioni aperte."
+    ],
+    "studio": "La DPIA è una valutazione sostanziale, non un semplice adempimento grafico: i contenuti devono essere coerenti con il trattamento reale.",
+    "client": "Il Cliente non compila direttamente la DPIA interna."
+  },
+  "privacyBreaches": {
+    "title": "Data breach",
+    "status": "operativo / registro",
+    "intro": "Registra gli eventi di violazione dei dati personali e le relative valutazioni e misure.",
+    "steps": [
+      "Apri Data breach.",
+      "Premi + Nuovo evento.",
+      "Registra data, descrizione e informazioni disponibili.",
+      "Valuta rischio e necessità delle azioni previste.",
+      "Registra notifiche, misure correttive e stato.",
+      "Aggiorna il registro fino alla chiusura dell'evento."
+    ],
+    "studio": "La gestione di un breach richiede valutazioni professionali e rispetto delle eventuali tempistiche applicabili; il registro non esegue automaticamente notifiche alle autorità.",
+    "client": "Il Cliente riceve comunicazioni solo se e quando lo Studio decide e dispone di un flusso effettivo per farlo."
+  },
+  "lexroom": {
+    "title": "Lexroom AI — LAB",
+    "status": "LAB / gratuito",
+    "intro": "Laboratorio gratuito per sperimentare analisi di fascicoli, bozze e modelli AI senza un servizio IA a pagamento.",
+    "steps": [
+      "Apri Lexroom AI — LAB quando vuoi sperimentare.",
+      "Seleziona una pratica disponibile.",
+      "Usa Analisi LAB per analizzare i materiali oppure Bozza LAB per preparare una bozza.",
+      "Leggi e verifica il risultato.",
+      "Gestisci i modelli LAB dello Studio quando previsto.",
+      "Se prepari una comunicazione LAB, trattala come preparazione simulata e non come invio reale."
+    ],
+    "studio": "Il LAB è ambiente di prova. Nessun risultato AI deve essere utilizzato senza revisione professionale.",
+    "client": "Il Cliente non opera direttamente nel LAB."
+  },
+  "communications": {
+    "title": "Lettere & Comunicazioni AI",
+    "status": "LAB / IA assistiva",
+    "intro": "Prepara bozze di lettere, diffide, solleciti e altre comunicazioni professionali collegate a una pratica.",
+    "steps": [
+      "Apri Lettere & Comunicazioni AI.",
+      "Seleziona il fascicolo.",
+      "Scegli il tipo di comunicazione.",
+      "Indica destinatario e oggetto.",
+      "Scrivi le istruzioni dell'avvocato.",
+      "Premi Genera comunicazione con AI.",
+      "Leggi integralmente la bozza e verifica fatti, nomi, date, importi e tono.",
+      "Approva o modifica solo dopo la revisione professionale."
+    ],
+    "studio": "La bozza non è un invio automatico e non sostituisce il controllo del professionista.",
+    "client": "Il Cliente riceve una comunicazione solo attraverso un flusso effettivamente attivato dallo Studio."
+  },
+  "studio-pratiche": {
+    "title": "Pratiche ricevute dal Portale Clienti",
+    "status": "operativo",
+    "intro": "Mostra le pratiche inviate dai Clienti dal Portale e permette allo Studio di esaminarne dati e allegati.",
+    "steps": [
+      "Apri la sezione delle pratiche ricevute.",
+      "Controlla cliente, materia, controparte, descrizione e allegati.",
+      "Verifica che il cliente sia quello corretto.",
+      "Valuta la richiesta.",
+      "Se la richiesta è accettata, prosegui con privacy/documentazione/onboarding secondo il flusso.",
+      "Se non è accettata, registra la decisione secondo le funzioni disponibili."
+    ],
+    "studio": "La ricezione di una richiesta non equivale all'accettazione dell'incarico.",
+    "client": "Dopo l'invio della richiesta il Cliente attende la valutazione dello Studio."
+  },
+  "manual": {
+    "title": "Manuale Operativo e Guida in Linea",
+    "status": "operativo",
+    "intro": "Guida contestuale alla schermata attualmente aperta. Spiega funzione, procedura, ruolo dello Studio e ruolo del Cliente.",
+    "steps": [
+      "Apri HELP dalla barra superiore.",
+      "Leggi la guida relativa al menu attivo.",
+      "Segui i passaggi nell'ordine indicato.",
+      "Quando il menu contiene funzioni LAB o registrazioni simulate, considera sempre lo stato indicato nella guida.",
+      "Usa il manuale come guida operativa e non come sostituto delle valutazioni professionali."
+    ],
+    "studio": "Il manuale descrive il comportamento gestionale previsto dal progetto attuale.",
+    "client": "Questa guida è destinata all'operatore dell'Area Studio."
+  }
+};
         function renderStudioHelp(panelId){
             const data=STUDIO_HELP[panelId];
             const headerBtn=document.getElementById('studioHeaderHelp');
