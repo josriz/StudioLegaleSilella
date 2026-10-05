@@ -23,7 +23,7 @@
   function field(label,id,value='',type='text',placeholder=''){return '<div class="form-group"><label>'+esc(label)+'</label><input id="'+id+'" type="'+type+'" value="'+esc(value)+'" placeholder="'+esc(placeholder)+'"></div>'}
   function area(label,id,value=''){return '<div class="form-group"><label>'+esc(label)+'</label><textarea id="'+id+'" rows="3">'+esc(value)+'</textarea></div>'}
   function actions(save,cancel){return '<div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-success" type="button" id="'+save+'">Salva</button><button class="btn" type="button" id="'+cancel+'">Annulla</button></div>'}
-  function showBox(name){['privacyTreatmentBox','privacyRequestBox','privacyBreachBox','privacyInformativeBox','privacyStudioIdentityBox','privacyConsensiBox','privacyResponsabiliBox','privacyDpiaBox'].forEach(x=>{if($(x))$(x).style.display=x===name?'block':'none'})}
+  function showBox(name){['privacyTreatmentBox','privacyRequestBox','privacyBreachBox','privacyModelBox','privacyInformativeBox','privacyStudioIdentityBox','privacyConsensiBox','privacyResponsabiliBox','privacyDpiaBox'].forEach(x=>{if($(x))$(x).style.display=x===name?'block':'none'})}
   function optionList(rows,valueKey,labelKey,selected){return rows.map(x=>'<option value="'+esc(x[valueKey])+'" '+(String(x[valueKey])===String(selected||'')?'selected':'')+'>'+esc(x[labelKey])+'</option>').join('')}
 
   function treatmentForm(data={}){
