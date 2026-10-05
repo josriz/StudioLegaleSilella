@@ -59,7 +59,7 @@
 
     const item = document.createElement('a');
     item.className = 'menu-item';
-    item.innerHTML = '📥 <span>Pratiche ricevute</span>';
+    item.innerHTML = '<span class="menu-photo menu-photo--pratiche"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/inbox.svg" alt="" aria-hidden="true"></span><span>Pratiche ricevute</span>';
     item.href = '#';
 
     const panel = document.createElement('div');
