@@ -80,29 +80,10 @@
         .sidebar-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.28); border-radius: 2px; }
         .menu-item { padding: 12px 20px; display: flex; align-items: center; gap: 15px; color: #f8fafc; cursor: pointer; text-decoration: none; transition: 0.2s; font-size: 14px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
         .menu-item:hover, .menu-item.active { background-color: rgba(255, 255, 255, 0.25); color: #fff; border-left: 4px solid var(--accent); }
-        /* ICONE MENU: stile fotografico/glass premium, senza emoji */
-        .menu-photo{width:34px;height:34px;min-width:34px;border-radius:9px;display:inline-grid;place-items:center;position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(255,255,255,.42),rgba(15,23,42,.28)),url('loghi_sfondi/stanza_vetro.jpg') center/cover;border:1px solid rgba(255,255,255,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 3px 10px rgba(0,0,0,.18);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);flex:0 0 34px;}
-        .menu-photo::after{content:'';width:18px;height:18px;background:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45));-webkit-mask:var(--menu-icon) center/contain no-repeat;mask:var(--menu-icon) center/contain no-repeat;opacity:.96;}
-        .menu-photo--dashboard{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M3 13h8V3H3v10Zm0 8h8v-6H3v6Zm10 0h8V11h-8v10Zm0-18v6h8V3h-8Z'/%3E%3C/svg%3E");}
-        .menu-photo--manual{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M5 3h11a3 3 0 0 1 3 3v14H8a3 3 0 0 0-3 1V3Zm3 5h8V6H8v2Zm0 4h8v-2H8v2Zm0 4h6v-2H8v2Z'/%3E%3C/svg%3E");}
-        .menu-photo--demo{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 2 3 6v2h18V6l-9-4Zm-7 8h2v9h2v-9h2v9h2v-9h2v9h2v-9h2v11H5V10Z'/%3E%3C/svg%3E");}
-        .menu-photo--team{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 2 14 8l6 1-4.5 4 1.3 6L12 16l-4.8 3 1.3-6L4 9l6-1 2-6Zm0 5.3L11.2 10l-2.5.4 1.8 1.6-.5 2.5 2-1.3 2 1.3-.5-2.5 1.8-1.6-2.5-.4L12 7.3Z'/%3E%3C/svg%3E");}
-        .menu-photo--clients{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M8 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 21a6 6 0 0 1 12 0H2Zm13 0a5 5 0 0 1 7 0h-7Z'/%3E%3C/svg%3E");}
-        .menu-photo--portal{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm0 3v2h16V8H4Zm2 5h5v2H6v-2Z'/%3E%3C/svg%3E");}
-        .menu-photo--conflict{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 2 4 5v6c0 5.2 3.4 9.5 8 11 4.6-1.5 8-5.8 8-11V5l-8-3Zm0 5 4 1.5v2.7c0 3.5-2.1 6.4-4 7.5-1.9-1.1-4-4-4-7.5V8.5L12 7Zm-1 3v4h2v-4h-2Z'/%3E%3C/svg%3E");}
-        .menu-photo--matters{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M4 3h10l6 6v12H4V3Zm9 1v6h6L13 4ZM7 13h10v2H7v-2Zm0 4h7v2H7v-2Z'/%3E%3C/svg%3E");}
-        .menu-photo--search{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M10.5 3a7.5 7.5 0 1 0 4.7 13.35L20 21.15 21.15 20l-4.7-4.8A7.5 7.5 0 0 0 10.5 3Zm0 2a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11Z'/%3E%3C/svg%3E");}
-        .menu-photo--agenda{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M6 2h2v3h8V2h2v3h3v17H3V5h3V2Zm13 8H5v10h14V10Zm-9 3h2v2h-2v-2Zm4 0h2v2h-2v-2Z'/%3E%3C/svg%3E");}
-        .menu-photo--pct{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 2 3 6v2h18V6l-9-4Zm-6 8h12v11H6V10Zm3 3v2h6v-2H9Zm0 4v2h6v-2H9Z'/%3E%3C/svg%3E");}
-        .menu-photo--timer{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M9 2h6v2H9V2Zm3 4a8 8 0 1 0 8 8 8 8 0 0 0-8-8Zm1 2v5h4v2h-6V8h2Z'/%3E%3C/svg%3E");}
-        .menu-photo--ai{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='m12 2 1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5L12 2Zm7 12 .8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14ZM5 14l.7 2.3L8 17l-2.3.7L5 20l-.7-2.3L2 17l2.3-.7L5 14Z'/%3E%3C/svg%3E");}
-        .menu-photo--mail{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M3 5h18v14H3V5Zm2 3v1l7 4 7-4V8l-7 4-7-4Z'/%3E%3C/svg%3E");}
-        .menu-photo--billing{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M5 2h14v20l-7-3-7 3V2Zm3 5v2h8V7H8Zm0 4v2h8v-2H8Z'/%3E%3C/svg%3E");}
-        .menu-photo--archive{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M4 3h16v18H4V3Zm3 4v2h10V7H7Zm0 4v2h10v-2H7Zm0 4v2h7v-2H7Z'/%3E%3C/svg%3E");}
-        .menu-photo--privacy{--menu-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 2 4 5v6c0 5.2 3.4 9.5 8 11 4.6-1.5 8-5.8 8-11V5l-8-3Zm0 5 4 1.5v2.7c0 3.5-2.1 6.4-4 7.5-1.9-1.1-4-4-4-7.5V8.5L12 7Z'/%3E%3C/svg%3E");}
-        .menu-item:hover .menu-photo,.menu-item.active .menu-photo{transform:translateY(-1px) scale(1.04);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 5px 14px rgba(0,0,0,.25);}
-        .menu-photo{transition:transform .2s ease,box-shadow .2s ease;}
-
+        /* ICONE MENU: set SVG professionale web, coerente e leggero (Tabler Icons / MIT) */
+        .menu-photo{width:34px;height:34px;min-width:34px;flex:0 0 34px;border-radius:10px;display:inline-grid;place-items:center;position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(226,232,240,.34));border:1px solid rgba(255,255,255,.72);box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 4px 12px rgba(15,23,42,.18);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:transform .2s ease,box-shadow .2s ease,background .2s ease;}
+        .menu-photo img{width:19px;height:19px;display:block;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(15,23,42,.25));}
+        .menu-item:hover .menu-photo,.menu-item.active .menu-photo{transform:translateY(-1px) scale(1.05);background:linear-gradient(145deg,rgba(255,255,255,.9),rgba(255,255,255,.48));box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 6px 16px rgba(15,23,42,.25);}
         .menu-section-title { padding: 12px 20px 6px; color: rgba(255,255,255,0.62); font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; pointer-events: none; }
         aside.collapsed .menu-section-title { font-size: 0; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.15); }
         aside.collapsed .menu-item span { display: none; }
@@ -887,29 +868,29 @@
         </div>
         <div class="sidebar-menu">
             <div class="menu-section-title">Studio</div>
-            <a class="menu-item active" onclick="switchTab('dashboard', this)"><span class="menu-photo menu-photo--dashboard" aria-hidden="true"></span><span>Dashboard</span></a>
-             <a class="menu-item" href="manuale.html"><span class="menu-photo menu-photo--manual" aria-hidden="true"></span><span>Manuale Operativo Online</span></a>
-             <a class="menu-item" onclick="switchTab('demo', this)"><span class="menu-photo menu-photo--demo" aria-hidden="true"></span><span>Demo — Una giornata nello Studio</span></a>
+            <a class="menu-item active" onclick="switchTab('dashboard', this)"><span class="menu-photo menu-photo--dashboard"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/layout-dashboard.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Dashboard</span></a>
+             <a class="menu-item" href="manuale.html"><span class="menu-photo menu-photo--manual"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/book-2.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Manuale Operativo Online</span></a>
+             <a class="menu-item" onclick="switchTab('demo', this)"><span class="menu-photo menu-photo--demo"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/player-play.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Demo — Una giornata nello Studio</span></a>
             <div class="menu-section-title">Professionisti e Team</div>
-            <a class="menu-item" onclick="switchTab('team', this)"><span class="menu-photo menu-photo--team" aria-hidden="true"></span><span>Professionisti & Team</span></a>
+            <a class="menu-item" onclick="switchTab('team', this)"><span class="menu-photo menu-photo--team"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/users.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Professionisti & Team</span></a>
             <div class="menu-section-title">Clienti</div>
-            <a class="menu-item" onclick="switchTab('clients', this)"><span class="menu-photo menu-photo--clients" aria-hidden="true"></span><span>Anagrafica Clienti</span></a>
-            <a class="menu-item" onclick="switchTab('client-portal', this)"><span class="menu-photo menu-photo--portal" aria-hidden="true"></span><span>Portale Clienti</span></a>
+            <a class="menu-item" onclick="switchTab('clients', this)"><span class="menu-photo menu-photo--clients"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/user.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Anagrafica Clienti</span></a>
+            <a class="menu-item" onclick="switchTab('client-portal', this)"><span class="menu-photo menu-photo--portal"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/folder.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Portale Clienti</span></a>
             <div class="menu-section-title">Gestione pratiche e attività</div>
-            <a class="menu-item" onclick="switchTab('conflict', this)"><span class="menu-photo menu-photo--conflict" aria-hidden="true"></span><span>Conflict Check</span></a>
-            <a class="menu-item" onclick="switchTab('matters', this)"><span class="menu-photo menu-photo--matters" aria-hidden="true"></span><span>Fascicoli & Contenzioso</span></a>
-            <a class="menu-item" onclick="switchTab('jurisprudence', this)"><span class="menu-photo menu-photo--search" aria-hidden="true"></span><span>Ricerca interna</span></a>
-            <a class="menu-item" onclick="switchTab('agenda', this)"><span class="menu-photo menu-photo--agenda" aria-hidden="true"></span><span>Agenda & Scadenze</span></a>
-            <a class="menu-item" onclick="switchTab('pct-deposit', this)"><span class="menu-photo menu-photo--pct" aria-hidden="true"></span><span>Registro Depositi PCT</span></a>
-            <a class="menu-item" onclick="switchTab('time-tracker', this)"><span class="menu-photo menu-photo--timer" aria-hidden="true"></span><span>Time Tracker</span></a>
+            <a class="menu-item" onclick="switchTab('conflict', this)"><span class="menu-photo menu-photo--conflict"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/scale.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Conflict Check</span></a>
+            <a class="menu-item" onclick="switchTab('matters', this)"><span class="menu-photo menu-photo--matters"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/briefcase.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Fascicoli & Contenzioso</span></a>
+            <a class="menu-item" onclick="switchTab('jurisprudence', this)"><span class="menu-photo menu-photo--search"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/search.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Ricerca interna</span></a>
+            <a class="menu-item" onclick="switchTab('agenda', this)"><span class="menu-photo menu-photo--agenda"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/calendar-event.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Agenda & Scadenze</span></a>
+            <a class="menu-item" onclick="switchTab('pct-deposit', this)"><span class="menu-photo menu-photo--pct"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/file-description.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Registro Depositi PCT</span></a>
+            <a class="menu-item" onclick="switchTab('time-tracker', this)"><span class="menu-photo menu-photo--timer"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/clock.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Time Tracker</span></a>
             <div class="menu-section-title">Intelligenza Artificiale</div>
-            <a class="menu-item" onclick="switchTab('ai-generator', this)"><span class="menu-photo menu-photo--ai" aria-hidden="true"></span><span>Redazione Atti AI</span></a>
+            <a class="menu-item" onclick="switchTab('ai-generator', this)"><span class="menu-photo menu-photo--ai"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/robot.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Redazione Atti AI</span></a>
             <div class="menu-section-title">Comunicazioni e amministrazione</div>
-            <a class="menu-item" onclick="switchTab('pec-client', this)"><span class="menu-photo menu-photo--mail" aria-hidden="true"></span><span>Registro Comunicazioni</span></a>
-            <a class="menu-item" onclick="switchTab('billing', this)"><span class="menu-photo menu-photo--billing" aria-hidden="true"></span><span>Fatturazione</span></a>
+            <a class="menu-item" onclick="switchTab('pec-client', this)"><span class="menu-photo menu-photo--mail"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/mail.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Registro Comunicazioni</span></a>
+            <a class="menu-item" onclick="switchTab('billing', this)"><span class="menu-photo menu-photo--billing"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/receipt.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Fatturazione</span></a>
             <div class="menu-section-title">Controllo e conformità</div>
-            <a class="menu-item" onclick="switchTab('archive', this)"><span class="menu-photo menu-photo--archive" aria-hidden="true"></span><span>Archivio & Audit</span></a>
-            <a class="menu-item" onclick="switchTab('privacy', this)"><span class="menu-photo menu-photo--privacy" aria-hidden="true"></span><span>Gestione Privacy</span></a>
+            <a class="menu-item" onclick="switchTab('archive', this)"><span class="menu-photo menu-photo--archive"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/archive.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Archivio & Audit</span></a>
+            <a class="menu-item" onclick="switchTab('privacy', this)"><span class="menu-photo menu-photo--privacy"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/shield-lock.svg" alt="" aria-hidden="true" loading="lazy"></span><span>Gestione Privacy</span></a>
         </div>
     </aside>
 
