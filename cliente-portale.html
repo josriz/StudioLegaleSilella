@@ -427,7 +427,7 @@ function openClientHelp(){
 function closeClientHelp(){$('clientHelpModal').classList.add('hidden')}
 window.openLegal=openLegal;window.closeLegal=closeLegal;window.downloadDoc=downloadDoc;window.prepareSign=prepareSign;window.returnSigned=returnSigned;
 
-$('clientHelpBtn').onclick=openClientHelp;$('closeClientHelp').onclick=closeClientHelp;
+$('closeClientHelp').onclick=closeClientHelp;
 $('clientHelpModal').addEventListener('click',e=>{if(e.target.id==='clientHelpModal')closeClientHelp()});
 $('logoutBtn').onclick=async()=>{await sb.auth.signOut();currentUser=null;currentClient=null;location.replace('./')};
 $('profileForm').onsubmit=saveProfile;$('uploadIdentityBtn').onclick=uploadIdentity;$('uploadOtherBtn').onclick=()=>$('otherPersonalFiles').click();$('otherPersonalFiles').onchange=uploadOtherPersonal;$('practiceForm').onsubmit=submitPractice;$('newPracticeBtn').onclick=()=>setTab('practice');
