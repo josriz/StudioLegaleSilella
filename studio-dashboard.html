@@ -834,6 +834,24 @@
 
         body.studio-auth-pending > *:not(#studioStartupError) { visibility: hidden !important; }
         body.studio-auth-pending { overflow: hidden !important; }
+        /* Stampa generale del pannello attivo */
+        @media print {
+            @page { size: A4; margin: 14mm; }
+            html, body { background:#fff !important; color:#111827 !important; }
+            body { overflow:visible !important; }
+            #appSidebar, header, #studioStartupError, .help-overlay, .modal-backdrop,
+            .no-print, button, input[type="button"], input[type="submit"], select,
+            textarea, .menu-item, .studio-notify-btn { display:none !important; }
+            main { margin:0 !important; width:100% !important; }
+            .content-area { padding:0 !important; margin:0 !important; }
+            .panel { display:none !important; }
+            .panel.active { display:block !important; visibility:visible !important; }
+            .card, .studio-demo-step, .studio-demo-end { break-inside:avoid; page-break-inside:avoid; }
+            table { width:100% !important; border-collapse:collapse !important; }
+            a { color:#111827 !important; text-decoration:none !important; }
+            .print-header { display:block !important; margin-bottom:14px; border-bottom:1px solid #cbd5e1; padding-bottom:8px; }
+        }
+        .print-header { display:none; }
 
 </style>
 </head>
@@ -887,7 +905,7 @@
                     </div>
                 </div>
             </div>
-            <div style="display:flex;align-items:center;gap:12px"><button id="studioNotifyBtn" class="studio-notify-btn" title="Notifiche">🔔<span id="studioNotifyCount" class="studio-notify-count" style="display:none">0</span></button><button id="studioHeaderHelp" class="btn" type="button" title="Guida operativa">HELP</button><div style="font-size: 13px; font-weight: 600; color: #1e293b;">Area Riservata - Avv. Titolare Silella</div><button id="studioHeaderLogout" class="btn" type="button">Esci</button></div>
+            <div style="display:flex;align-items:center;gap:12px"><button id="studioPrintBtn" class="btn no-print" type="button" title="Stampa schermata corrente">🖨️ Stampa</button><button id="studioNotifyBtn" class="studio-notify-btn" title="Notifiche">🔔<span id="studioNotifyCount" class="studio-notify-count" style="display:none">0</span></button><button id="studioHeaderHelp" class="btn" type="button" title="Guida operativa">HELP</button><div style="font-size: 13px; font-weight: 600; color: #1e293b;">Area Riservata - Avv. Titolare Silella</div><button id="studioHeaderLogout" class="btn" type="button">Esci</button></div>
         </header>
 
         <div class="content-area">
@@ -1929,6 +1947,26 @@
             if (window.renderStudioHelpForActive) window.renderStudioHelpForActive();
             // L'intestazione superiore mantiene sempre i recapiti dello Studio.
         }
+
+        function printCurrentStudioView() {
+            const active = document.querySelector('.panel.active');
+            if (!active) { alert('Nessuna schermata disponibile per la stampa.'); return; }
+            const oldHeader = document.querySelector('.print-header');
+            if (oldHeader) oldHeader.remove();
+            const header = document.createElement('div');
+            header.className = 'print-header';
+            const title = document.querySelector('#headerTitle')?.innerText?.trim() || 'Studio Legale Silella';
+            header.innerHTML = '<strong>Studio Legale Silella</strong><br><span>'+escapeHtml(title)+'</span><br><span>Stampa del: '+new Date().toLocaleString('it-IT')+'</span>';
+            active.prepend(header);
+            const cleanup = () => { header.remove(); window.removeEventListener('afterprint', cleanup); };
+            window.addEventListener('afterprint', cleanup);
+            window.print();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const printBtn = document.getElementById('studioPrintBtn');
+            if (printBtn) printBtn.addEventListener('click', printCurrentStudioView);
+        });
 
         async function runConflictCheck() {
             const query = document.getElementById('conflictQuery').value.trim();
