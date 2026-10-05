@@ -1093,6 +1093,80 @@
         }
 
 </style>
+
+<!-- CLEAN BASE VISUAL RESET 20261006: sfondo e glass effect bottoni rimossi; nessuna funzione modificata -->
+<style id="clean-base-reset-20261006">
+  /* Sfondo pulito: nessuna fotografia, nessun effetto vetro */
+  html, body {
+    background: #f3f4f6 !important;
+    background-image: none !important;
+  }
+  body {
+    color: #1f2937 !important;
+  }
+  main,
+  .content-area {
+    background: #f3f4f6 !important;
+    background-image: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Rimozione completa del glassmorphism dai pulsanti */
+  button,
+  .btn,
+  [class*="btn"],
+  input[type="button"],
+  input[type="submit"],
+  a.button,
+  a.btn {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+  }
+
+  /* Pulsanti base: puliti e opachi */
+  button,
+  .btn,
+  input[type="button"],
+  input[type="submit"],
+  a.button,
+  a.btn {
+    background-color: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    color: #1f2937 !important;
+    opacity: 1 !important;
+  }
+
+  button:hover,
+  .btn:hover,
+  input[type="button"]:hover,
+  input[type="submit"]:hover,
+  a.button:hover,
+  a.btn:hover {
+    background-color: #f9fafb !important;
+    transform: none !important;
+  }
+
+  /* Mantiene i colori funzionali dei pulsanti senza effetto vetro */
+  .btn-primary { background-color: #1f2937 !important; color: #fff !important; border-color: #1f2937 !important; }
+  .btn-success { background-color: #2f6f57 !important; color: #fff !important; border-color: #2f6f57 !important; }
+  .btn-danger  { background-color: #9f3f3f !important; color: #fff !important; border-color: #9f3f3f !important; }
+  .btn-warning { background-color: #a8792e !important; color: #fff !important; border-color: #a8792e !important; }
+  .btn-info    { background-color: #35617d !important; color: #fff !important; border-color: #35617d !important; }
+
+  .studio-notify-btn {
+    background: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+</style>
+
 </head>
 <body class="studio-auth-pending">
 
