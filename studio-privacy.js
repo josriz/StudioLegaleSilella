@@ -196,12 +196,12 @@
     }catch(e){console.error(e);status.textContent=e.message||'Errore nel salvataggio del modello.'}
   }
 
-  window.sendPrivacyInformative = async function sendPrivacyInformative(id){
+  window.sendPrivacyInformative = async function sendPrivacyInformative(id, preselectedClientId=null){
     const existing=document.getElementById('privacySendModal');
     if(existing) existing.remove();
     const informative=informatives.find(x=>x.id===id);
     if(!informative||informative.stato!=='attiva'){alert('Attiva prima l’informativa da preparare.');return}
-    const options=clients.filter(x=>x.user_id).map(x=>'<option value="'+x.id+'">'+esc(x.full_name||x.user_id)+'</option>').join('');
+    const options=clients.filter(x=>x.user_id).map(x=>'<option value="'+x.id+'"'+(preselectedClientId===x.id?' selected':'')+'>'+esc(x.full_name||x.user_id)+'</option>').join('');
     if(!options){alert('Nessun cliente con accesso attivo al Portale.');return}
 
     const m=document.createElement('div');
