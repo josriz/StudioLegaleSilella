@@ -1094,6 +1094,98 @@
 
 </style>
 
+<!-- STUDIO SCENE DESIGN 20261006: sfondo fotografico professionale + gerarchia visuale, solo CSS -->
+<style id="studio-scene-design-20261006">
+html,body{background:#17283a !important;}
+body{
+  position:relative !important;
+  background:
+    linear-gradient(90deg,rgba(8,22,37,.82) 0%,rgba(10,25,40,.54) 24%,rgba(12,25,39,.18) 58%,rgba(12,25,39,.42) 100%),
+    linear-gradient(180deg,rgba(7,18,30,.24),rgba(7,18,30,.46)),
+    url('loghi_sfondi/scrivania_studio.jpg') center center/cover fixed no-repeat !important;
+}
+body:before{
+ content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+ background:radial-gradient(circle at 76% 32%,rgba(202,169,108,.16),transparent 26%);
+}
+main{
+ background:linear-gradient(180deg,rgba(243,238,229,.88),rgba(237,232,222,.94)) !important;
+ backdrop-filter:blur(2px) !important;-webkit-backdrop-filter:blur(2px) !important;
+}
+aside{
+ width:278px !important;
+ background:linear-gradient(180deg,rgba(10,27,45,.97),rgba(19,43,66,.97)) !important;
+ box-shadow:10px 0 32px rgba(4,14,24,.24) !important;
+ border-right:1px solid rgba(205,173,112,.16) !important;
+}
+.sidebar-header{
+ background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.015)) !important;
+ border-bottom:1px solid rgba(255,255,255,.13) !important;
+}
+.sidebar-header:after{
+ content:"";position:absolute;bottom:0;left:20px;right:20px;height:2px;
+ background:linear-gradient(90deg,transparent,#c5a36a,transparent) !important;
+}
+.sidebar-menu{padding:18px 10px !important;}
+.menu-section-title{
+ color:#aebdca !important;letter-spacing:1.3px !important;font-size:10px !important;
+ text-transform:uppercase !important;padding:13px 14px 7px !important;
+}
+.menu-item{
+ margin:3px 0 !important;border-left:3px solid transparent !important;border-radius:8px !important;
+ color:#dbe4ed !important;text-shadow:none !important;padding:11px 14px !important;
+}
+.menu-item:hover{background:rgba(255,255,255,.075) !important;border-left-color:#8b9bad !important;color:#fff !important;}
+.menu-item.active{
+ background:linear-gradient(90deg,rgba(196,161,99,.23),rgba(255,255,255,.05)) !important;
+ border-left-color:#c5a36a !important;color:#fff !important;
+}
+header{
+ height:88px !important;background:rgba(255,252,247,.97) !important;
+ border-bottom:1px solid #dcd5ca !important;box-shadow:0 5px 22px rgba(16,31,48,.10) !important;
+ backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+}
+header h1{color:#12263d !important;font-size:22px !important;font-weight:700 !important;letter-spacing:-.3px !important;}
+.content-area{padding:28px !important;background:transparent !important;}
+.card,.stat-card,.panel,.section-card,.dashboard-card,.content-card{
+ background:rgba(255,253,249,.975) !important;border:1px solid #ddd6cb !important;
+ border-radius:13px !important;box-shadow:0 9px 28px rgba(22,39,57,.09) !important;
+ backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+}
+.card:hover,.stat-card:hover,.panel:hover,.section-card:hover,.dashboard-card:hover,.content-card:hover{
+ box-shadow:0 12px 34px rgba(22,39,57,.12) !important;
+}
+button,.btn,input[type=button],input[type=submit],a.button,a.btn{
+ border-radius:8px !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+ box-shadow:none !important;text-shadow:none !important;transform:none !important;
+}
+.btn-primary{background:#16304a !important;color:#fff !important;border-color:#16304a !important;}
+.btn-success{background:#39765e !important;color:#fff !important;border-color:#39765e !important;}
+.btn-warning{background:#a97d3d !important;color:#fff !important;border-color:#a97d3d !important;}
+.btn-danger{background:#a24747 !important;color:#fff !important;border-color:#a24747 !important;}
+.btn-info{background:#416e89 !important;color:#fff !important;border-color:#416e89 !important;}
+button:not(.btn-primary):not(.btn-success):not(.btn-warning):not(.btn-danger):not(.btn-info),
+.btn:not(.btn-primary):not(.btn-success):not(.btn-warning):not(.btn-danger):not(.btn-info){
+ background:#fffdfa !important;color:#33465b !important;border:1px solid #d0c9bf !important;
+}
+table{background:#fffdfa !important;border-color:#ddd6cb !important;}
+thead,th{background:#f0ebe3 !important;color:#42536a !important;}
+tbody tr:hover{background:#faf6ef !important;}
+input,select,textarea{background:#fff !important;border-color:#d1cbc1 !important;box-shadow:none !important;}
+input:focus,select:focus,textarea:focus{border-color:#b7945a !important;box-shadow:0 0 0 3px rgba(183,148,90,.13) !important;}
+.studio-notify-btn{background:#fffdfa !important;border:1px solid #d0c9bf !important;box-shadow:none !important;backdrop-filter:none !important;}
+@media(max-width:900px){
+ main{background:linear-gradient(180deg,rgba(243,238,229,.96),rgba(237,232,222,.98)) !important;}
+ header{height:78px !important;}
+ .content-area{padding:18px !important;}
+}
+@media(max-width:600px){
+ body{background-position:center center !important;}
+ .content-area{padding:14px !important;}
+}
+</style>
+
+
 <!-- VISUAL REWORK 20261006: solo presentazione grafica -->
 <style id="studio-visual-rework-20261006">
 :root{
