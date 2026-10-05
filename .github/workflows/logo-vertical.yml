@@ -1,0 +1,138 @@
+name: Logo Studio Silella - vertical text
+
+on:
+  push:
+    paths:
+      - ".github/workflows/logo-vertical.yml"
+      - "DO_REPLACE_LOGO"
+
+permissions:
+  contents: write
+
+jobs:
+  process-logo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Install image tools
+        run: python -m pip install --upgrade pillow numpy opencv-python-headless
+
+      - name: Process or publish logo
+        shell: python
+        run: |
+          from pathlib import Path
+          import cv2
+          import numpy as np
+          from PIL import Image
+
+          src = Path("Logo_Studio_Silella.jpg")
+          test = Path("Logo_Studio_Silella_vertical-test.jpg")
+          marker = Path("DO_REPLACE_LOGO")
+
+          if marker.exists():
+              if not test.exists():
+                  raise SystemExit("Test logo non presente: stop per sicurezza.")
+              src_bytes = test.read_bytes()
+              src.write_bytes(src_bytes)
+              marker.unlink()
+              print("REPLACE_DONE")
+              raise SystemExit(0)
+
+          if test.exists():
+              print("Test già presente: nessuna seconda elaborazione.")
+              raise SystemExit(0)
+
+          img = cv2.imread(str(src), cv2.IMREAD_COLOR)
+          if img is None:
+              raise SystemExit("Impossibile leggere il JPG originale.")
+
+          h, w = img.shape[:2]
+          print(f"Originale: {w}x{h}")
+
+          # Area esclusiva della scritta centrale: la fotografia resta invariata
+          # fuori da questa fascia.
+          x1, x2 = int(w * 0.27), int(w * 0.80)
+          y1, y2 = int(h * 0.38), int(h * 0.64)
+
+          roi = img[y1:y2, x1:x2].copy()
+          lab = cv2.cvtColor(roi, cv2.COLOR_BGR2LAB)
+          L, A, B = cv2.split(lab)
+
+          # Il testo è molto più luminoso dello sfondo e poco saturo.
+          # La combinazione limita l'intervento alle lettere, evitando
+          # di deformare la fotografia e le linee del pannello.
+          hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+          H, S, V = cv2.split(hsv)
+          mask = ((L > 145) & (S < 105) & (V > 145)).astype(np.uint8) * 255
+
+          # Mantieni solo componenti abbastanza grandi da appartenere alla
+          # tipografia e chiudi piccoli buchi interni delle lettere.
+          n, labels, stats, _ = cv2.connectedComponentsWithStats(mask, 8)
+          clean = np.zeros_like(mask)
+          for i in range(1, n):
+              area = stats[i, cv2.CC_STAT_AREA]
+              bw = stats[i, cv2.CC_STAT_WIDTH]
+              bh = stats[i, cv2.CC_STAT_HEIGHT]
+              if area >= 12 and bw >= 2 and bh >= 3:
+                  clean[labels == i] = 255
+
+          kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
+          clean = cv2.morphologyEx(clean, cv2.MORPH_CLOSE, kernel, iterations=1)
+
+          # Riduci il rischio di includere le linee del vetro: il testo occupa
+          # soprattutto la fascia centrale e le linee sottili vengono escluse.
+          clean[:int(clean.shape[0]*0.10), :] = 0
+          clean[int(clean.shape[0]*0.90):, :] = 0
+
+          if cv2.countNonZero(clean) < 1000:
+              raise SystemExit("Maschera testo troppo piccola: stop per sicurezza.")
+
+          # Rimuove il testo originale con inpainting, lasciando intatta
+          # la fotografia circostante.
+          dil = cv2.dilate(clean, np.ones((3,3), np.uint8), iterations=1)
+          background = cv2.inpaint(roi, dil, 3, cv2.INPAINT_TELEA)
+
+          # Ricava il livello tipografico dall'originale e lo allunga solo
+          # verticalmente. Larghezza invariata.
+          text_layer = cv2.bitwise_and(roi, roi, mask=clean)
+
+          ys, xs = np.where(clean > 0)
+          tx1, tx2 = max(0, xs.min()-3), min(clean.shape[1], xs.max()+4)
+          ty1, ty2 = max(0, ys.min()-3), min(clean.shape[0], ys.max()+4)
+
+          crop_text = text_layer[ty1:ty2, tx1:tx2]
+          crop_mask = clean[ty1:ty2, tx1:tx2]
+
+          scale_y = 1.28
+          new_h = max(1, int(crop_text.shape[0] * scale_y))
+          stretched_text = cv2.resize(crop_text, (crop_text.shape[1], new_h), interpolation=cv2.INTER_CUBIC)
+          stretched_mask = cv2.resize(crop_mask, (crop_mask.shape[1], new_h), interpolation=cv2.INTER_CUBIC)
+
+          # Centra verticalmente il testo allungato nella stessa posizione.
+          center_y = (ty1 + ty2) / 2
+          sy1 = int(round(center_y - new_h/2))
+          sy2 = sy1 + new_h
+
+          out_roi = background.copy()
+          clip_y1 = max(0, sy1)
+          clip_y2 = min(out_roi.shape[0], sy2)
+          src_y1 = clip_y1 - sy1
+          src_y2 = src_y1 + (clip_y2 - clip_y1)
+
+          if clip_y2 > clip_y1:
+              alpha = stretched_mask[src_y1:src_y2].astype(np.float32) / 255.0
+              alpha = alpha[..., None]
+              fg = stretched_text[src_y1:src_y2].astype(np.float32)
+              bg = out_roi[clip_y1:clip_y2].astype(np.float32)
+              out_roi[clip_y1:clip_y2] = (fg * alpha + bg * (1-alpha)).astype(np.uint8)
+
+          result = img.copy()
+          result[y1:y2, x1:x2] = out_roi
+
+          # Stessa risoluzione dell'originale.
+          cv2.imwrite(str(test), result, [cv2.IMWRITE_JPEG_QUALITY, 95])
+          print(f"Creato test: {test} ({w}x{h})")
