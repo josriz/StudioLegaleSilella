@@ -134,8 +134,8 @@
           await loadData();target=state.clients.find(x=>x.id===client.id);
         }
         const {data:infos,error:ie}=await c.from('studio_privacy_informative').select('id').eq('tipo','clienti').eq('stato','attiva').order('valida_dal',{ascending:false}).limit(1).maybeSingle();if(ie)throw ie;if(!infos)throw Error('Nessuna informativa privacy attiva.');
-        const {data:out,error}=await c.functions.invoke('studio-privacy-portal',{body:{action:'send',informative_id:infos.id,client_id:target.id}});if(error)throw error;if(!out?.ok)throw Error(out?.error||'Invio informativa non riuscito.');
-        b.textContent='Informativa inviata';s.textContent='Informativa inviata al cliente e disponibile nel Portale.';await loadData();
+         b.disabled=false;b.textContent='Invia informativa privacy';
+         window.sendPrivacyInformative(infos.id,target.id);
       }catch(e){b.disabled=false;b.textContent='Invia informativa privacy';s.textContent='Errore: '+(e?.message||e)}
     };
     m.querySelector('#clientPracticeForm').onsubmit=async e=>{
