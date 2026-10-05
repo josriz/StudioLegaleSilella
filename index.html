@@ -97,8 +97,16 @@ document.getElementById('openRegister')?.addEventListener('click',()=>location.h
  document.getElementById('legalModal')?.classList.add('hidden');
  document.getElementById('studioRoute')?.classList.remove('hidden');
  document.title='Studio Legale Silella | Login Studio';
- const load=()=>{
-  const sb=window.getStudioSupabaseClient?window.getStudioSupabaseClient():window.STUDIO_SUPABASE_CLIENT;
+ const load=async()=>{
+  let sb=null;
+  try {
+   if(window.studioSupabaseReady) sb=await window.studioSupabaseReady;
+   else sb=window.getStudioSupabaseClient?window.getStudioSupabaseClient():window.STUDIO_SUPABASE_CLIENT;
+  } catch(error) {
+   const err=document.getElementById('studioRouteError');
+   if(err) err.textContent='Servizio di accesso Studio non disponibile. Ricarica la pagina e riprova.';
+   return;
+  }
   const form=document.getElementById('studioRouteForm'); if(!sb||!form)return;
   form.addEventListener('submit',async e=>{
    e.preventDefault();const b=document.getElementById('studioRouteSubmit'),err=document.getElementById('studioRouteError');err.textContent='';b.disabled=true;b.textContent='Accesso in corso…';
