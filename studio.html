@@ -28,7 +28,14 @@ body{margin:0;min-height:100vh;font-family:'Segoe UI',Tahoma,sans-serif;backgrou
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.76.0"></script><script src="config.js?v=20261004-6"></script>
 <script>
-const sb=window.getStudioSupabaseClient?window.getStudioSupabaseClient():window.STUDIO_SUPABASE_CLIENT;
+let sb=null;
+async function ensureStudioSupabase(){
+ if(sb)return sb;
+ if(window.studioSupabaseReady) sb=await window.studioSupabaseReady;
+ else sb=window.getStudioSupabaseClient?window.getStudioSupabaseClient():window.STUDIO_SUPABASE_CLIENT;
+ if(!sb)throw new Error('Servizio di accesso Studio non disponibile. Ricarica la pagina e riprova.');
+ return sb;
+}
 const loginForm=document.getElementById('studioLoginForm');
 const recoveryBox=document.getElementById('studioRecoveryBox');
 const recoveryForm=document.getElementById('studioRecoveryForm');
@@ -38,6 +45,7 @@ document.getElementById('studioForgotBtn').addEventListener('click',async()=>{
  const email=document.getElementById('studioLoginEmail').value.trim(),err=document.getElementById('studioLoginError');
  err.textContent='';err.className='studio-login-error';
  if(!email){err.textContent='Inserisci prima l’email dello Studio.';return}
+ try{ sb=await ensureStudioSupabase(); }catch(e){err.textContent=e?.message||'Servizio di accesso non disponibile.';return}
  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.href.split('#')[0]});
  err.textContent=error?error.message:'Controlla la posta: ti abbiamo inviato il link per reimpostare la password.';
  if(!error)err.className='studio-login-error ok';
@@ -45,6 +53,7 @@ document.getElementById('studioForgotBtn').addEventListener('click',async()=>{
 recoveryForm.addEventListener('submit',async e=>{
  e.preventDefault();const err=document.getElementById('studioRecoveryError');err.textContent='';
  const p1=document.getElementById('studioNewPassword').value,p2=document.getElementById('studioNewPassword2').value;
+ try{ sb=await ensureStudioSupabase(); }catch(e){err.textContent=e?.message||'Servizio di accesso non disponibile.';return}
  if(p1!==p2){err.textContent='Le password non coincidono.';return}
  const {error}=await sb.auth.updateUser({password:p1});
  if(error){err.textContent=error.message;return}
@@ -59,6 +68,7 @@ async function authorized(user){
 document.getElementById('studioLoginForm').addEventListener('submit',async e=>{
  e.preventDefault();const b=document.getElementById('studioLoginSubmit'),err=document.getElementById('studioLoginError');err.textContent='';b.disabled=true;b.textContent='Accesso in corso…';
  try{
+  sb=await ensureStudioSupabase();
   const {data,error}=await sb.auth.signInWithPassword({email:document.getElementById('studioLoginEmail').value.trim(),password:document.getElementById('studioLoginPassword').value});
   if(error)throw error;
   if(!await authorized(data.user)){await sb.auth.signOut();throw new Error('Questo account non è autorizzato all’Area Studio.');}
