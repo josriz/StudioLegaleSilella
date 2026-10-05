@@ -1094,6 +1094,293 @@
 
 </style>
 
+<!-- FINAL STUDIO VISUAL DESIGN 20261006: solo CSS, funzioni e markup funzionale invariati -->
+<style id="studio-final-design-20261006">
+:root{
+  --primary:#16283f !important;
+  --secondary:#0d1b2a !important;
+  --accent:#b28a4a !important;
+  --success:#2f7058 !important;
+  --warning:#a87832 !important;
+  --danger:#9d4141 !important;
+  --glass-sidebar:#16283f !important;
+  --glass-card:#ffffff !important;
+  --glass-border:#e3dfd6 !important;
+  --text-main:#253246 !important;
+  --border:#e3dfd6 !important;
+}
+
+/* ===== PAGINA ===== */
+html,body{background:#f4f1eb !important;}
+body{
+  color:#253246 !important;
+  background:#f4f1eb !important;
+  background-image:none !important;
+  overflow:hidden;
+}
+main{
+  background:#f4f1eb !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+
+/* ===== SIDEBAR ===== */
+aside{
+  width:270px !important;
+  background:#12243a !important;
+  border-right:1px solid rgba(255,255,255,.07) !important;
+  box-shadow:5px 0 24px rgba(16,31,50,.10) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+aside.collapsed{width:70px !important;}
+.sidebar-header{
+  height:90px !important;
+  padding:8px 12px !important;
+  background:#12243a !important;
+  border-bottom:1px solid rgba(255,255,255,.12) !important;
+}
+.sidebar-header img{
+  transform:scale(1.42) scaleY(.76) !important;
+  filter:none !important;
+}
+aside.collapsed .sidebar-header img{transform:scale(1) !important;}
+
+.sidebar-menu{
+  padding:18px 10px !important;
+}
+.menu-section-title{
+  color:#aeb9c7 !important;
+  letter-spacing:1.15px !important;
+  font-size:10px !important;
+  padding:14px 14px 7px !important;
+}
+.menu-item{
+  margin:3px 0 !important;
+  padding:11px 14px !important;
+  min-height:43px !important;
+  border-left:3px solid transparent !important;
+  border-radius:7px !important;
+  gap:12px !important;
+  color:#dce3eb !important;
+  text-shadow:none !important;
+  font-size:13.5px !important;
+  transition:background .18s ease,border-color .18s ease,color .18s ease !important;
+}
+.menu-item:hover{
+  background:#1c3550 !important;
+  color:#fff !important;
+  border-left-color:#72869b !important;
+}
+.menu-item.active{
+  background:#1d3854 !important;
+  color:#fff !important;
+  border-left:3px solid #c09a5a !important;
+}
+.menu-photo{
+  border-radius:7px !important;
+  border:1px solid rgba(255,255,255,.13) !important;
+  box-shadow:none !important;
+}
+.sidebar-footer{
+  background:#0f2033 !important;
+  border-top:1px solid rgba(255,255,255,.08) !important;
+}
+
+/* ===== HEADER ===== */
+header{
+  height:82px !important;
+  padding:0 28px !important;
+  background:#fffdf9 !important;
+  border-bottom:1px solid #e3dfd6 !important;
+  box-shadow:0 2px 12px rgba(31,43,58,.045) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+header h1{
+  color:#16283f !important;
+  font-size:21px !important;
+  font-weight:650 !important;
+  letter-spacing:-.25px !important;
+}
+header p, header small{
+  color:#788392 !important;
+}
+.content-area{
+  padding:28px !important;
+  background:#f4f1eb !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+
+/* ===== CARD / PANNELLI ===== */
+.card,
+.stat-card,
+.panel,
+.section-card,
+.dashboard-card,
+.content-card{
+  background:#fffdfb !important;
+  border:1px solid #e4e0d8 !important;
+  border-radius:12px !important;
+  box-shadow:0 5px 20px rgba(31,43,58,.055) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+.card:hover,.stat-card:hover,.panel:hover,.section-card:hover,.dashboard-card:hover,.content-card:hover{
+  box-shadow:0 7px 24px rgba(31,43,58,.075) !important;
+}
+
+/* classi comuni presenti nei moduli */
+[class*="card"],[class*="panel"],[class*="box"]{
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+
+/* ===== TITOLI / SEZIONI ===== */
+h1,h2,h3,h4{
+  color:#16283f;
+}
+h2{
+  letter-spacing:-.2px;
+}
+.section-title{
+  color:#16283f !important;
+  border-bottom-color:#e6e1d8 !important;
+}
+.muted,.text-muted,.subtitle{
+  color:#788392 !important;
+}
+
+/* ===== TABELLE ===== */
+table{
+  background:#fffdfb !important;
+  border-color:#e3dfd6 !important;
+}
+thead,th{
+  background:#f0ede7 !important;
+  color:#405066 !important;
+  border-color:#e0dbd2 !important;
+}
+td{
+  border-color:#ebe7df !important;
+}
+tbody tr:hover{
+  background:#faf7f1 !important;
+}
+
+/* ===== FORM ===== */
+input,select,textarea{
+  background:#fff !important;
+  color:#253246 !important;
+  border:1px solid #d7d3ca !important;
+  border-radius:7px !important;
+  box-shadow:none !important;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:#b28a4a !important;
+  outline:none !important;
+  box-shadow:0 0 0 3px rgba(178,138,74,.12) !important;
+}
+
+/* ===== BOTTONI: SOLIDI, ELEGANTI, NON GLASS ===== */
+button,.btn,input[type=button],input[type=submit],a.button,a.btn{
+  border-radius:7px !important;
+  font-weight:600 !important;
+  letter-spacing:.05px !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  background-image:none !important;
+  box-shadow:none !important;
+  text-shadow:none !important;
+  transform:none !important;
+}
+.btn-primary{
+  background:#16283f !important;color:#fff !important;border-color:#16283f !important;
+}
+.btn-primary:hover{background:#203955 !important;}
+.btn-success{
+  background:#2f7058 !important;color:#fff !important;border-color:#2f7058 !important;
+}
+.btn-warning{
+  background:#a87832 !important;color:#fff !important;border-color:#a87832 !important;
+}
+.btn-danger{
+  background:#9d4141 !important;color:#fff !important;border-color:#9d4141 !important;
+}
+.btn-info{
+  background:#3c6680 !important;color:#fff !important;border-color:#3c6680 !important;
+}
+button:not(.btn-primary):not(.btn-success):not(.btn-warning):not(.btn-danger):not(.btn-info),
+.btn:not(.btn-primary):not(.btn-success):not(.btn-warning):not(.btn-danger):not(.btn-info){
+  background:#fff !important;
+  color:#34445a !important;
+  border:1px solid #d4d0c8 !important;
+}
+button:not(.btn-primary):not(.btn-success):not(.btn-warning):not(.btn-danger):not(.btn-info):hover,
+.btn:not(.btn-primary):not(.btn-success):not(.btn-warning):not(.btn-danger):not(.btn-info):hover{
+  background:#f7f4ef !important;
+  border-color:#bdb7ad !important;
+}
+
+/* ===== BADGE / STATO ===== */
+.badge,.status,.pill{
+  box-shadow:none !important;
+  text-shadow:none !important;
+}
+
+/* ===== NOTIFICHE ===== */
+.studio-notify-btn{
+  background:#fff !important;
+  color:#34445a !important;
+  border:1px solid #d7d3ca !important;
+  border-radius:7px !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+}
+.studio-notify-modal{
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+.studio-notify-box{
+  background:#fffdfb !important;
+  border:1px solid #e0dcd4 !important;
+  border-radius:12px !important;
+  box-shadow:0 15px 45px rgba(16,31,50,.16) !important;
+}
+
+/* ===== HELP ===== */
+.studio-help-modal{
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  background:rgba(13,27,42,.38) !important;
+}
+.studio-help-box{
+  background:#fffdfb !important;
+  border:1px solid #e0dcd4 !important;
+  border-radius:12px !important;
+  box-shadow:0 18px 55px rgba(16,31,50,.18) !important;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-track{background:#ebe8e2;}
+::-webkit-scrollbar-thumb{background:#b9b4aa;border-radius:8px;}
+::-webkit-scrollbar-thumb:hover{background:#989187;}
+
+/* ===== MOBILE ===== */
+@media(max-width:900px){
+  aside{box-shadow:8px 0 28px rgba(16,31,50,.18) !important;}
+  header{height:76px !important;padding:0 18px !important;}
+  .content-area{padding:18px !important;}
+}
+@media(max-width:600px){
+  header{background:#fffdf9 !important;}
+  .content-area{padding:14px !important;}
+}
+</style>
+
+
 <!-- CLEAN BASE VISUAL RESET 20261006: sfondo e glass effect bottoni rimossi; nessuna funzione modificata -->
 <style id="clean-base-reset-20261006">
   /* Sfondo pulito: nessuna fotografia, nessun effetto vetro */
