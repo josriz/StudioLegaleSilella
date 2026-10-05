@@ -17,7 +17,7 @@ const init=async()=>{
  if(!profile||!['studio','admin'].includes(profile.role))return;
  const menu=document.querySelector('.sidebar-menu'), area=document.querySelector('.content-area');
  if(!menu||!area||document.getElementById('panel-lexroom'))return;
- const item=document.createElement('a');item.className='menu-item';item.href='#';item.innerHTML='🧪 <span>Lexroom LAB</span>';
+ const item=document.createElement('a');item.className='menu-item';item.href='#';item.innerHTML='<span class="menu-photo menu-photo--lab"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/flask.svg" alt="" aria-hidden="true"></span><span>Lexroom LAB</span>';
  const panel=document.createElement('div');panel.id='panel-lexroom';panel.className='panel';
  panel.innerHTML=`
  <div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><h3>🧠 Lexroom AI — Laboratorio gratuito</h3><span style="font-size:11px;color:#166534;background:#dcfce7;padding:5px 8px;border-radius:10px">LAB · nessuna API AI a pagamento</span><button class="btn btn-info" type="button" id="lxHelp">❓ HELP</button><button class="btn btn-info" id="lxRefresh">Aggiorna</button></div><p id="lxStatus" style="font-size:12px;color:#64748b;margin:8px 0"></p>
