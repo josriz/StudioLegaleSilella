@@ -28,7 +28,7 @@ const init=async()=>{
  const commItem=document.createElement('a');
  commItem.className='menu-item';
  commItem.href='#';
- commItem.innerHTML='✉️ <span>Lettere & Comunicazioni AI</span>';
+ commItem.innerHTML='<span class="menu-photo menu-photo--communications"><img src="https://cdn.jsdelivr.net/npm/@tabler/icons@3.34.0/icons/outline/mail.svg" alt="" aria-hidden="true"></span><span>Lettere & Comunicazioni AI</span>';
  const commPanel=document.createElement('div');
  commPanel.id='panel-communications-ai';
  commPanel.className='panel';
