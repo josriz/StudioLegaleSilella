@@ -1956,7 +1956,7 @@
             const header = document.createElement('div');
             header.className = 'print-header';
             const title = document.querySelector('#headerTitle')?.innerText?.trim() || 'Studio Legale Silella';
-            header.innerHTML = '<strong>Studio Legale Silella</strong><br><span>'+escapeHtml(title)+'</span><br><span>Stampa del: '+new Date().toLocaleString('it-IT')+'</span>';
+            header.innerHTML = '<strong>Studio Legale Silella</strong><br><span class="print-title"></span><br><span>Stampa del: '+new Date().toLocaleString('it-IT')+'</span>'; header.querySelector('.print-title').textContent = title;
             active.prepend(header);
             const cleanup = () => { header.remove(); window.removeEventListener('afterprint', cleanup); };
             window.addEventListener('afterprint', cleanup);
