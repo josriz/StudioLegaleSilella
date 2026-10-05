@@ -1,8 +1,6 @@
 name: Inspect JPG dimensions
 on:
   push:
-    paths:
-      - 'loghi_sfondi/sfondo_cli_marrone.jpg'
 jobs:
   inspect:
     runs-on: ubuntu-latest
