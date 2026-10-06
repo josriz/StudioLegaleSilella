@@ -68,17 +68,9 @@ document.getElementById('studioLoginForm').addEventListener('submit',async e=>{
  e.preventDefault();const b=document.getElementById('studioLoginSubmit'),err=document.getElementById('studioLoginError');err.textContent='';b.disabled=true;b.textContent='Accesso in corso…';
  try{
   sb=await ensureStudioSupabase();
-  // Elimina esclusivamente la sessione locale non più valida prima del nuovo accesso.
-  // Non modifica password, utenti o configurazione Auth del progetto.
-  try{
-   const {data:sessionData}=await sb.auth.getSession();
-   if(sessionData?.session){
-    const {error:sessionError}=await sb.auth.getUser();
-    if(sessionError){
-     await sb.auth.signOut({scope:'local'});
-    }
-   }
-  }catch(_sessionCheck){}
+  // Pulisce sempre e solo la sessione Studio del dispositivo corrente prima di un nuovo accesso.
+  // Non revoca le sessioni Studio presenti su PC, smartphone o altri dispositivi.
+  try{ await sb.auth.signOut({scope:'local'}); }catch(_sessionReset){}
   const {data,error}=await sb.auth.signInWithPassword({email:document.getElementById('studioLoginEmail').value.trim(),password:document.getElementById('studioLoginPassword').value});
   if(error)throw error;
   if(!await authorized(data.user)){await sb.auth.signOut({scope:'local'});throw new Error('Questo account non è autorizzato all’Area Studio.');}
