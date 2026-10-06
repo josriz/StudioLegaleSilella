@@ -56,7 +56,7 @@ recoveryForm.addEventListener('submit',async e=>{
  if(p1!==p2){err.textContent='Le password non coincidono.';return}
  const {error}=await sb.auth.updateUser({password:p1});
  if(error){err.textContent=error.message;return}
- await sb.auth.signOut();recoveryBox.style.display='none';loginForm.style.display='block';document.getElementById('studioForgotBtn').style.display='block';err.className='studio-login-error ok';err.textContent='Password aggiornata. Ora puoi accedere con la nuova password.';
+ await sb.auth.signOut({scope:'local'});recoveryBox.style.display='none';loginForm.style.display='block';document.getElementById('studioForgotBtn').style.display='block';err.className='studio-login-error ok';err.textContent='Password aggiornata. Ora puoi accedere con la nuova password.';
 });
 if(isRecoveryLink())showRecovery();
 async function authorized(user){
@@ -81,7 +81,7 @@ document.getElementById('studioLoginForm').addEventListener('submit',async e=>{
   }catch(_sessionCheck){}
   const {data,error}=await sb.auth.signInWithPassword({email:document.getElementById('studioLoginEmail').value.trim(),password:document.getElementById('studioLoginPassword').value});
   if(error)throw error;
-  if(!await authorized(data.user)){await sb.auth.signOut();throw new Error('Questo account non è autorizzato all’Area Studio.');}
+  if(!await authorized(data.user)){await sb.auth.signOut({scope:'local'});throw new Error('Questo account non è autorizzato all’Area Studio.');}
   location.replace('studio-dashboard.html');
  }catch(e){err.textContent=e?.message||'Accesso non riuscito.'}
  finally{b.disabled=false;b.textContent='Accedi all\'Area Studio'}
