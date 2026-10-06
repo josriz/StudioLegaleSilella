@@ -10,6 +10,7 @@ window.getStudioSupabaseClient = function(){
     window.STUDIO_SUPABASE_PUBLISHABLE_KEY,
     { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
   );
+  window.STUDIO_SUPABASE_CLIENT = window.__studioSupabaseClient;
   return window.__studioSupabaseClient;
 };
 
