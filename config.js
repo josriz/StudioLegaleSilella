@@ -8,9 +8,8 @@ window.getStudioSupabaseClient = function(){
   window.__studioSupabaseClient = window.supabase.createClient(
     window.STUDIO_SUPABASE_URL,
     window.STUDIO_SUPABASE_PUBLISHABLE_KEY,
-    { auth: { ...(window.matchMedia?.('(max-width: 900px)').matches ? { storageKey: 'silella-studio-mobile-auth' } : {}), persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
+    { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
   );
-  window.STUDIO_SUPABASE_CLIENT = window.__studioSupabaseClient;
   return window.__studioSupabaseClient;
 };
 
