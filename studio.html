@@ -26,7 +26,7 @@ body{margin:0;min-height:100vh;font-family:'Segoe UI',Tahoma,sans-serif;backgrou
 <div id="studioRecoveryBox" class="studio-recovery-box" style="display:none"><div class="studio-login-kicker">RECUPERO ACCESSO</div><h2>Reimposta password</h2><p class="studio-login-subtitle">Inserisci una nuova password per il tuo accesso Studio.</p><form id="studioRecoveryForm"><label for="studioNewPassword">Nuova password</label><input id="studioNewPassword" type="password" minlength="8" autocomplete="new-password" required placeholder="Nuova password"><label for="studioNewPassword2">Conferma password</label><input id="studioNewPassword2" type="password" minlength="8" autocomplete="new-password" required placeholder="Ripeti la password"><div id="studioRecoveryError" class="studio-login-error"></div><button type="submit" class="studio-login-submit">Salva nuova password</button></form></div>
 <div class="studio-login-footer">Accesso riservato ai professionisti autorizzati</div>
 </div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.76.0"></script><script src="config.js?v=20261006-7"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.76.0"></script><script src="config.js?v=20261006-3"></script>
 <script>
 let sb=null;
 async function ensureStudioSupabase(){
@@ -42,9 +42,10 @@ const recoveryForm=document.getElementById('studioRecoveryForm');
 function isRecoveryLink(){return /(^|[&#?])type=recovery(?:&|#|$)/i.test(location.hash+location.search)}
 function showRecovery(){loginForm.style.display='none';document.getElementById('studioForgotBtn').style.display='none';recoveryBox.style.display='block'}
 document.getElementById('studioForgotBtn').addEventListener('click',async()=>{
- const email=document.getElementById('studioLoginEmail').value.trim(),err=document.getElementById('studioLoginError');err.textContent='';err.className='studio-login-error';
+ const email=document.getElementById('studioLoginEmail').value.trim(),err=document.getElementById('studioLoginError');
+ err.textContent='';err.className='studio-login-error';
  if(!email){err.textContent='Inserisci prima l’email dello Studio.';return}
- try{sb=await ensureStudioSupabase()}catch(e){err.textContent=e?.message||'Servizio di accesso non disponibile.';return}
+ try{ sb=await ensureStudioSupabase(); }catch(e){err.textContent=e?.message||'Servizio di accesso non disponibile.';return}
  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.href.split('#')[0]});
  err.textContent=error?error.message:'Controlla la posta: ti abbiamo inviato il link per reimpostare la password.';
  if(!error)err.className='studio-login-error ok';
@@ -52,7 +53,7 @@ document.getElementById('studioForgotBtn').addEventListener('click',async()=>{
 recoveryForm.addEventListener('submit',async e=>{
  e.preventDefault();const err=document.getElementById('studioRecoveryError');err.textContent='';
  const p1=document.getElementById('studioNewPassword').value,p2=document.getElementById('studioNewPassword2').value;
- try{sb=await ensureStudioSupabase()}catch(e){err.textContent=e?.message||'Servizio di accesso non disponibile.';return}
+ try{ sb=await ensureStudioSupabase(); }catch(e){err.textContent=e?.message||'Servizio di accesso non disponibile.';return}
  if(p1!==p2){err.textContent='Le password non coincidono.';return}
  const {error}=await sb.auth.updateUser({password:p1});
  if(error){err.textContent=error.message;return}
