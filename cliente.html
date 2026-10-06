@@ -63,7 +63,7 @@ body{margin:0}
 <div id="authView" class="authWrap studio-login-overlay">
   <div class="authCard studio-login-card">
     <div class="studio-login-logo-wrap">
-      <img class="studio-login-logo" src="loghi_sfondi/sfondo_cli_login_banner.svg" alt="Studio Legale Silella">
+      <img class="studio-login-logo" src="loghi_sfondi/sfondo_cli_login.jpg" alt="Studio Legale Silella">
     </div>
     <div class="studio-login-kicker">AREA RISERVATA</div>
     <h2>Accesso Area Cliente</h2>
@@ -98,141 +98,141 @@ body{margin:0}
     <div class="studio-login-footer">Accesso riservato ai Clienti autorizzati</div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=20261005-1"></script>
-
-<script>
-const STUDIO_SUPABASE_URL=window.STUDIO_SUPABASE_URL;
-const STUDIO_SUPABASE_PUBLISHABLE_KEY=window.STUDIO_SUPABASE_PUBLISHABLE_KEY;
-const sb=supabase.createClient(STUDIO_SUPABASE_URL,STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-client-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-const $=id=>document.getElementById(id);
-let activePrivacyNotice=null;
-async function loadPrivacy(){
-  const today=new Date().toISOString().slice(0,10);
-  const {data,error}=await sb.from('studio_privacy_informative').select('id,titolo,versione,contenuto,valida_dal,valida_al').eq('tipo','clienti').eq('stato','attiva').or('valida_dal.is.null,valida_dal.lte.'+today).or('valida_al.is.null,valida_al.gte.'+today).order('valida_dal',{ascending:false}).limit(1).maybeSingle();
-  if(error){console.error('Informativa privacy:',error);return}
-  activePrivacyNotice=data||null;
-  const el=$('privacySignupInfo');
-  if(el)el.textContent=activePrivacyNotice?'Informativa privacy vigente disponibile.':'Informativa privacy vigente non disponibile: registrazione temporaneamente sospesa.';
-}
-$('forgotBtn').onclick=async()=>{
-  const email=$('loginEmail').value.trim();
-  if(!email){$('loginErr').textContent='Inserisci prima l’email.';return}
-  $('forgotBtn').disabled=true;
-  const resetRedirect=new URL(location.href);
-  resetRedirect.hash='';
-  resetRedirect.search='';
-  resetRedirect.pathname=resetRedirect.pathname.replace(/[^/]+$/,'cliente.html');
-  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:resetRedirect.toString()});
-  $('forgotBtn').disabled=false;
-  $('loginErr').textContent=error?error.message:'Controlla la posta: troverai il link per impostare una nuova password.';
-  $('loginErr').className=error?'studio-login-error':'studio-login-error ok';
-};
-$('loginForm').onsubmit=async e=>{
-  e.preventDefault();$('loginErr').textContent='';$('loginBtn').disabled=true;
-  const {data,error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});
-  $('loginBtn').disabled=false;
-  if(error){$('loginErr').textContent=error.message;return}
-  let {data:profile,error:roleError}=await sb.from('studio_utenti').select('role').eq('user_id',data.user.id).maybeSingle();
-  if(roleError){
-    await sb.auth.signOut();
-    $('loginErr').textContent='Impossibile verificare il tipo di account.';
-    return;
-  }
-  if(!profile){
-    const {data:boot,error:bootError}=await sb.rpc('studio_bootstrap_cliente');
-    if(bootError){
-      await sb.auth.signOut();
-      $('loginErr').textContent=bootError.message||'Impossibile completare l’attivazione dell’Area Cliente.';
-      return;
-    }
-    const {data:profileAfter,error:profileAfterError}=await sb.from('studio_utenti').select('role').eq('user_id',data.user.id).maybeSingle();
-    if(profileAfterError||profileAfter?.role!=='cliente'){
-      await sb.auth.signOut();
-      $('loginErr').textContent='Profilo Cliente non attivato.';
-      return;
-    }
-    profile=profileAfter;
-  }
-  if(profile.role!=='cliente'){
-    await sb.auth.signOut();
-    $('loginErr').textContent='Questo account è abilitato all’Area Studio e non può entrare nell’Area Cliente.';
-    return;
-  }
-  // Completa la richiesta salvata localmente quando Supabase richiede prima la conferma email.
-  const pendingRaw=localStorage.getItem('studio_onboarding_request_v1');
-  if(pendingRaw){
-    let pending;
-    try{pending=JSON.parse(pendingRaw)}catch(_){pending=null}
-    if(pending && pending.customer_type && pending.request_description && pending.privacy_notice_id){
-      $('loginErr').textContent='Invio della richiesta allo Studio in corso…';
-      $('loginErr').className='studio-login-error';
-      $('loginBtn').disabled=true;
-      const {error:requestError}=await sb.rpc('studio_registra_richiesta_cliente',{
-        p_customer_type:pending.customer_type,
-        p_tax_id:pending.tax_id||'',
-        p_vat_number:pending.vat_number||'',
-        p_request_description:pending.request_description,
-        p_privacy_notice_id:pending.privacy_notice_id,
-        p_terms_accepted:pending.terms_accepted===true,
-        p_privacy_notice_seen:pending.privacy_notice_seen===true
-      });
-      $('loginBtn').disabled=false;
-      if(requestError){
-        const msg=String(requestError.message||'');
-        if(/già abilitato|gia abilitato|non può inviare una nuova richiesta|non puo inviare una nuova richiesta/i.test(msg)){
-          // La richiesta locale è obsoleta: l'account risulta già abilitato. Non ripetere l'onboarding.
-          localStorage.removeItem('studio_onboarding_request_v1');
-          location.replace('cliente-portale.html?v=20261005-1');
-          return;
-        }
-        $('loginErr').textContent='Accesso effettuato, ma la richiesta non è ancora stata inviata allo Studio: '+msg+'. Non ripetere la registrazione; riprova l’accesso o contatta lo Studio.';
-        return;
-      }
-      localStorage.removeItem('studio_onboarding_request_v1');
-      $('loginErr').textContent='✓ Richiesta inviata correttamente allo Studio. È in attesa di valutazione; l’invio non comporta l’accettazione dell’incarico.';
-      $('loginErr').className='studio-login-error ok';
-      setTimeout(()=>location.replace('cliente-portale.html?v=20261005-1'),1800);
-      return;
-    }
-  }
-  location.replace('cliente-portale.html?v=20261005-1');
-};
-async function showPasswordRecovery(){
-  $('loginBox').classList.add('hidden');
-  $('resetBox').classList.remove('hidden');
-  $('loginErr').textContent='';
-  $('resetErr').textContent='';
-  $('newPassword').focus();
-}
-$('resetForm').onsubmit=async e=>{
-  e.preventDefault();
-  const password=$('newPassword').value;
-  const confirm=$('newPasswordConfirm').value;
-  $('resetErr').textContent='';
-  if(password.length<8){$('resetErr').textContent='La password deve contenere almeno 8 caratteri.';return}
-  if(password!==confirm){$('resetErr').textContent='Le due password non coincidono.';return}
-  $('resetBtn').disabled=true;
-  const {error}=await sb.auth.updateUser({password});
-  $('resetBtn').disabled=false;
-  if(error){$('resetErr').textContent=error.message;return}
-  $('resetErr').textContent='✓ Password aggiornata correttamente. Ora puoi accedere con la nuova password.';
-  $('resetErr').className='studio-login-error ok';
-  $('newPassword').value='';
-  $('newPasswordConfirm').value='';
-  setTimeout(()=>{
-    $('resetBox').classList.add('hidden');
-    $('loginBox').classList.remove('hidden');
-    $('loginErr').textContent='Password aggiornata. Inserisci la nuova password per accedere.';
-    $('loginErr').className='studio-login-error ok';
-    $('loginPassword').value='';
-    $('loginPassword').focus();
-  },1400);
-};
-sb.auth.onAuthStateChange((event)=>{
-  if(event==='PASSWORD_RECOVERY') showPasswordRecovery();
-});
-loadPrivacy();
-</script>
-</body>
+<script src="https://cdn.jsdelivr.net/npm/@Supabase/supabase-js@2"></script> 
+<script src="config.js?v=20261005-1"></script> 
+ 
+<script> 
+const STUDIO_SUPABASE_URL=window.STUDIO_SUPABASE_URL; 
+const STUDIO_SUPABASE_PUBLISHABLE_KEY=window.STUDIO_SUPABASE_PUBLISHABLE_KEY; 
+const sb=supabase.createClient(STUDIO_SUPABASE_URL,STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-client-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}); 
+const $=id=>document.getElementById(id); 
+let activePrivacyNotice=null; 
+async function loadPrivacy(){ 
+  const today=new Date().toISOString().slice(0,10); 
+  const {data,error}=await sb.from('studio_privacy_informative').select('id,titolo,versione,contenuto,valida_dal,valida_al').eq('tipo','clienti').eq('stato','attiva').or('valida_dal.is.null,valida_dal.lte.'+today).or('valida_al.is.null,valida_al.gte.'+today).order('valida_dal',{ascending:false}).limit(1).maybeSingle(); 
+  if(error){console.error('Informativa privacy:',error);return} 
+  activePrivacyNotice=data||null; 
+  const el=$('privacySignupInfo'); 
+  if(el)el.textContent=activePrivacyNotice?'Informativa privacy vigente disponibile.':'Informativa privacy vigente non disponibile: registrazione temporaneamente sospesa.'; 
+} 
+$('forgotBtn').onclick=async()=>{ 
+  const email=$('loginEmail').value.trim(); 
+  if(!email){$('loginErr').textContent='Inserisci prima l’email.';return} 
+  $('forgotBtn').disabled=true; 
+  const resetRedirect=new URL(location.href); 
+  resetRedirect.hash=''; 
+  resetRedirect.search=''; 
+  resetRedirect.pathname=resetRedirect.pathname.replace(/[^/]+$/,'cliente.html'); 
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:resetRedirect.toString()}); 
+  $('forgotBtn').disabled=false; 
+  $('loginErr').textContent=error?error.message:'Controlla la posta: troverai il link per impostare una nuova password.'; 
+  $('loginErr').className=error?'studio-login-error':'studio-login-error ok'; 
+}; 
+$('loginForm').onsubmit=async e=>{ 
+  e.preventDefault();$('loginErr').textContent='';$('loginBtn').disabled=true; 
+  const {data,error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value}); 
+  $('loginBtn').disabled=false; 
+  if(error){$('loginErr').textContent=error.message;return} 
+  let {data:profile,error:roleError}=await sb.from('studio_utenti').select('role').eq('user_id',data.user.id).maybeSingle(); 
+  if(roleError){ 
+    await sb.auth.signOut(); 
+    $('loginErr').textContent='Impossibile verificare il tipo di account.'; 
+    return; 
+  } 
+  if(!profile){ 
+    const {data:boot,error:bootError}=await sb.rpc('studio_bootstrap_cliente'); 
+    if(bootError){ 
+      await sb.auth.signOut(); 
+      $('loginErr').textContent=bootError.message||'Impossibile completare l’attivazione dell’Area Cliente.'; 
+      return; 
+    } 
+    const {data:profileAfter,error:profileAfterError}=await sb.from('studio_utenti').select('role').eq('user_id',data.user.id).maybeSingle(); 
+    if(profileAfterError||profileAfter?.role!=='cliente'){ 
+      await sb.auth.signOut(); 
+      $('loginErr').textContent='Profilo Cliente non attivato.'; 
+      return; 
+    } 
+    profile=profileAfter; 
+  } 
+  if(profile.role!=='cliente'){ 
+    await sb.auth.signOut(); 
+    $('loginErr').textContent='Questo account è abilitato all’Area Studio e non può entrare nell’Area Cliente.'; 
+    return; 
+  } 
+  // Completa la richiesta salvata localmente quando Supabase richiede prima la conferma email. 
+  const pendingRaw=localStorage.getItem('studio_onboarding_request_v1'); 
+  if(pendingRaw){ 
+    let pending; 
+    try{pending=JSON.parse(pendingRaw)}catch(_){pending=null} 
+    if(pending && pending.customer_type && pending.request_description && pending.privacy_notice_id){ 
+      $('loginErr').textContent='Invio della richiesta allo Studio in corso…'; 
+      $('loginErr').className='studio-login-error'; 
+      $('loginBtn').disabled=true; 
+      const {error:requestError}=await sb.rpc('studio_registra_richiesta_cliente',{ 
+        p_customer_type:pending.customer_type, 
+        p_tax_id:pending.tax_id||'', 
+        p_vat_number:pending.vat_number||'', 
+        p_request_description:pending.request_description, 
+        p_privacy_notice_id:pending.privacy_notice_id, 
+        p_terms_accepted:pending.terms_accepted===true, 
+        p_privacy_notice_seen:pending.privacy_notice_seen===true 
+      }); 
+      $('loginBtn').disabled=false; 
+      if(requestError){ 
+        const msg=String(requestError.message||''); 
+        if(/già abilitato|gia abilitato|non può inviare una nuova richiesta|non puo inviare una nuova richiesta/i.test(msg)){ 
+          // La richiesta locale è obsoleta: l'account risulta già abilitato. Non ripetere l'onboarding. 
+          localStorage.removeItem('studio_onboarding_request_v1'); 
+          location.replace('cliente-portale.html?v=20261005-1'); 
+          return; 
+        } 
+        $('loginErr').textContent='Accesso effettuato, ma la richiesta non è ancora stata inviata allo Studio: '+msg+'. Non ripetere la registrazione; riprova l’accesso o contatta lo Studio.'; 
+        return; 
+      } 
+      localStorage.removeItem('studio_onboarding_request_v1'); 
+      $('loginErr').textContent='✓ Richiesta inviata correttamente allo Studio. È in attesa di valutazione; l’invio non comporta l’accettazione dell’incarico.'; 
+      $('loginErr').className='studio-login-error ok'; 
+      setTimeout(()=>location.replace('cliente-portale.html?v=20261005-1'),1800); 
+      return; 
+    } 
+  } 
+  location.replace('cliente-portale.html?v=20261005-1'); 
+}; 
+async function showPasswordRecovery(){ 
+  $('loginBox').classList.add('hidden'); 
+  $('resetBox').classList.remove('hidden'); 
+  $('loginErr').textContent=''; 
+  $('resetErr').textContent=''; 
+  $('newPassword').focus(); 
+} 
+$('resetForm').onsubmit=async e=>{ 
+  e.preventDefault(); 
+  const password=$('newPassword').value; 
+  const confirm=$('newPasswordConfirm').value; 
+  $('resetErr').textContent=''; 
+  if(password.length<8){$('resetErr').textContent='La password deve contenere almeno 8 caratteri.';return} 
+  if(password!==confirm){$('resetErr').textContent='Le due password non coincidono.';return} 
+  $('resetBtn').disabled=true; 
+  const {error}=await sb.auth.updateUser({password}); 
+  $('resetBtn').disabled=false; 
+  if(error){$('resetErr').textContent=error.message;return} 
+  $('resetErr').textContent='✓ Password aggiornata correttamente. Ora puoi accedere con la nuova password.'; 
+  $('resetErr').className='studio-login-error ok'; 
+  $('newPassword').value=''; 
+  $('newPasswordConfirm').value=''; 
+  setTimeout(()=>{ 
+    $('resetBox').classList.add('hidden'); 
+    $('loginBox').classList.remove('hidden'); 
+    $('loginErr').textContent='Password aggiornata. Inserisci la nuova password per accedere.'; 
+    $('loginErr').className='studio-login-error ok'; 
+    $('loginPassword').value=''; 
+    $('loginPassword').focus(); 
+  },1400); 
+}; 
+sb.auth.onAuthStateChange((event)=>{ 
+  if(event==='PASSWORD_RECOVERY') showPasswordRecovery(); 
+}); 
+loadPrivacy(); 
+</script> 
+</body> 
 </html>
