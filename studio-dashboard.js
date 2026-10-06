@@ -46,7 +46,7 @@
         .eq('user_id', user.id)
         .maybeSingle();
       if (roleError || !['studio','admin'].includes(profile?.role)) {
-        await client.auth.signOut();
+        await client.auth.signOut({scope:'local'});
         location.replace('studio.html');
         return;
       }
@@ -138,7 +138,7 @@
       }
       const authorizedUser = await getAuthorizedStudioUser(user);
       if (!authorizedUser) {
-        await client.auth.signOut();
+        await client.auth.signOut({scope:'local'});
         location.replace('studio.html');
         return null;
       }
@@ -265,7 +265,7 @@
     document.getElementById('studioRefresh').addEventListener('click', loadPractices);
 
     document.getElementById('studioLogout').addEventListener('click', async () => {
-      await client.auth.signOut();
+      await client.auth.signOut({scope:'local'});
       location.replace('studio.html');
     });
 
