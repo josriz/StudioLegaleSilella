@@ -4071,7 +4071,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     btn.textContent='Uscita…';
     try{
       const client=window.STUDIO_SUPABASE_CLIENT;
-      await client.auth.signOut();
+      await client.auth.signOut({scope:'local'});
     }catch(e){console.error('Logout Studio:',e);}
     window.location.href='index.html';
   });
