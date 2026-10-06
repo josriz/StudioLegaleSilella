@@ -3917,6 +3917,68 @@ document.addEventListener('DOMContentLoaded',()=>{
     <div id="studioHelpContent"></div>
   </div>
 </div>
+
+<style id="mobile-sidebar-layout-fix-20261006">
+/* FIX RESPONSIVE MOBILE: sidebar in overlay, contenuti a tutta larghezza.
+   Non modifica markup, funzioni, menu o flussi. */
+@media (max-width:900px){
+  aside{
+    position:fixed !important;
+    top:0 !important;
+    left:-280px !important;
+    width:280px !important;
+    height:100dvh !important;
+    max-height:100dvh !important;
+    z-index:1000 !important;
+    flex:0 0 auto !important;
+    transition:left .25s ease !important;
+  }
+  aside.mobile-open{
+    left:0 !important;
+  }
+  aside.collapsed{
+    width:280px !important;
+  }
+  main{
+    position:relative !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100vw !important;
+    flex:1 1 100% !important;
+    margin:0 !important;
+  }
+  .content-area{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    overflow-x:hidden !important;
+  }
+}
+@media (max-width:600px){
+  aside{
+    width:min(86vw,320px) !important;
+    left:calc(-1 * min(86vw,320px)) !important;
+  }
+  aside.collapsed{
+    width:min(86vw,320px) !important;
+  }
+  aside.mobile-open{
+    left:0 !important;
+  }
+  main{
+    width:100% !important;
+    max-width:100vw !important;
+    min-width:0 !important;
+  }
+  .content-area{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    overflow-x:hidden !important;
+  }
+}
+</style>
+
 </body>
 </html>
 <!-- Dashboard Studio separata dalla pagina di login -->
