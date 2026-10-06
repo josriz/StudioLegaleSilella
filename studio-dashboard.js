@@ -37,7 +37,7 @@
     {
       const { data: { user }, error: authError } = await client.auth.getUser();
       if (authError || !user) {
-        location.replace('studio.html');
+        location.replace('studio.html?logout='+Date.now());
         return;
       }
       const { data: profile, error: roleError } = await client
