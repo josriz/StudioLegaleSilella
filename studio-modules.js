@@ -202,10 +202,11 @@
   }
 
   function renderAll(){renderDashboard();renderTeam();renderClients();renderAgenda();renderPec();renderPct();renderTimer();renderBilling();renderPortal();renderArchive();renderStudioNotifications();bindStudioNotifications();if(window.renderStudioHelpForActive)window.renderStudioHelpForActive();}
-  function init(){
+  async function init(){
     ['dashboard','team','clients','agenda','pec-client','pct-deposit','time-tracker','billing','client-portal','archive'].forEach(id=>bindMenu(id,refreshAll));
     const c=getClient();
-    if(c)c.auth.onAuthStateChange((event,session)=>{
+    if(!c){renderError('Servizio Supabase non disponibile.');return;}
+    c.auth.onAuthStateChange((event,session)=>{
       if(event==='SIGNED_IN'&&session){
         studioAuthReady=true;
         refreshAll();
@@ -214,7 +215,21 @@
         renderError('Accesso Studio richiesto.');
       }
     });
-    renderError('Accesso Studio richiesto.');
+    try{
+      const {data:{session},error}=await c.auth.getSession();
+      if(error) throw error;
+      if(session?.user){
+        studioAuthReady=true;
+        await refreshAll();
+      }else{
+        studioAuthReady=false;
+        renderError('Accesso Studio richiesto.');
+      }
+    }catch(e){
+      console.error('Inizializzazione Area Studio:',e);
+      studioAuthReady=false;
+      renderError(e?.message||'Impossibile verificare la sessione Studio.');
+    }
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
