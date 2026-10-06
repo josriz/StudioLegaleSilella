@@ -1680,12 +1680,32 @@ button:not(.btn-primary):not(.btn-success):not(.btn-warning):not(.btn-danger):no
   }
 </style>
 
+
+<style id="sidebar-brand-title-20261006">
+.sidebar-header{position:relative !important;}
+.sidebar-brand-title{
+  color:#fff !important;
+  font-size:18px !important;
+  font-weight:700 !important;
+  letter-spacing:.15px !important;
+  line-height:1.15 !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+  text-shadow:0 1px 3px rgba(0,0,0,.28) !important;
+}
+aside.collapsed .sidebar-brand-title{display:none !important;}
+@media(max-width:600px){
+  .sidebar-brand-title{font-size:16px !important;}
+}
+</style>
+
 </head>
 <body class="studio-auth-pending">
 
     <!-- SIDEBAR -->
     <aside id="appSidebar">
         <div class="sidebar-header">
+            <div class="sidebar-brand-title">Studio Legale Silella</div>
         </div>
         <div class="sidebar-menu">
             <div class="menu-section-title">Studio</div>
