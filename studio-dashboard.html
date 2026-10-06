@@ -1314,24 +1314,37 @@ button:not(.btn-primary):not(.btn-success):not(.btn-warning):not(.btn-danger):no
 }
 
 /* ===== PAGINA ===== */
+/* ===== SFONDO DEFINITIVO STUDIO ===== */
 html,body{
-  background:
-    linear-gradient(180deg,rgba(6,18,34,.10),rgba(6,18,34,.18)),
-    url('./loghi_sfondi/sfondo_azzurro_studio.jpg') center center / cover no-repeat fixed !important;
+  background:#f4f1eb !important;
 }
 body{
+  position:relative;
   color:#253246 !important;
-  background:
-    linear-gradient(180deg,rgba(6,18,34,.10),rgba(6,18,34,.18)),
-    url('./loghi_sfondi/sfondo_azzurro_studio.jpg') center center / cover no-repeat fixed !important;
   overflow:hidden;
 }
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:
+    linear-gradient(rgba(6,18,34,.10),rgba(6,18,34,.18)),
+    url("https://josriz.github.io/StudioLegaleSilella/loghi_sfondi/sfondo_azzurro_studio.jpg?v=20261006-1")
+    center center / cover no-repeat;
+}
 main{
+  position:relative;
+  z-index:1;
   background:rgba(244,241,235,.04) !important;
   backdrop-filter:none !important;
   -webkit-backdrop-filter:none !important;
 }
-
+aside{
+  position:relative;
+  z-index:2;
+}
 /* ===== SIDEBAR ===== */
 aside{
   width:270px !important;
