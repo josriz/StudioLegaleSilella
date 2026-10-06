@@ -68,9 +68,6 @@ document.getElementById('studioLoginForm').addEventListener('submit',async e=>{
  e.preventDefault();const b=document.getElementById('studioLoginSubmit'),err=document.getElementById('studioLoginError');err.textContent='';b.disabled=true;b.textContent='Accesso in corso…';
  try{
   sb=await ensureStudioSupabase();
-  // Pulisce sempre e solo la sessione Studio del dispositivo corrente prima di un nuovo accesso.
-  // Non revoca le sessioni Studio presenti su PC, smartphone o altri dispositivi.
-  try{ await sb.auth.signOut({scope:'local'}); }catch(_sessionReset){}
   const {data,error}=await sb.auth.signInWithPassword({email:document.getElementById('studioLoginEmail').value.trim(),password:document.getElementById('studioLoginPassword').value});
   if(error)throw error;
   if(!await authorized(data.user)){await sb.auth.signOut({scope:'local'});throw new Error('Questo account non è autorizzato all’Area Studio.');}
