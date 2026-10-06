@@ -1614,6 +1614,53 @@ button:not(.btn-primary):not(.btn-success):not(.btn-warning):not(.btn-danger):no
 </style>
 
 
+/* ===== FIX SIDEBAR MOBILE DEFINITIVO 20261006 =====
+   I CSS grafici finali successivi sovrascrivevano position:fixed della sidebar.
+   Desktop/PC invariato. */
+@media (max-width:900px){
+  html,body{width:100%;max-width:100%;overflow:hidden;}
+  aside{
+    position:fixed !important;
+    top:0 !important;
+    left:-280px !important;
+    width:280px !important;
+    height:100dvh !important;
+    max-height:100dvh !important;
+    z-index:120 !important;
+    margin:0 !important;
+    flex:none !important;
+    transition:left .25s ease !important;
+  }
+  aside.mobile-open{left:0 !important;}
+  aside.collapsed{width:280px !important;}
+  main{
+    width:100% !important;
+    min-width:0 !important;
+    flex:1 1 100% !important;
+  }
+  header{
+    position:relative;
+    z-index:110 !important;
+    width:100% !important;
+    min-width:0 !important;
+  }
+  .content-area{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    box-sizing:border-box !important;
+    overflow-x:hidden !important;
+  }
+}
+@media (max-width:600px){
+  aside{
+    width:min(86vw,320px) !important;
+    left:calc(-1 * min(86vw,320px)) !important;
+  }
+  aside.mobile-open{left:0 !important;}
+  aside.collapsed{width:min(86vw,320px) !important;}
+}
+
 <!-- CLEAN BASE VISUAL RESET 20261006: sfondo e glass effect bottoni rimossi; nessuna funzione modificata -->
 <style id="clean-base-reset-20261006">
   /* SFONDO STUDIO: questo reset è l'ultimo CSS del file, quindi deve mantenere l'immagine */
