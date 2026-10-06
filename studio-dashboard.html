@@ -1797,6 +1797,21 @@ aside.collapsed .sidebar-brand-city{display:none !important;}
 .studio-print-file-info{min-width:0;display:grid;gap:4px}.studio-print-file-info strong{color:#111827;overflow-wrap:anywhere}.studio-print-file-info span{font-size:12px;color:#475569}
 @media(max-width:600px){.studio-print-file-row{align-items:flex-start;flex-direction:column}.studio-print-file-row .btn{width:100%}}
 </style>
+
+<style id="studio-context-print-20261006">
+.studio-context-print-area{display:none}
+@media print{
+  body > *:not(#studioContextPrintArea){display:none !important}
+  #studioContextPrintArea{display:block !important;position:static !important;width:100% !important;background:#fff !important;color:#111827 !important;padding:0 !important}
+  #studioContextPrintArea .studio-context-print-header{display:block !important;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #cbd5e1;color:#111827 !important}
+  #studioContextPrintArea .studio-context-print-header strong{font-size:18px}
+  #studioContextPrintArea .studio-context-print-header div{font-size:15px;margin-top:4px}
+  #studioContextPrintArea .studio-context-print-header small{font-size:11px;color:#475569}
+  #studioContextPrintArea .card,#studioContextPrintArea table{width:100% !important;break-inside:avoid;page-break-inside:avoid}
+  #studioContextPrintArea table{border-collapse:collapse !important}
+  #studioContextPrintArea th,#studioContextPrintArea td{color:#111827 !important;background:#fff !important}
+}
+</style>
 </head>
 <body class="studio-auth-pending">
 
@@ -2884,102 +2899,43 @@ aside.collapsed .sidebar-brand-city{display:none !important;}
         }
 
         function printCurrentStudioView() {
-            const matters = window.__studioMatters || [];
-            const files = [];
-            const seen = new Set();
+            const active = document.querySelector('.panel.active');
+            if (!active) { alert('Nessun menu disponibile per la stampa.'); return; }
 
-            matters.forEach(m => {
-                const matterLabel = [m.client_name, m.legal_area, m.counterparty].filter(Boolean).join(' · ') || 'Fascicolo';
-                (m.documents || []).forEach(d => {
-                    if (!d?.storage_path || seen.has('doc:'+d.id)) return;
-                    seen.add('doc:'+d.id);
-                    files.push({
-                        id: d.id,
-                        name: d.file_name || 'Documento',
-                        path: d.storage_path,
-                        mime: d.mime_type || '',
-                        matter: matterLabel,
-                        kind: 'Fascicolo'
-                    });
-                });
-                (m.portalDocuments || []).forEach(d => {
-                    if (!d?.storage_path || seen.has('portal:'+d.id)) return;
-                    seen.add('portal:'+d.id);
-                    files.push({
-                        id: d.id,
-                        name: d.file_name || 'Documento Portale',
-                        path: d.storage_path,
-                        mime: d.mime_type || '',
-                        matter: matterLabel,
-                        kind: 'Portale'
-                    });
-                });
-            });
+            const panelId = active.id || '';
+            const title = active.querySelector('h3,h2,h1')?.innerText?.trim() || 'Studio Legale Silella';
+            const printTarget = active.querySelector('.card') || active;
 
-            if (!files.length) {
-                alert('Non ci sono file disponibili per la stampa.');
-                return;
-            }
+            const old = document.getElementById('studioContextPrintArea');
+            if (old) old.remove();
 
-            let modal = document.getElementById('studioPrintFilesModal');
-            if (!modal) {
-                modal = document.createElement('div');
-                modal.id = 'studioPrintFilesModal';
-                modal.innerHTML = '<div class="studio-print-files-backdrop"></div>' +
-                    '<div class="studio-print-files-dialog" role="dialog" aria-modal="true" aria-labelledby="studioPrintFilesTitle">' +
-                    '<div class="studio-print-files-head"><div><h3 id="studioPrintFilesTitle">Stampa file</h3><div class="studio-print-files-subtitle">Seleziona il documento che vuoi stampare.</div></div><button type="button" class="btn" id="studioPrintFilesClose">Chiudi</button></div>' +
-                    '<div id="studioPrintFilesList" class="studio-print-files-list"></div></div>';
-                document.body.appendChild(modal);
-                document.getElementById('studioPrintFilesClose').onclick = () => modal.remove();
-                modal.querySelector('.studio-print-files-backdrop').onclick = () => modal.remove();
-            }
+            const area = document.createElement('div');
+            area.id = 'studioContextPrintArea';
+            area.className = 'studio-context-print-area';
 
-            const list = document.getElementById('studioPrintFilesList');
-            list.innerHTML = files.map((f,i) =>
-                '<div class="studio-print-file-row">' +
-                '<div class="studio-print-file-info"><strong>'+escapeMatter(f.name)+'</strong><span>'+escapeMatter(f.kind)+' · '+escapeMatter(f.matter)+'</span></div>' +
-                '<button type="button" class="btn btn-info" data-print-file="'+i+'">🖨️ Stampa</button>' +
-                '</div>'
-            ).join('');
+            const header = document.createElement('div');
+            header.className = 'studio-context-print-header';
+            header.innerHTML = '<strong>Studio Legale Silella</strong><div>'+escapeMatter(title)+'</div><small>'+new Date().toLocaleString('it-IT')+'</small>';
+            area.appendChild(header);
 
-            list.querySelectorAll('[data-print-file]').forEach(btn => {
-                btn.onclick = () => printStoredStudioFile(files[Number(btn.dataset.printFile)]);
-            });
-        }
+            const clone = printTarget.cloneNode(true);
+            clone.querySelectorAll('button,input,select,textarea,.no-print,.studio-notify-btn').forEach(el => el.remove());
+            area.appendChild(clone);
+            document.body.appendChild(area);
 
-        async function printStoredStudioFile(file) {
-            if (!file?.path) return;
-            if (file.mime && !file.mime.toLowerCase().includes('pdf')) {
-                alert('La stampa diretta è disponibile per i file PDF. Per questo file verrà aperto il documento per la stampa dal programma associato.');
-            }
-            const client = getStudioClient();
-            if (!client) return;
-            const popup = window.open('', '_blank');
-            if (!popup) {
-                alert('Il browser ha bloccato la nuova finestra. Consenti i popup per stampare il documento.');
-                return;
-            }
-            popup.document.write('<html><head><title>Preparazione stampa…</title></head><body style="font-family:Arial,sans-serif;padding:30px">Preparazione del documento per la stampa…</body></html>');
-            popup.document.close();
-
-            const {data, error} = await client.storage.from('studio-legale-documenti').createSignedUrl(file.path, 300);
-            if (error || !data?.signedUrl) {
-                popup.close();
-                alert('Impossibile aprire il documento: '+(error?.message || 'URL non disponibile'));
-                return;
-            }
-
-            popup.location.href = data.signedUrl;
-            setTimeout(() => {
-                try { popup.focus(); popup.print(); } catch (e) {}
-            }, 1800);
+            const cleanup = () => {
+                area.remove();
+                window.removeEventListener('afterprint', cleanup);
+            };
+            window.addEventListener('afterprint', cleanup);
+            window.print();
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             const printBtn = document.getElementById('studioPrintBtn');
             if (printBtn) {
-                printBtn.title = 'Stampa un file';
-                printBtn.textContent = '🖨️ Stampa file';
+                printBtn.title = 'Stampa il contenuto del menu corrente';
+                printBtn.textContent = '🖨️ Stampa';
                 printBtn.addEventListener('click', printCurrentStudioView);
             }
         });
