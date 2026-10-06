@@ -1607,17 +1607,19 @@ button:not(.btn-primary):not(.btn-success):not(.btn-warning):not(.btn-danger):no
 
 <!-- CLEAN BASE VISUAL RESET 20261006: sfondo e glass effect bottoni rimossi; nessuna funzione modificata -->
 <style id="clean-base-reset-20261006">
-  /* Sfondo pulito: nessuna fotografia, nessun effetto vetro */
+  /* SFONDO STUDIO: questo reset è l'ultimo CSS del file, quindi deve mantenere l'immagine */
   html, body {
-    background: #f3f4f6 !important;
-    background-image: none !important;
+    background:
+      linear-gradient(rgba(6,18,34,.10),rgba(6,18,34,.18)),
+      url("https://josriz.github.io/StudioLegaleSilella/loghi_sfondi/sfondo_azzurro_studio.jpg?v=20261006-3")
+      center center / cover no-repeat fixed !important;
   }
   body {
     color: #1f2937 !important;
   }
   main,
   .content-area {
-    background: #f3f4f6 !important;
+    background: transparent !important;
     background-image: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
