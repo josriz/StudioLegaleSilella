@@ -3,7 +3,7 @@
   const esc = v => String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const fmt = v => v ? new Date(v).toLocaleString('it-IT') : '—';
   const day = v => v ? new Date(v).toLocaleDateString('it-IT') : '—';
-  const state = {user:null,profile:null,practices:[],docs:[],audit:[],communications:[],team:[],agenda:[],pct:[],time:[],clients:[],bills:[],portalInvites:[],teamInvites:[],portalDocs:[],notifications:[]};
+  const state = {user:null,profile:null,practices:[],docs:[],audit:[],communications:[],team:[],agenda:[],pct:[],pctProcedimenti:[],pctDepositiV2:[],pctAllegatiV2:[],pctEventiV2:[],pctConfigV2:null,pctProviderConnection:null,pctExternalArtifacts:[],time:[],clients:[],bills:[],portalInvites:[],teamInvites:[],portalDocs:[],notifications:[]};
 
   async function loadData(){
     const c=getClient(); if(!c) throw new Error('Supabase non disponibile.');
@@ -23,6 +23,8 @@
       c.from('studio_pct_allegati_v2').select('*').order('created_at',{ascending:false}),
       c.from('studio_pct_eventi_v2').select('*').order('occurred_at',{ascending:false}),
       c.from('studio_pct_config_v2').select('*').maybeSingle(),
+      c.from('studio_pct_provider_connections').select('*').maybeSingle(),
+      c.from('studio_pct_external_artifacts').select('*').order('created_at',{ascending:false}),
       c.from('studio_time_entries').select('*').order('started_at',{ascending:false}).limit(200),
       c.from('studio_clienti').select('*').order('created_at',{ascending:false}),
       c.from('studio_fatture').select('*').order('issue_date',{ascending:false}),
@@ -32,7 +34,7 @@
       c.from('studio_notifiche').select('*').eq('recipient_user_id',user.id).order('created_at',{ascending:false}).limit(100)
     ];
     const rs=await Promise.all(qs); for(const x of rs) if(x.error) throw x.error;
-    [state.practices,state.docs,state.audit,state.communications,state.team,state.agenda,state.pct,state.pctProcedimenti,state.pctDepositiV2,state.pctAllegatiV2,state.pctEventiV2,state.pctConfigV2,state.time,state.clients,state.bills,state.portalInvites,state.teamInvites,state.portalDocs,state.notifications]=rs.map(x=>x.data||null).map((x,i)=>i===11?(x||null):(x||[]));
+    [state.practices,state.docs,state.audit,state.communications,state.team,state.agenda,state.pct,state.pctProcedimenti,state.pctDepositiV2,state.pctAllegatiV2,state.pctEventiV2,state.pctConfigV2,state.pctProviderConnection,state.pctExternalArtifacts,state.time,state.clients,state.bills,state.portalInvites,state.teamInvites,state.portalDocs,state.notifications]=rs.map(x=>x.data||null).map((x,i)=>[11,12].includes(i)?(x||null):(x||[]));
     state.user=user; state.profile=profile;
   }
   const panel=(id,html)=>{const p=document.getElementById('panel-'+id); if(p)p.innerHTML=html;};
@@ -173,24 +175,130 @@
   }
 
   function renderPct(){
-    const procedures=state.pctProcedimenti, deposits=state.pctDepositiV2, config=state.pctConfigV2||{};
-    const statusLabel={preparazione:'Preparazione',verificato:'Verificato',firmato:'Firmato',busta_generata:'Busta generata',pronto_invio:'Pronto per INVIO',inviato:'INVIO eseguito',ricevuta_accettazione:'PEC accettazione ricevuta',ricevuta_consegna:'PEC consegna ricevuta',controlli_ok:'Controlli automatici OK',in_attesa_accettazione:'In attesa accettazione',accettato:'Accettato',rifiutato:'Rifiutato',errore:'Errore',annullato:'Annullato'};
-    const procOptions='<option value="">— procedimento —</option>'+procedures.map(p=>'<option value="'+p.id+'">'+esc(p.ufficio_giudiziario)+' · '+esc(p.registro)+' · R.G. '+esc(p.rg_numero)+'/'+esc(p.rg_anno)+'</option>').join('');
-    const rows=deposits.map(d=>{const p=procedures.find(x=>x.id===d.procedimento_id),pr=state.practices.find(x=>x.id===d.pratica_id);const actions=d.stato==='preparazione'?'<button class="btn btn-info" data-pct-verify="'+d.id+'">Verifica</button>':d.stato==='verificato'?'<button class="btn btn-info" data-pct-sign="'+d.id+'">Conferma firma</button>':d.stato==='firmato'?'<button class="btn btn-info" data-pct-envelope="'+d.id+'">Genera busta</button>':d.stato==='busta_generata'?'<button class="btn btn-info" data-pct-ready="'+d.id+'">Valida per INVIO</button>':d.stato==='pronto_invio'?'<button class="btn btn-success" data-pct-send="'+d.id+'">INVIO</button>':'';return '<tr><td>'+esc(pr?.client_name||'—')+'</td><td>'+esc(p?.ufficio_giudiziario||'—')+'</td><td>'+esc(d.tipo_atto)+'</td><td>'+esc(statusLabel[d.stato]||d.stato)+'</td><td>'+esc(d.validation_status)+'</td><td>'+esc(d.envelope_status)+'</td><td>'+fmt(d.submitted_at)+'</td><td>'+actions+'</td></tr>}).join('')||'<tr><td colspan="8">Nessun deposito PCT.</td></tr>';
-    panel('pct-deposit',`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div><h3>🏛️ PCT · Procedimento, Deposito e INVIO</h3><div style="font-size:12px;color:#64748b">Workflow interno completo fino al punto INVIO. Nessun invio ministeriale viene simulato.</div></div><button class="btn btn-info" id="pctRefresh">Aggiorna</button></div>
-      <div class="card" style="margin-top:14px;background:#f8fafc"><h4 style="margin:0 0 10px">➕ Nuovo deposito</h4><form id="pctDepositForm"><div style="display:grid;grid-template-columns:2fr 1fr 2fr 1fr;gap:8px"><select id="pctDepProc" required>${procOptions}</select><input id="pctDepType" placeholder="Tipo atto" required><input id="pctDepSubject" placeholder="Oggetto"><input id="pctDepRecipient" placeholder="Ufficio destinatario"></div><textarea id="pctDepNotes" placeholder="Note operative" style="width:100%;margin-top:8px;min-height:60px"></textarea><div id="pctDepositStatus" style="font-size:12px;margin-top:8px"></div><div style="display:flex;justify-content:flex-end;margin-top:8px"><button class="btn btn-success">Crea deposito</button></div></form></div>
-      <div class="card" style="margin-top:14px;background:#f8fafc"><h4 style="margin:0 0 10px">⚙️ Configurazione invio futuro</h4><form id="pctConfigForm" style="display:grid;grid-template-columns:1.2fr 2fr 1fr 1fr auto;gap:8px;align-items:end"><input id="pctProvider" placeholder="Provider / portale" value="${esc(config.provider_name||'')}"><input id="pctPortalUrl" placeholder="URL portale esterno" value="${esc(config.portal_url||'')}"><select id="pctSendMode"><option value="manual">Manuale</option><option value="api">API</option><option value="pec">PEC</option><option value="pda">PdA</option><option value="pst">PST</option></select><label style="font-size:12px"><input id="pctEnabled" type="checkbox" ${config.enabled?'checked':''}> Abilitato</label><button class="btn btn-info">Salva</button></form><div style="font-size:11px;color:#64748b;margin-top:6px">Le credenziali non vengono memorizzate in chiaro: saranno definite quando verrà scelto il servizio esterno.</div></div>
-      <table><thead><tr><th>Fascicolo</th><th>Ufficio</th><th>Atto</th><th>Stato</th><th>Controlli</th><th>Busta</th><th>INVIO</th><th>Azioni</th></tr></thead><tbody data-module-body>${rows}</tbody></table><div class="card" style="margin-top:18px;background:#eff6ff;border-left:4px solid #2563eb"><strong>Flusso completato internamente:</strong> procedimento → deposito → verifica → firma/conferma → busta → validazione → conferma professionista → <strong>INVIO</strong>. Il collegamento al portale ministeriale/provider viene configurato separatamente.</div></div>`);
-    document.getElementById('pctRefresh').onclick=refreshAll;document.getElementById('pctSendMode').value=config.send_mode||'manual';
-    document.getElementById('pctConfigForm').onsubmit=async e=>{e.preventDefault();const payload={id:true,provider_name:pctProvider.value.trim()||null,portal_url:pctPortalUrl.value.trim()||null,send_mode:pctSendMode.value,enabled:pctEnabled.checked,updated_by:state.user.id,updated_at:new Date().toISOString()};const {error}=await getClient().from('studio_pct_config_v2').upsert(payload,{onConflict:'id'});if(error)alert(error.message);else refreshAll()};
-    document.getElementById('pctDepositForm').onsubmit=async e=>{e.preventDefault();const s=document.getElementById('pctDepositStatus'),proc=procedures.find(x=>x.id===pctDepProc.value);if(!proc){s.textContent='Seleziona un procedimento.';return}s.textContent='Creazione deposito…';const {data,error}=await getClient().from('studio_pct_depositi_v2').insert({pratica_id:proc.pratica_id,procedimento_id:proc.id,created_by:state.user.id,tipo_atto:pctDepType.value.trim(),oggetto:pctDepSubject.value.trim()||null,ufficio_destinatario:pctDepRecipient.value.trim()||null,notes:pctDepNotes.value.trim()||null}).select().single();if(error){s.textContent=error.message;return}await getClient().from('studio_pct_eventi_v2').insert({deposito_id:data.id,event_type:'deposito_creato',status:'preparazione',created_by:state.user.id,details:{pratica_id:proc.pratica_id}});s.textContent='Deposito creato in preparazione.';e.target.reset();refreshAll()};
-    const event=async(id,type,status,details={})=>{await getClient().from('studio_pct_eventi_v2').insert({deposito_id:id,event_type:type,status,created_by:state.user.id,details})};
-    document.querySelectorAll('[data-pct-verify]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctVerify);if(!d)return;const docs=state.docs.filter(x=>x.pratica_id===d.pratica_id),att=state.pctAllegatiV2.filter(x=>x.deposito_id===d.id);if(!docs.length){alert('Nessun documento disponibile nel fascicolo.');return}if(!att.length){const first=docs[0],ins=await getClient().from('studio_pct_allegati_v2').insert({deposito_id:d.id,documento_id:first.id,file_name:first.file_name,storage_path:first.storage_path||null,ruolo:'atto_principale',obbligatorio:true,created_by:state.user.id});if(ins.error){alert(ins.error.message);return}}const {error}=await getClient().from('studio_pct_depositi_v2').update({stato:'verificato',validation_status:'ok',updated_at:new Date().toISOString()}).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'verifica_completata','ok',{allegati:Math.max(att.length,1)});refreshAll()}});
-    document.querySelectorAll('[data-pct-sign]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctSign);if(!d)return;const {error}=await getClient().from('studio_pct_depositi_v2').update({stato:'firmato',updated_at:new Date().toISOString()}).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'firma_confermata','ok');refreshAll()}});
-    document.querySelectorAll('[data-pct-envelope]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctEnvelope);if(!d)return;const {error}=await getClient().from('studio_pct_depositi_v2').update({stato:'busta_generata',envelope_status:'generata',updated_at:new Date().toISOString()}).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'busta_generata','ok');refreshAll()}});
-    document.querySelectorAll('[data-pct-ready]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctReady);if(!d)return;const {error}=await getClient().from('studio_pct_depositi_v2').update({stato:'pronto_invio',envelope_status:'validata',professional_confirmed_at:new Date().toISOString(),confirmed_by:state.user.id,updated_at:new Date().toISOString()}).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'conferma_professionista','ok',{punto:'INVIO'});refreshAll()}});
-    document.querySelectorAll('[data-pct-send]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctSend);if(!d)return;if(!confirm('Confermare INVIO? Questa operazione registra il punto INVIO interno; non effettua il deposito sul portale esterno.'))return;const {error}=await getClient().from('studio_pct_depositi_v2').update({stato:'inviato',submitted_at:new Date().toISOString(),external_channel:config.send_mode||'manual',updated_at:new Date().toISOString()}).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'invio','inviato',{channel:config.send_mode||'manual',portal_url:config.portal_url||null});refreshAll()}});
+    const c=getClient();
+    const procedures=state.pctProcedimenti||[];
+    const deposits=state.pctDepositiV2||[];
+    const config=state.pctConfigV2||{};
+    const conn=state.pctProviderConnection||{};
+    const artifacts=state.pctExternalArtifacts||[];
+    const statusLabel={preparazione:'Preparazione',verificato:'Verificato',firmato:'Firmato',busta_generata:'Busta generata',pronto_invio:'Pronto per INVIO',inviato:'INVIO registrato',ricevuta_accettazione:'Accettazione ricevuta',ricevuta_consegna:'Consegna ricevuta',controlli_ok:'Controlli OK',in_attesa_accettazione:'In attesa accettazione',accettato:'Accettato',rifiutato:'Rifiutato',errore:'Errore',annullato:'Annullato'};
+    const connectionLabel={non_configurata:'Non configurata',configurata:'Configurata',verificata:'Verificata',errore:'Errore',disabilitata:'Disabilitata'};
+    const procOptions='<option value="">— seleziona procedimento —</option>'+procedures.map(p=>'<option value="'+p.id+'">'+esc(p.ufficio_giudiziario)+' · '+esc(p.registro)+' · RG '+esc(p.rg_numero)+'/'+esc(p.rg_anno)+'</option>').join('');
+    const rows=deposits.map(d=>{
+      const p=procedures.find(x=>x.id===d.procedimento_id);
+      const aa=artifacts.filter(x=>x.deposito_id===d.id);
+      let action='';
+      if(d.stato==='preparazione') action='<button class="btn btn-info" data-pct-verify="'+d.id+'">Verifica</button>';
+      else if(d.stato==='verificato') action='<button class="btn btn-info" data-pct-sign="'+d.id+'">Conferma firma</button>';
+      else if(d.stato==='firmato') action='<button class="btn btn-info" data-pct-envelope="'+d.id+'">Genera busta</button>';
+      else if(d.stato==='busta_generata') action='<button class="btn btn-info" data-pct-ready="'+d.id+'">Valida per INVIO</button>';
+      else if(d.stato==='pronto_invio') action='<button class="btn btn-success" data-pct-send="'+d.id+'">INVIO</button>';
+      else if(['inviato','ricevuta_accettazione','ricevuta_consegna','controlli_ok','in_attesa_accettazione'].includes(d.stato)) action='<button class="btn btn-info" data-pct-poll="'+d.id+'">Interroga servizio</button>';
+      return '<tr><td>'+esc(state.practices.find(x=>x.id===d.pratica_id)?.client_name||'—')+'</td><td>'+esc(p?.ufficio_giudiziario||'—')+'</td><td>'+esc(d.tipo_atto)+'</td><td>'+esc(statusLabel[d.stato]||d.stato)+'</td><td>'+esc(d.validation_status)+'</td><td>'+esc(d.envelope_status)+'</td><td>'+esc(d.external_id||'—')+'</td><td>'+aa.length+'</td><td>'+fmt(d.submitted_at)+'</td><td>'+action+'</td></tr>';
+    }).join('')||'<tr><td colspan="10">Nessun deposito PCT.</td></tr>';
+    const credStatus=document.getElementById('pctCredentialStatus');
+    panel('pct-deposit',`<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <div><h3>🏛️ PCT · Gestione completa deposito e collegamento esterno</h3><div style="font-size:12px;color:#64748b">Il gestionale governa il fascicolo, il deposito, l'invio, gli esiti, le ricevute e il recupero successivo.</div></div>
+        <button class="btn btn-info" id="pctRefresh">Aggiorna</button>
+      </div>
+      <div class="card" style="margin-top:14px;background:#f8fafc"><h4 style="margin:0 0 10px">➕ Nuovo deposito</h4>
+        <form id="pctDepositForm"><div style="display:grid;grid-template-columns:2fr 1fr 2fr 1fr;gap:8px"><select id="pctDepProc" required>${procOptions}</select><input id="pctDepType" placeholder="Tipo atto" required><input id="pctDepSubject" placeholder="Oggetto"><input id="pctDepRecipient" placeholder="Ufficio destinatario"></div><textarea id="pctDepNotes" placeholder="Note operative" style="width:100%;margin-top:8px;min-height:60px"></textarea><div id="pctDepositStatus" style="font-size:12px;margin-top:8px"></div><div style="display:flex;justify-content:flex-end;margin-top:8px"><button class="btn btn-success">Crea deposito</button></div></form>
+      </div>
+      <div class="card" style="margin-top:14px;background:#f8fafc"><h4 style="margin:0 0 10px">⚙️ Servizio esterno</h4>
+        <form id="pctConfigForm" style="display:grid;grid-template-columns:1.2fr 2fr 1fr 1fr auto;gap:8px;align-items:end">
+          <input id="pctProvider" placeholder="Provider / portale" value="${esc(config.provider_name||'')}">
+          <input id="pctPortalUrl" placeholder="URL portale esterno" value="${esc(config.portal_url||'')}">
+          <select id="pctSendMode"><option value="manual">Manuale</option><option value="api">API</option><option value="pec">PEC</option><option value="pda">PdA</option><option value="pst">PST</option></select>
+          <label style="font-size:12px"><input id="pctEnabled" type="checkbox" ${config.enabled?'checked':''}> Abilitato</label>
+          <button class="btn btn-info">Salva configurazione</button>
+        </form>
+        <div style="margin-top:10px;padding:10px;border-radius:8px;background:#fff;border:1px solid #e2e8f0">
+          <strong>🔐 Credenziali professionista</strong>
+          <div style="font-size:11px;color:#64748b;margin:4px 0 8px">Il segreto non viene mai riletto né mostrato alla pagina. Viene salvato tramite funzione protetta.</div>
+          <form id="pctCredentialsForm" style="display:grid;grid-template-columns:1.3fr 1.2fr 1fr auto;gap:8px;align-items:end">
+            <input id="pctUsername" placeholder="Utente / email">
+            <input id="pctSecret" type="password" placeholder="Password / token / API key" autocomplete="new-password">
+            <select id="pctSecretKind"><option value="password">Password</option><option value="api_key">API key</option><option value="token">Token</option><option value="certificate">Certificato</option><option value="other">Altro</option></select>
+            <button class="btn btn-info">Salva credenziali</button>
+          </form>
+          <div id="pctCredentialStatus" style="font-size:12px;margin-top:8px">Stato credenziali: ${conn.connection_status==='verificata'?'configurate e verificate':(conn.connection_status==='configurata'?'configurate': 'non configurate')}</div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-info" id="pctConfigCheck">Verifica configurazione</button>
+          ${config.portal_url?'<a class="btn btn-info" href="'+esc(config.portal_url)+'" target="_blank" rel="noopener noreferrer">Apri portale esterno</a>':''}
+          <span style="font-size:12px;padding:8px;background:#fff;border-radius:8px">Connessione: <strong>${esc(connectionLabel[conn.connection_status]||'Non configurata')}</strong></span>
+        </div>
+        <div style="font-size:11px;color:#64748b;margin-top:8px">Nota: URL e credenziali da sole non definiscono il protocollo di un portale. L'invio/interrogazione automatica reale viene eseguita dal connettore del servizio scelto; la modalità manuale resta disponibile senza simulare un invio.</div>
+      </div>
+      <table><thead><tr><th>Fascicolo</th><th>Ufficio</th><th>Atto</th><th>Stato</th><th>Controlli</th><th>Busta</th><th>ID esterno</th><th>Allegati recuperati</th><th>Ultimo invio</th><th>Azioni</th></tr></thead><tbody data-module-body>${rows}</tbody></table>
+      <div class="card" style="margin-top:18px;background:#eff6ff;border-left:4px solid #2563eb"><strong>Gestione successiva all'invio:</strong> il deposito mantiene ID esterno, ricevute/esiti e artefatti scaricati. Il pulsante <strong>Interroga servizio</strong> è predisposto per il connettore del provider e non inventa risposte se il provider non espone ancora il relativo protocollo.</div>
+    </div>`);
+    document.getElementById('pctRefresh').onclick=refreshAll;
+    document.getElementById('pctSendMode').value=config.send_mode||'manual';
+
+    document.getElementById('pctConfigForm').onsubmit=async e=>{
+      e.preventDefault();
+      const payload={id:true,provider_name:pctProvider.value.trim()||null,portal_url:pctPortalUrl.value.trim()||null,send_mode:pctSendMode.value,enabled:pctEnabled.checked,updated_by:state.user.id,updated_at:new Date().toISOString()};
+      const {error}=await c.from('studio_pct_config_v2').upsert(payload,{onConflict:'id'});
+      if(error){alert(error.message);return}
+      await c.from('studio_pct_provider_connections').upsert({config_id:true,enabled:pctEnabled.checked,connection_status:pctEnabled.checked?'configurata':'disabilitata',updated_by:state.user.id,updated_at:new Date().toISOString()},{onConflict:'config_id'});
+      refreshAll();
+    };
+    document.getElementById('pctCredentialsForm').onsubmit=async e=>{
+      e.preventDefault();
+      const s=document.getElementById('pctCredentialStatus'); const secret=document.getElementById('pctSecret').value;
+      if(!pctUsername.value.trim()||!secret){s.textContent='Inserisci utente e segreto.';return}
+      s.textContent='Salvataggio protetto…';
+      const {error}=await c.rpc('studio_pct_save_provider_credentials',{p_username:pctUsername.value.trim(),p_secret:secret,p_secret_kind:pctSecretKind.value});
+      pctSecret.value='';
+      if(error){s.textContent='Errore: '+error.message;return}
+      await c.from('studio_pct_provider_connections').upsert({config_id:true,connection_status:'configurata',enabled:true,updated_by:state.user.id,updated_at:new Date().toISOString()},{onConflict:'config_id'});
+      s.textContent='Credenziali configurate. Il segreto non viene restituito alla pagina.';
+      await refreshAll();
+    };
+    document.getElementById('pctConfigCheck').onclick=async()=>{
+      const s=document.getElementById('pctCredentialStatus');
+      const {data,error}=await c.rpc('studio_pct_provider_credentials_status');
+      if(error){s.textContent='Verifica non riuscita: '+error.message;return}
+      if(!data?.configured){s.textContent='Credenziali non configurate.';return}
+      await c.from('studio_pct_provider_connections').upsert({config_id:true,connection_status:'configurata',enabled:true,last_tested_at:new Date().toISOString(),updated_by:state.user.id,updated_at:new Date().toISOString()},{onConflict:'config_id'});
+      s.textContent='Configurazione verificata. La connessione applicativa reale dipenderà dal connettore del servizio scelto.';
+      refreshAll();
+    };
+    document.getElementById('pctDepositForm').onsubmit=async e=>{
+      e.preventDefault();const s=document.getElementById('pctDepositStatus'),proc=procedures.find(x=>x.id===pctDepProc.value);
+      if(!proc){s.textContent='Seleziona un procedimento.';return}s.textContent='Creazione deposito…';
+      const {data,error}=await c.from('studio_pct_depositi_v2').insert({pratica_id:proc.pratica_id,procedimento_id:proc.id,created_by:state.user.id,tipo_atto:pctDepType.value.trim(),oggetto:pctDepSubject.value.trim()||null,ufficio_destinatario:pctDepRecipient.value.trim()||null,notes:pctDepNotes.value.trim()||null}).select().single();
+      if(error){s.textContent=error.message;return}
+      await c.from('studio_pct_eventi_v2').insert({deposito_id:data.id,event_type:'deposito_creato',status:'preparazione',created_by:state.user.id,details:{pratica_id:proc.pratica_id}});
+      s.textContent='Deposito creato in preparazione.';e.target.reset();refreshAll();
+    };
+    const event=async(id,type,status,details={})=>{await c.from('studio_pct_eventi_v2').insert({deposito_id:id,event_type:type,status,created_by:state.user.id,details})};
+    document.querySelectorAll('[data-pct-verify]').forEach(b=>b.onclick=async()=>{
+      const d=deposits.find(x=>x.id===b.dataset.pctVerify);if(!d)return;
+      const docs=state.docs.filter(x=>x.pratica_id===d.pratica_id),att=state.pctAllegatiV2.filter(x=>x.deposito_id===d.id);
+      if(!docs.length){alert('Nessun documento disponibile nel fascicolo.');return}
+      if(!att.length){const first=docs[0],ins=await c.from('studio_pct_allegati_v2').insert({deposito_id:d.id,documento_id:first.id,file_name:first.file_name,storage_path:first.storage_path||null,ruolo:'atto_principale',obbligatorio:true,created_by:state.user.id});if(ins.error){alert(ins.error.message);return}}
+      const {error}=await c.from('studio_pct_depositi_v2').update({stato:'verificato',validation_status:'ok',updated_at:new Date().toISOString()}).eq('id',d.id);
+      if(error)alert(error.message);else{await event(d.id,'verifica_completata','ok',{allegati:Math.max(att.length,1)});refreshAll()}
+    });
+    document.querySelectorAll('[data-pct-sign]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctSign);if(!d)return;const {error}=await c.from('studio_pct_depositi_v2').update({stato:'firmato',updated_at:new Date().toISOString()}).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'firma_confermata','ok');refreshAll()}});
+    document.querySelectorAll('[data-pct-envelope]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctEnvelope);if(!d)return;const {error}=await c.from('studio_pct_depositi_v2').update({stato:'busta_generata',envelope_status:'generata',updated_at:new Date().toISOString()}).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'busta_generata','ok');refreshAll()}});
+    document.querySelectorAll('[data-pct-ready]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctReady);if(!d)return;const {error}=await c.from('studio_pct_depositi_v2').update({stato:'pronto_invio',envelope_status:'validata',professional_confirmed_at:new Date().toISOString(),confirmed_by:state.user.id,updated_at:new Date().toISOString()}).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'conferma_professionista','ok',{punto:'INVIO'});refreshAll()}});
+    document.querySelectorAll('[data-pct-send]').forEach(b=>b.onclick=async()=>{
+      const d=deposits.find(x=>x.id===b.dataset.pctSend);if(!d)return;
+      if(!config.enabled){alert('Configura e abilita prima il servizio esterno.');return}
+      if(!confirm('Confermare INVIO? In modalità manuale il gestionale registra il deposito come pronto per trasmissione esterna; non simula un invio al portale.'))return;
+      const {error}=await c.from('studio_pct_depositi_v2').update({stato:'inviato',submitted_at:new Date().toISOString(),external_channel:config.send_mode||'manual',updated_at:new Date().toISOString()}).eq('id',d.id);
+      if(error)alert(error.message);else{await event(d.id,'invio','inviato',{channel:config.send_mode||'manual',portal_url:config.portal_url||null,modalita:config.send_mode||'manual'});refreshAll()}
+    });
+    document.querySelectorAll('[data-pct-poll]').forEach(b=>b.onclick=async()=>{
+      const d=deposits.find(x=>x.id===b.dataset.pctPoll);if(!d)return;
+      alert('Interrogazione pronta: per eseguire il recupero automatico occorre il connettore del servizio esterno scelto. Nessun esito viene inventato.');
+    });
   }
+
   function renderTimer(){
     const open=state.time.find(x=>x.user_id===state.user.id&&!x.ended_at);
     panel('time-tracker','<div class="card"><h3>⏱️ Time Tracker & Ore Lavorate</h3><div style="font-size:12px;color:#64748b">Sessioni persistenti in studio_time_entries</div><div class="card" style="margin-top:14px;background:#f8fafc"><form id="timeForm" style="display:grid;grid-template-columns:2fr 2fr auto;gap:8px"><select id="timePractice">'+practiceOptions()+'</select><input id="timeDesc" placeholder="Attività"><button class="btn btn-success">'+(open?'Sessione già attiva':'Avvia sessione')+'</button></form><div id="timeStatus" style="font-size:12px;margin-top:8px"></div></div><table><thead><tr><th>Inizio</th><th>Fine</th><th>Durata</th><th>Pratica</th><th>Attività</th><th>Azioni</th></tr></thead><tbody data-module-body>'+(state.time.map(t=>'<tr><td>'+fmt(t.started_at)+'</td><td>'+fmt(t.ended_at)+'</td><td>'+esc(t.duration_seconds!=null?Math.floor(t.duration_seconds/60)+' min':'in corso')+'</td><td>'+esc(state.practices.find(p=>p.id===t.pratica_id)?.client_name||'—')+'</td><td>'+esc(t.description||'—')+'</td><td>'+(!t.ended_at&&t.user_id===state.user.id?'<button class="btn btn-danger" data-time-stop="'+t.id+'">Ferma</button>':'')+'</td></tr>').join('')||'<tr><td colspan="6">Nessuna sessione.</td></tr>')+'</tbody></table></div>');
