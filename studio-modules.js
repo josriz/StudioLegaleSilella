@@ -19,6 +19,10 @@
       c.from('studio_agenda').select('*').order('starts_at',{ascending:true}),
       c.from('studio_pct_depositi').select('*').order('created_at',{ascending:false}),
       c.from('studio_pct_procedimenti').select('*').order('created_at',{ascending:false}),
+      c.from('studio_pct_depositi_v2').select('*').order('created_at',{ascending:false}),
+      c.from('studio_pct_allegati_v2').select('*').order('created_at',{ascending:false}),
+      c.from('studio_pct_eventi_v2').select('*').order('occurred_at',{ascending:false}),
+      c.from('studio_pct_config_v2').select('*').maybeSingle(),
       c.from('studio_time_entries').select('*').order('started_at',{ascending:false}).limit(200),
       c.from('studio_clienti').select('*').order('created_at',{ascending:false}),
       c.from('studio_fatture').select('*').order('issue_date',{ascending:false}),
@@ -28,7 +32,7 @@
       c.from('studio_notifiche').select('*').eq('recipient_user_id',user.id).order('created_at',{ascending:false}).limit(100)
     ];
     const rs=await Promise.all(qs); for(const x of rs) if(x.error) throw x.error;
-    [state.practices,state.docs,state.audit,state.communications,state.team,state.agenda,state.pct,state.pctProcedimenti,state.time,state.clients,state.bills,state.portalInvites,state.teamInvites,state.portalDocs,state.notifications]=rs.map(x=>x.data||[]);
+    [state.practices,state.docs,state.audit,state.communications,state.team,state.agenda,state.pct,state.pctProcedimenti,state.pctDepositiV2,state.pctAllegatiV2,state.pctEventiV2,state.pctConfigV2,state.time,state.clients,state.bills,state.portalInvites,state.teamInvites,state.portalDocs,state.notifications]=rs.map(x=>x.data||null).map((x,i)=>i===11?(x||null):(x||[]));
     state.user=user; state.profile=profile;
   }
   const panel=(id,html)=>{const p=document.getElementById('panel-'+id); if(p)p.innerHTML=html;};
@@ -169,63 +173,24 @@
   }
 
   function renderPct(){
-    const linked=state.pctProcedimenti;
-    panel('pct-deposit',`<div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-        <div><h3>🏛️ PCT · Anagrafica Procedimento Telematico</h3><div style="font-size:12px;color:#64748b">Funzione 1 · dati strutturati del procedimento collegati al fascicolo. Il collegamento al portale esterno sarà configurato successivamente.</div></div>
-        <button class="btn btn-info" id="pctRefresh">Aggiorna</button>
-      </div>
-      <div class="card" style="margin-top:14px;background:#f8fafc">
-        <h4 style="margin:0 0 10px">➕ Nuovo procedimento telematico</h4>
-        <form id="pctProcedureForm">
-          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px">
-            <select id="pctProcPractice" required><option value="">— Fascicolo —</option>${state.practices.map(p=>'<option value="'+p.id+'">'+esc(p.client_name)+' · '+esc(p.legal_area||'')+'</option>').join('')}</select>
-            <input id="pctProcCourt" placeholder="Ufficio giudiziario / Tribunale" required>
-            <input id="pctProcCode" placeholder="Codice ufficio">
-            <input id="pctProcRegistry" placeholder="Registro (es. Contenzioso civile)" required>
-            <input id="pctProcRG" placeholder="Numero R.G." required>
-            <input id="pctProcYear" type="number" min="1900" max="2200" placeholder="Anno R.G." required>
-            <input id="pctProcType" placeholder="Tipo procedimento" required>
-            <input id="pctProcSection" placeholder="Sezione">
-            <input id="pctProcJudge" placeholder="Giudice">
-            <input id="pctProcParty" placeholder="Parte assistita" required>
-            <input id="pctProcPartyCode" placeholder="CF / P.IVA parte assistita">
-            <input id="pctProcOpposing" placeholder="Controparte" required>
-          </div>
-          <textarea id="pctProcNotes" placeholder="Note del procedimento / dati utili" style="width:100%;margin-top:8px;min-height:72px"></textarea>
-          <div id="pctProcedureStatus" style="font-size:12px;margin-top:8px"></div>
-          <div style="display:flex;justify-content:flex-end;margin-top:8px"><button class="btn btn-success" type="submit">Salva procedimento</button></div>
-        </form>
-      </div>
-      <table><thead><tr><th>Fascicolo</th><th>Ufficio</th><th>Registro</th><th>R.G.</th><th>Procedimento</th><th>Parte assistita</th><th>Controparte</th><th>Stato</th><th>Azioni</th></tr></thead>
-      <tbody data-module-body>${linked.map(p=>'<tr><td>'+esc(state.practices.find(x=>x.id===p.pratica_id)?.client_name||p.pratica_id)+'</td><td>'+esc(p.ufficio_giudiziario)+'</td><td>'+esc(p.registro)+'</td><td>'+esc(p.rg_numero)+'/'+esc(p.rg_anno)+'</td><td>'+esc(p.tipo_procedimento)+'</td><td>'+esc(p.parte_assistita)+'</td><td>'+esc(p.controparte)+'</td><td>'+esc(p.stato)+'</td><td><button class="btn btn-info" data-pct-proc-edit="'+p.id+'">Modifica</button></td></tr>').join('')||'<tr><td colspan="9">Nessun procedimento telematico registrato.</td></tr>'}</tbody></table>
-      <div class="card" style="margin-top:18px;background:#fffbeb;border-left:4px solid #d97706"><strong>Stato funzione:</strong> anagrafica procedimento completa e persistente. <strong>Non viene effettuato alcun invio esterno.</strong></div>
-    </div>`);
-    document.getElementById('pctRefresh').onclick=refreshAll;
-    document.getElementById('pctProcedureForm').onsubmit=async e=>{
-      e.preventDefault();
-      const s=document.getElementById('pctProcedureStatus');
-      const year=Number(pctProcYear.value);
-      if(!Number.isInteger(year)||year<1900||year>2200){s.textContent='Anno R.G. non valido.';return;}
-      s.textContent='Salvataggio…';
-      const payload={pratica_id:pctProcPractice.value,created_by:state.user.id,ufficio_giudiziario:pctProcCourt.value.trim(),codice_ufficio:pctProcCode.value.trim()||null,registro:pctProcRegistry.value.trim(),rg_numero:pctProcRG.value.trim(),rg_anno:year,tipo_procedimento:pctProcType.value.trim(),sezione:pctProcSection.value.trim()||null,giudice:pctProcJudge.value.trim()||null,parte_assistita:pctProcParty.value.trim(),parte_assistita_codice:pctProcPartyCode.value.trim()||null,controparte:pctProcOpposing.value.trim(),note:pctProcNotes.value.trim()||null};
-      const {error}=await getClient().from('studio_pct_procedimenti').insert(payload);
-      s.textContent=error?(error.code==='23505'?'Esiste già un procedimento con Ufficio, Registro e R.G. indicati.':error.message):'Procedimento telematico salvato correttamente.';
-      if(!error){e.target.reset();refreshAll();}
-    };
-    document.querySelectorAll('[data-pct-proc-edit]').forEach(b=>b.onclick=async()=>{
-      const p=state.pctProcedimenti.find(x=>x.id===b.dataset.pctProcEdit); if(!p)return;
-      const nextCourt=prompt('Ufficio giudiziario / Tribunale',p.ufficio_giudiziario); if(nextCourt===null)return;
-      const nextReg=prompt('Registro',p.registro); if(nextReg===null)return;
-      const nextType=prompt('Tipo procedimento',p.tipo_procedimento); if(nextType===null)return;
-      const nextSection=prompt('Sezione',p.sezione||''); if(nextSection===null)return;
-      const nextJudge=prompt('Giudice',p.giudice||''); if(nextJudge===null)return;
-      const nextOpp=prompt('Controparte',p.controparte); if(nextOpp===null)return;
-      const {error}=await getClient().from('studio_pct_procedimenti').update({ufficio_giudiziario:nextCourt.trim(),registro:nextReg.trim(),tipo_procedimento:nextType.trim(),sezione:nextSection.trim()||null,giudice:nextJudge.trim()||null,controparte:nextOpp.trim()}).eq('id',p.id);
-      if(error)alert(error.message);else refreshAll();
-    });
+    const procedures=state.pctProcedimenti, deposits=state.pctDepositiV2, config=state.pctConfigV2||{};
+    const statusLabel={preparazione:'Preparazione',verificato:'Verificato',firmato:'Firmato',busta_generata:'Busta generata',pronto_invio:'Pronto per INVIO',inviato:'INVIO eseguito',ricevuta_accettazione:'PEC accettazione ricevuta',ricevuta_consegna:'PEC consegna ricevuta',controlli_ok:'Controlli automatici OK',in_attesa_accettazione:'In attesa accettazione',accettato:'Accettato',rifiutato:'Rifiutato',errore:'Errore',annullato:'Annullato'};
+    const procOptions='<option value="">— procedimento —</option>'+procedures.map(p=>'<option value="'+p.id+'">'+esc(p.ufficio_giudiziario)+' · '+esc(p.registro)+' · R.G. '+esc(p.rg_numero)+'/'+esc(p.rg_anno)+'</option>').join('');
+    const rows=deposits.map(d=>{const p=procedures.find(x=>x.id===d.procedimento_id),pr=state.practices.find(x=>x.id===d.pratica_id);const actions=d.stato==='preparazione'?'<button class="btn btn-info" data-pct-verify="'+d.id+'">Verifica</button>':d.stato==='verificato'?'<button class="btn btn-info" data-pct-sign="'+d.id+'">Conferma firma</button>':d.stato==='firmato'?'<button class="btn btn-info" data-pct-envelope="'+d.id+'">Genera busta</button>':d.stato==='busta_generata'?'<button class="btn btn-info" data-pct-ready="'+d.id+'">Valida per INVIO</button>':d.stato==='pronto_invio'?'<button class="btn btn-success" data-pct-send="'+d.id+'">INVIO</button>':'';return '<tr><td>'+esc(pr?.client_name||'—')+'</td><td>'+esc(p?.ufficio_giudiziario||'—')+'</td><td>'+esc(d.tipo_atto)+'</td><td>'+esc(statusLabel[d.stato]||d.stato)+'</td><td>'+esc(d.validation_status)+'</td><td>'+esc(d.envelope_status)+'</td><td>'+fmt(d.submitted_at)+'</td><td>'+actions+'</td></tr>}).join('')||'<tr><td colspan="8">Nessun deposito PCT.</td></tr>';
+    panel('pct-deposit',`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div><h3>🏛️ PCT · Procedimento, Deposito e INVIO</h3><div style="font-size:12px;color:#64748b">Workflow interno completo fino al punto INVIO. Nessun invio ministeriale viene simulato.</div></div><button class="btn btn-info" id="pctRefresh">Aggiorna</button></div>
+      <div class="card" style="margin-top:14px;background:#f8fafc"><h4 style="margin:0 0 10px">➕ Nuovo deposito</h4><form id="pctDepositForm"><div style="display:grid;grid-template-columns:2fr 1fr 2fr 1fr;gap:8px"><select id="pctDepProc" required>${procOptions}</select><input id="pctDepType" placeholder="Tipo atto" required><input id="pctDepSubject" placeholder="Oggetto"><input id="pctDepRecipient" placeholder="Ufficio destinatario"></div><textarea id="pctDepNotes" placeholder="Note operative" style="width:100%;margin-top:8px;min-height:60px"></textarea><div id="pctDepositStatus" style="font-size:12px;margin-top:8px"></div><div style="display:flex;justify-content:flex-end;margin-top:8px"><button class="btn btn-success">Crea deposito</button></div></form></div>
+      <div class="card" style="margin-top:14px;background:#f8fafc"><h4 style="margin:0 0 10px">⚙️ Configurazione invio futuro</h4><form id="pctConfigForm" style="display:grid;grid-template-columns:1.2fr 2fr 1fr 1fr auto;gap:8px;align-items:end"><input id="pctProvider" placeholder="Provider / portale" value="${esc(config.provider_name||'')}"><input id="pctPortalUrl" placeholder="URL portale esterno" value="${esc(config.portal_url||'')}"><select id="pctSendMode"><option value="manual">Manuale</option><option value="api">API</option><option value="pec">PEC</option><option value="pda">PdA</option><option value="pst">PST</option></select><label style="font-size:12px"><input id="pctEnabled" type="checkbox" ${config.enabled?'checked':''}> Abilitato</label><button class="btn btn-info">Salva</button></form><div style="font-size:11px;color:#64748b;margin-top:6px">Le credenziali non vengono memorizzate in chiaro: saranno definite quando verrà scelto il servizio esterno.</div></div>
+      <table><thead><tr><th>Fascicolo</th><th>Ufficio</th><th>Atto</th><th>Stato</th><th>Controlli</th><th>Busta</th><th>INVIO</th><th>Azioni</th></tr></thead><tbody data-module-body>${rows}</tbody></table><div class="card" style="margin-top:18px;background:#eff6ff;border-left:4px solid #2563eb"><strong>Flusso completato internamente:</strong> procedimento → deposito → verifica → firma/conferma → busta → validazione → conferma professionista → <strong>INVIO</strong>. Il collegamento al portale ministeriale/provider viene configurato separatamente.</div></div>`);
+    document.getElementById('pctRefresh').onclick=refreshAll;document.getElementById('pctSendMode').value=config.send_mode||'manual';
+    document.getElementById('pctConfigForm').onsubmit=async e=>{e.preventDefault();const payload={id:true,provider_name:pctProvider.value.trim()||null,portal_url:pctPortalUrl.value.trim()||null,send_mode:pctSendMode.value,enabled:pctEnabled.checked,updated_by:state.user.id,updated_at:new Date().toISOString()};const {error}=await getClient().from('studio_pct_config_v2').upsert(payload,{onConflict:'id'});if(error)alert(error.message);else refreshAll()};
+    document.getElementById('pctDepositForm').onsubmit=async e=>{e.preventDefault();const s=document.getElementById('pctDepositStatus'),proc=procedures.find(x=>x.id===pctDepProc.value);if(!proc){s.textContent='Seleziona un procedimento.';return}s.textContent='Creazione deposito…';const {data,error}=await getClient().from('studio_pct_depositi_v2').insert({pratica_id:proc.pratica_id,procedimento_id:proc.id,created_by:state.user.id,tipo_atto:pctDepType.value.trim(),oggetto:pctDepSubject.value.trim()||null,ufficio_destinatario:pctDepRecipient.value.trim()||null,notes:pctDepNotes.value.trim()||null}).select().single();if(error){s.textContent=error.message;return}await getClient().from('studio_pct_eventi_v2').insert({deposito_id:data.id,event_type:'deposito_creato',status:'preparazione',created_by:state.user.id,details:{pratica_id:proc.pratica_id}});s.textContent='Deposito creato in preparazione.';e.target.reset();refreshAll()};
+    const event=async(id,type,status,details={})=>{await getClient().from('studio_pct_eventi_v2').insert({deposito_id:id,event_type:type,status,created_by:state.user.id,details})};
+    document.querySelectorAll('[data-pct-verify]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctVerify);if(!d)return;const docs=state.docs.filter(x=>x.pratica_id===d.pratica_id),att=state.pctAllegatiV2.filter(x=>x.deposito_id===d.id);if(!docs.length){alert('Nessun documento disponibile nel fascicolo.');return}if(!att.length){const first=docs[0],ins=await getClient().from('studio_pct_allegati_v2').insert({deposito_id:d.id,documento_id:first.id,file_name:first.file_name,storage_path:first.storage_path||null,ruolo:'atto_principale',obbligatorio:true,created_by:state.user.id});if(ins.error){alert(ins.error.message);return}}const {error}=await getClient().from('studio_pct_depositi_v2').update({stato:'verificato',validation_status:'ok',updated_at:new Date().toISOString()}).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'verifica_completata','ok',{allegati:Math.max(att.length,1)});refreshAll()}});
+    document.querySelectorAll('[data-pct-sign]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctSign);if(!d)return;const {error}=await getClient().from('studio_pct_depositi_v2').update({stato:'firmato',updated_at:new Date().toISOString()}).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'firma_confermata','ok');refreshAll()}});
+    document.querySelectorAll('[data-pct-envelope]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctEnvelope);if(!d)return;const {error}=await getClient().from('studio_pct_depositi_v2').update({stato:'busta_generata',envelope_status:'generata',updated_at:new Date().toISOString()}).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'busta_generata','ok');refreshAll()}});
+    document.querySelectorAll('[data-pct-ready]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctReady);if(!d)return;const {error}=await getClient().from('studio_pct_depositi_v2').update({stato:'pronto_invio',envelope_status:'validata',professional_confirmed_at:new Date().toISOString(),confirmed_by:state.user.id,updated_at:new Date().toISOString()}).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'conferma_professionista','ok',{punto:'INVIO'});refreshAll()}});
+    document.querySelectorAll('[data-pct-send]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctSend);if(!d)return;if(!confirm('Confermare INVIO? Questa operazione registra il punto INVIO interno; non effettua il deposito sul portale esterno.'))return;const {error}=await getClient().from('studio_pct_depositi_v2').update({stato:'inviato',submitted_at:new Date().toISOString(),external_channel:config.send_mode||'manual',updated_at:new Date().toISOString()}).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'invio','inviato',{channel:config.send_mode||'manual',portal_url:config.portal_url||null});refreshAll()}});
   }
-
   function renderTimer(){
     const open=state.time.find(x=>x.user_id===state.user.id&&!x.ended_at);
     panel('time-tracker','<div class="card"><h3>⏱️ Time Tracker & Ore Lavorate</h3><div style="font-size:12px;color:#64748b">Sessioni persistenti in studio_time_entries</div><div class="card" style="margin-top:14px;background:#f8fafc"><form id="timeForm" style="display:grid;grid-template-columns:2fr 2fr auto;gap:8px"><select id="timePractice">'+practiceOptions()+'</select><input id="timeDesc" placeholder="Attività"><button class="btn btn-success">'+(open?'Sessione già attiva':'Avvia sessione')+'</button></form><div id="timeStatus" style="font-size:12px;margin-top:8px"></div></div><table><thead><tr><th>Inizio</th><th>Fine</th><th>Durata</th><th>Pratica</th><th>Attività</th><th>Azioni</th></tr></thead><tbody data-module-body>'+(state.time.map(t=>'<tr><td>'+fmt(t.started_at)+'</td><td>'+fmt(t.ended_at)+'</td><td>'+esc(t.duration_seconds!=null?Math.floor(t.duration_seconds/60)+' min':'in corso')+'</td><td>'+esc(state.practices.find(p=>p.id===t.pratica_id)?.client_name||'—')+'</td><td>'+esc(t.description||'—')+'</td><td>'+(!t.ended_at&&t.user_id===state.user.id?'<button class="btn btn-danger" data-time-stop="'+t.id+'">Ferma</button>':'')+'</td></tr>').join('')||'<tr><td colspan="6">Nessuna sessione.</td></tr>')+'</tbody></table></div>');
