@@ -2014,6 +2014,42 @@ aside.collapsed .sidebar-brand-city{display:none !important;}
 }
 </style>
 
+<style id="pct-visibility-fix-20261008">
+/* PCT: pannello sempre visibile e scorrevole quando viene selezionato. */
+#panel-pct-deposit.active{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  height:auto !important;
+  min-height:0 !important;
+  overflow:visible !important;
+}
+#panel-pct-deposit.active > .card{
+  display:block !important;
+  visibility:visible !important;
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  height:auto !important;
+  max-height:none !important;
+  overflow:visible !important;
+}
+#panel-pct-deposit.active table{
+  width:100% !important;
+  max-width:100% !important;
+}
+@media(max-width:900px){
+  #panel-pct-deposit.active{
+    overflow:visible !important;
+  }
+  #panel-pct-deposit.active > .card{
+    overflow:visible !important;
+  }
+}
+</style>
 </head>
 <body class="studio-auth-pending">
 
