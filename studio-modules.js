@@ -220,7 +220,7 @@
 #pct-deposit button.btn,
 #pct-deposit input[type="button"].btn,
 #pct-deposit input[type="submit"].btn{
-  background:#ffffff!important;
+  background:#ffffff!important;background-color:#ffffff!important;background-image:none!important;
   color:#1e3a8a!important;
   border:1px solid #93c5fd!important;
   border-radius:12px!important;
@@ -230,22 +230,22 @@
 #pct-deposit .btn:hover:not(:disabled),
 #pct-deposit a.btn:hover,
 #pct-deposit button.btn:hover:not(:disabled){
-  background:#eff6ff!important;
+  background:#eff6ff!important;background-color:#eff6ff!important;background-image:none!important;
   color:#1e3a8a!important;
   border-color:#60a5fa!important;
 }
 #pct-deposit .btn.btn-success{
-  background:#ffffff!important;
+  background:#ffffff!important;background-color:#ffffff!important;background-image:none!important;
   color:#166534!important;
   border-color:#86efac!important;
 }
 #pct-deposit .btn.btn-success:hover:not(:disabled){
-  background:#f0fdf4!important;
+  background:#f0fdf4!important;background-color:#f0fdf4!important;background-image:none!important;
   color:#166534!important;
   border-color:#4ade80!important;
 }
 #pct-deposit .btn:disabled{
-  background:#f1f5f9!important;
+  background:#f1f5f9!important;background-color:#f1f5f9!important;background-image:none!important;
   color:#64748b!important;
   border-color:#cbd5e1!important;
   box-shadow:none!important;
