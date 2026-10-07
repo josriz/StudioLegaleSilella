@@ -388,8 +388,6 @@
       const {data:{session}}=await c.auth.getSession();if(!session){alert('Sessione non disponibile.');return}
       b.disabled=true;try{const r=await fetch(window.STUDIO_SUPABASE_URL+'/functions/v1/studio-pct-namirial',{method:'POST',headers:{apikey:window.STUDIO_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'content-type':'application/json'},body:JSON.stringify({operation:'status',deposito_id:d.id})});const out=await r.json().catch(()=>({}));if(!out.ok)throw new Error(out.error||'Sincronizzazione non riuscita');await refreshAll();}catch(e){alert('Sincronizzazione Namirial non riuscita: '+(e?.message||e))}finally{b.disabled=false}
     });
-  }
-
     if(window.__pctNamirialTimer) clearInterval(window.__pctNamirialTimer);
     window.__pctNamirialTimer=setInterval(async()=>{if(state.pctConfigV2?.enabled&&state.pctConfigV2?.send_mode==='api'&&String(state.pctConfigV2?.provider_name||'').toLowerCase().includes('namirial')){try{const {data:{session}}=await c.auth.getSession();if(!session)return;await fetch(window.STUDIO_SUPABASE_URL+'/functions/v1/studio-pct-namirial',{method:'POST',headers:{apikey:window.STUDIO_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'content-type':'application/json'},body:JSON.stringify({operation:'sync'})});await loadData();renderPct();}catch(e){console.warn('Sincronizzazione Namirial automatica:',e?.message||e)} }},60000);
   }
