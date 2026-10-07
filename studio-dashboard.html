@@ -35,10 +35,6 @@
         /* SIDEBAR - VETRO TRASPARENTISSIMO */
         aside { 
             width: 280px; 
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: -280px;
             background: var(--glass-sidebar); 
             backdrop-filter: blur(5px); 
             -webkit-backdrop-filter: blur(5px); 
@@ -46,13 +42,11 @@
             color: #fff; 
             display: flex; 
             flex-direction: column; 
-            transition: left 0.3s ease; 
-            z-index: 1000; 
+            transition: width 0.3s ease; 
+            z-index: 10; 
             box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.2);
         }
-        aside.sidebar-open { left: 0; }
-        aside.collapsed { width: 70px; left: -70px; }
-        aside.sidebar-open.collapsed { left: 0; }
+        aside.collapsed { width: 70px; }
         
         /* HEADER DELLA SIDEBAR (LOGO GRANDE) */
         .sidebar-header {
@@ -2573,27 +2567,17 @@ aside.collapsed .sidebar-brand-city{display:none !important;}
                 sidebar.classList.toggle('mobile-open');
                 return;
             }
-            sidebar.classList.toggle('sidebar-open');
+            sidebar.classList.toggle('collapsed');
         }
 
         document.addEventListener('click', function(e) {
-            const sidebar = document.getElementById('appSidebar');
-            const isMobile = window.matchMedia('(max-width: 900px)').matches;
-            const isOpen = isMobile ? sidebar.classList.contains('mobile-open') : sidebar.classList.contains('sidebar-open');
-            if (isOpen &&
-                !e.target.closest('#appSidebar') &&
-                !e.target.closest('.toggle-btn')) {
-                sidebar.classList.remove(isMobile ? 'mobile-open' : 'sidebar-open');
-            }
-        });
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key !== 'Escape') return;
-            const sidebar = document.getElementById('appSidebar');
             if (window.matchMedia('(max-width: 900px)').matches) {
-                sidebar.classList.remove('mobile-open');
-            } else {
-                sidebar.classList.remove('sidebar-open');
+                const sidebar = document.getElementById('appSidebar');
+                if (sidebar.classList.contains('mobile-open') &&
+                    !e.target.closest('#appSidebar') &&
+                    !e.target.closest('.toggle-btn')) {
+                    sidebar.classList.remove('mobile-open');
+                }
             }
         });
 
