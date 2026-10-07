@@ -2280,7 +2280,7 @@ aside.collapsed .sidebar-brand-city{display:none !important;}
                         <span>Attività Recenti dello Studio</span>
                         <span class="recent-activities-chevron" aria-hidden="true">▾</span>
                     </summary>
-                    <div id="recentActivitiesDropdown" class="recent-activities-body">
+                    <div id="recentActivitiesDropdown" class="recent-activities-body" style="display:none !important;">
                         <div style="overflow-x:auto">
                             <table>
                                 <thead><tr><th>Timestamp</th><th>Modulo</th><th>Descrizione Attività</th><th>Stato</th></tr></thead>
@@ -3060,7 +3060,17 @@ aside.collapsed .sidebar-brand-city{display:none !important;}
             // L'utente li apre manualmente cliccando sul relativo titolo.
             document.querySelectorAll('details').forEach(detail => { detail.open = false; });
             const recentActivities = document.querySelector('details.recent-activities-card');
-            if (recentActivities) recentActivities.removeAttribute('open');
+            if (recentActivities) {
+                recentActivities.removeAttribute('open');
+                const recentBody = document.getElementById('recentActivitiesDropdown');
+                if (recentBody) recentBody.style.setProperty('display','none','important');
+                const recentSummary = recentActivities.querySelector('summary');
+                recentSummary?.addEventListener('click', () => {
+                    setTimeout(() => {
+                        if (recentBody) recentBody.style.setProperty('display', recentActivities.open ? 'block' : 'none', 'important');
+                    }, 0);
+                });
+            }
             document.getElementById('studioHeaderHelp')?.addEventListener('click',()=>{
                 const active=document.querySelector('.panel.active');
                 openStudioHelp(active?.id?.replace(/^panel-/,'')||'manual');
