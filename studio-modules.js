@@ -196,7 +196,7 @@
       else if(d.stato==='verificato') action='<button class="btn btn-info" style="color:#fff;background:#2563eb;border-color:#2563eb;font-weight:700" data-pct-sign="'+d.id+'">Conferma firma</button>';
       else if(d.stato==='firmato') action='<button class="btn btn-info" style="color:#fff;background:#2563eb;border-color:#2563eb;font-weight:700" data-pct-envelope="'+d.id+'">Genera busta</button>';
       else if(d.stato==='busta_generata') action='<button class="btn btn-info" style="color:#fff;background:#2563eb;border-color:#2563eb;font-weight:700" data-pct-ready="'+d.id+'">Pronto per invio</button>';
-      else if(d.stato==='pronto_invio') action=pctMode==='namirial'?'<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-success" style="color:#fff;background:#15803d;border-color:#15803d;font-weight:700" data-pct-send="'+d.id+'">Registra trasmissione manuale</button><button class="btn" disabled style="color:#475569;background:#e2e8f0;border-color:#cbd5e1;font-weight:700" title="Namirial API non ancora attivata">Namirial API non attiva</button></div>':'<button class="btn btn-success" style="color:#fff;background:#15803d;border-color:#15803d;font-weight:700" data-pct-send="'+d.id+'">Registra trasmissione</button>';
+      else if(d.stato==='pronto_invio') action=pctMode==='namirial'?'<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-success" style="color:#166534;background:#fff;border-color:#86efac;font-weight:700" data-pct-namirial-send="'+d.id+'">Invia con Namirial</button><button class="btn btn-success" style="color:#166534;background:#fff;border-color:#86efac;font-weight:700" data-pct-send="'+d.id+'">Manuale</button></div>':'<button class="btn btn-success" style="color:#166534;background:#fff;border-color:#86efac;font-weight:700" data-pct-send="'+d.id+'">Registra trasmissione</button>';
       else if(d.stato==='inviato') action='<button class="btn btn-info" style="color:#fff;background:#2563eb;border-color:#2563eb;font-weight:700" data-pct-accept="'+d.id+'">Registra accettazione</button>';
       else if(d.stato==='ricevuta_accettazione') action='<button class="btn btn-info" style="color:#fff;background:#2563eb;border-color:#2563eb;font-weight:700" data-pct-delivery="'+d.id+'">Registra consegna</button>';
       else if(['ricevuta_consegna','controlli_ok','in_attesa_accettazione'].includes(d.stato)) action='<button class="btn btn-info" style="color:#fff;background:#2563eb;border-color:#2563eb;font-weight:700" data-pct-outcome="'+d.id+'">Registra esito</button>';
@@ -272,6 +272,30 @@
           <label style="font-size:12px"><input id="pctEnabled" type="checkbox" ${config.enabled?'checked':''}> Abilitato</label>
           <button class="btn btn-info" style="color:#fff;background:#2563eb;border-color:#2563eb;font-weight:700">Salva configurazione</button>
         </form>
+        <div style="margin-top:10px;padding:10px;border-radius:8px;background:#fff;border:1px solid #e2e8f0">
+          <strong>🔌 Parametri Namirial API</strong>
+          <div style="font-size:11px;color:#64748b;margin:4px 0 8px">Questi campi rendono il connettore configurabile senza modificare il gestionale. Inserisci i valori esatti forniti da Namirial.</div>
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px">
+            <input id="pctApiBaseUrl" placeholder="Base URL API Namirial" value="${esc(config.api_base_url||'')}">
+            <select id="pctApiAuthMode"><option value="bearer">Bearer token</option><option value="basic">Basic</option><option value="api_key">API key</option><option value="custom_header">Header personalizzato</option></select>
+            <input id="pctApiKeyHeader" placeholder="Header API key" value="${esc(config.api_key_header||'X-API-Key')}">
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px">
+            <input id="pctApiTestPath" placeholder="Percorso TEST" value="${esc(config.api_test_path||'')}">
+            <input id="pctApiCreatePath" placeholder="Percorso CREA deposito" value="${esc(config.api_create_path||'')}">
+            <input id="pctApiStatusPath" placeholder="Percorso STATO {external_id}" value="${esc(config.api_status_path||'')}">
+            <input id="pctApiSyncPath" placeholder="Percorso SINCRONIZZA" value="${esc(config.api_sync_path||'')}">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 3fr;gap:8px;margin-top:8px">
+            <select id="pctApiRequestMode"><option value="json">JSON</option><option value="multipart">Multipart</option></select>
+            <textarea id="pctApiMapping" rows="2" placeholder='Mapping risposta JSON (opzionale)'>${esc(JSON.stringify(config.api_response_mapping||{},null,2))}</textarea>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:9px">
+            <button type="button" class="btn btn-info" id="pctNamirialTest">Test API Namirial</button>
+            <button type="button" class="btn btn-info" id="pctNamirialSync">Sincronizza depositi Namirial</button>
+            <span id="pctNamirialStatus" style="font-size:12px;color:#475569;padding:8px"></span>
+          </div>
+        </div>
         <div style="margin-top:10px;padding:10px;border-radius:8px;background:#eef6ff;border:1px solid #bfdbfe"><strong>Modalità PCT</strong><div style="font-size:11px;color:#475569;margin-top:4px"><strong>Manuale:</strong> sempre disponibile; inserisci e gestisci gli allegati dal fascicolo e registra manualmente trasmissione, ricevute ed esiti. <strong>Namirial API:</strong> modulo predisposto e separato; si attiva solo quando saranno disponibili contratto, credenziali e specifiche tecniche API Namirial.</div></div>
         <div style="margin-top:10px;padding:10px;border-radius:8px;background:#fff;border:1px solid #e2e8f0">
           <strong>🔐 Credenziali professionista</strong>
@@ -299,7 +323,8 @@
 
     document.getElementById('pctConfigForm').onsubmit=async e=>{
       e.preventDefault();
-      const payload={id:true,provider_name:pctProvider.value.trim()||null,portal_url:pctPortalUrl.value.trim()||null,send_mode:pctSendMode.value,enabled:pctEnabled.checked,updated_by:state.user.id,updated_at:new Date().toISOString()};
+      let responseMapping={}; try{responseMapping=JSON.parse(pctApiMapping.value||'{}')}catch(e){alert('Il mapping JSON Namirial non è valido.');return}
+      const payload={id:true,provider_name:pctProvider.value.trim()||null,portal_url:pctPortalUrl.value.trim()||null,send_mode:pctSendMode.value,enabled:pctEnabled.checked,api_base_url:pctApiBaseUrl.value.trim()||null,api_auth_mode:pctApiAuthMode.value,api_key_header:pctApiKeyHeader.value.trim()||'X-API-Key',api_test_path:pctApiTestPath.value.trim()||'',api_create_path:pctApiCreatePath.value.trim()||'',api_status_path:pctApiStatusPath.value.trim()||'',api_sync_path:pctApiSyncPath.value.trim()||'',api_request_mode:pctApiRequestMode.value,api_response_mapping:responseMapping,updated_by:state.user.id,updated_at:new Date().toISOString()};
       const {error}=await c.from('studio_pct_config_v2').upsert(payload,{onConflict:'id'});
       if(error){alert(error.message);return}
       await c.from('studio_pct_provider_connections').upsert({config_id:true,enabled:pctEnabled.checked,connection_status:pctEnabled.checked?'configurata':'disabilitata',updated_by:state.user.id,updated_at:new Date().toISOString()},{onConflict:'config_id'});
@@ -317,6 +342,8 @@
       s.textContent='Credenziali configurate. Il segreto non viene restituito alla pagina.';
       await refreshAll();
     };
+    document.getElementById('pctNamirialTest').onclick=async()=>{const s=document.getElementById('pctNamirialStatus');s.textContent='Test connessione Namirial…';const {data:{session}}=await c.auth.getSession();if(!session){s.textContent='Sessione non disponibile.';return}try{const r=await fetch(window.STUDIO_SUPABASE_URL+'/functions/v1/studio-pct-namirial',{method:'POST',headers:{apikey:window.STUDIO_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'content-type':'application/json'},body:JSON.stringify({operation:'test'})});const out=await r.json().catch(()=>({}));s.textContent=out.ok?'✓ API Namirial raggiungibile. HTTP '+out.http_status:'✕ Test fallito: '+(out.error||('HTTP '+(out.http_status||'errore')));}catch(e){s.textContent='✕ Errore connessione: '+(e?.message||e)}};
+    document.getElementById('pctNamirialSync').onclick=async()=>{const s=document.getElementById('pctNamirialStatus');s.textContent='Sincronizzazione Namirial…';const {data:{session}}=await c.auth.getSession();if(!session){s.textContent='Sessione non disponibile.';return}try{const r=await fetch(window.STUDIO_SUPABASE_URL+'/functions/v1/studio-pct-namirial',{method:'POST',headers:{apikey:window.STUDIO_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'content-type':'application/json'},body:JSON.stringify({operation:'sync'})});const out=await r.json().catch(()=>({}));s.textContent=out.ok?'✓ Sincronizzazione completata.':'✕ Sincronizzazione: '+(out.error||'errore');await refreshAll();}catch(e){s.textContent='✕ Errore sincronizzazione: '+(e?.message||e)}};
     document.getElementById('pctConfigCheck').onclick=async()=>{
       const s=document.getElementById('pctCredentialStatus');
       const {data,error}=await c.rpc('studio_pct_provider_credentials_status');
@@ -354,10 +381,17 @@
     document.querySelectorAll('[data-pct-outcome]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctOutcome);if(!d)return;const raw=prompt('Esito cancelleria: ACCETTATO, RIFIUTATO oppure ERRORE','ACCETTATO');if(raw===null)return;const outcome=raw.trim().toLowerCase();if(!['accettato','rifiutato','errore'].includes(outcome)){alert('Esito non valido.');return}const note=prompt('Dettaglio esito (facoltativo):','')||null;const now=new Date().toISOString();const patch={stato:outcome,updated_at:now,closure_note:note};if(outcome==='rifiutato')patch.rejected_at=now;if(outcome==='errore')patch.error_message=note;const {error}=await c.from('studio_pct_depositi_v2').update(patch).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'esito_cancelleria',outcome,{note,external_id:d.external_id});refreshAll()}});
     document.querySelectorAll('[data-pct-close]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctClose);if(!d)return;const existing=state.pctClosures.find(x=>x.deposito_id===d.id&&!x.reopened_at);if(existing){alert('Deposito già chiuso.');return}const outcome=d.stato==='accettato'?'accettato':d.stato==='rifiutato'?'rifiutato':'errore';const summary=prompt('Nota di chiusura (facoltativa):','Chiusura del deposito nel gestionale.')||null;const now=new Date().toISOString();const {error:ce}=await c.from('studio_pct_chiusure').upsert({deposito_id:d.id,outcome,summary,closed_by:state.user.id,closed_at:now},{onConflict:'deposito_id'});if(ce){alert(ce.message);return}const {error:de}=await c.from('studio_pct_depositi_v2').update({stato:'chiuso',closure_outcome:outcome,closure_note:summary,closed_at:now,closed_by:state.user.id,updated_at:now}).eq('id',d.id);if(de){alert(de.message);return}await event(d.id,'deposito_chiuso','chiuso',{outcome,summary});refreshAll()});
     document.querySelectorAll('[data-pct-download]').forEach(b=>b.onclick=async()=>{const a=artifacts.find(x=>x.id===b.dataset.pctDownload);if(!a?.storage_path)return;b.disabled=true;try{const {data,error}=await c.storage.from('studio-legale-documenti').createSignedUrl(a.storage_path,300);if(error)throw error;await c.from('studio_pct_external_artifacts').update({status:'scaricato',downloaded_at:new Date().toISOString()}).eq('id',a.id);window.open(data.signedUrl,'_blank','noopener');}catch(e){alert('Download non riuscito: '+(e?.message||e))}finally{b.disabled=false}});
+    document.querySelectorAll('[data-pct-namirial-send]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctNamirialSend);if(!d)return;if(!confirm('Inviare questo deposito a Namirial tramite API?'))return;b.disabled=true;b.textContent='Invio…';try{const {data:{session}}=await c.auth.getSession();if(!session)throw new Error('Sessione non disponibile.');const r=await fetch(window.STUDIO_SUPABASE_URL+'/functions/v1/studio-pct-namirial',{method:'POST',headers:{apikey:window.STUDIO_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'content-type':'application/json'},body:JSON.stringify({operation:'send',deposito_id:d.id})});const out=await r.json().catch(()=>({}));if(!out.ok)throw new Error(out.error||'Invio Namirial non riuscito.');alert('Invio Namirial completato. ID esterno: '+(out.result?.external_id||'non restituito'));await refreshAll();}catch(e){alert('Invio Namirial non riuscito: '+(e?.message||e));b.disabled=false;b.textContent='Invia con Namirial';}});
     document.querySelectorAll('[data-pct-poll]').forEach(b=>b.onclick=async()=>{
       const d=deposits.find(x=>x.id===b.dataset.pctPoll);if(!d)return;
-      alert('Interrogazione pronta: per eseguire il recupero automatico occorre il connettore del servizio esterno scelto. Nessun esito viene inventato.');
+      if(pctMode!=='namirial'){alert('La modalità automatica Namirial non è attiva.');return}
+      const {data:{session}}=await c.auth.getSession();if(!session){alert('Sessione non disponibile.');return}
+      b.disabled=true;try{const r=await fetch(window.STUDIO_SUPABASE_URL+'/functions/v1/studio-pct-namirial',{method:'POST',headers:{apikey:window.STUDIO_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'content-type':'application/json'},body:JSON.stringify({operation:'status',deposito_id:d.id})});const out=await r.json().catch(()=>({}));if(!out.ok)throw new Error(out.error||'Sincronizzazione non riuscita');await refreshAll();}catch(e){alert('Sincronizzazione Namirial non riuscita: '+(e?.message||e))}finally{b.disabled=false}
     });
+  }
+
+    if(window.__pctNamirialTimer) clearInterval(window.__pctNamirialTimer);
+    window.__pctNamirialTimer=setInterval(async()=>{if(state.pctConfigV2?.enabled&&state.pctConfigV2?.send_mode==='api'&&String(state.pctConfigV2?.provider_name||'').toLowerCase().includes('namirial')){try{const {data:{session}}=await c.auth.getSession();if(!session)return;await fetch(window.STUDIO_SUPABASE_URL+'/functions/v1/studio-pct-namirial',{method:'POST',headers:{apikey:window.STUDIO_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'content-type':'application/json'},body:JSON.stringify({operation:'sync'})});await loadData();renderPct();}catch(e){console.warn('Sincronizzazione Namirial automatica:',e?.message||e)} }},60000);
   }
 
   function renderTimer(){
