@@ -18,6 +18,7 @@
       c.from('studio_utenti').select('user_id,role,full_name,created_at').in('role',['studio','admin']).order('created_at',{ascending:true}),
       c.from('studio_agenda').select('*').order('starts_at',{ascending:true}),
       c.from('studio_pct_depositi').select('*').order('created_at',{ascending:false}),
+      c.from('studio_pct_procedimenti').select('*').order('created_at',{ascending:false}),
       c.from('studio_time_entries').select('*').order('started_at',{ascending:false}).limit(200),
       c.from('studio_clienti').select('*').order('created_at',{ascending:false}),
       c.from('studio_fatture').select('*').order('issue_date',{ascending:false}),
@@ -27,7 +28,7 @@
       c.from('studio_notifiche').select('*').eq('recipient_user_id',user.id).order('created_at',{ascending:false}).limit(100)
     ];
     const rs=await Promise.all(qs); for(const x of rs) if(x.error) throw x.error;
-    [state.practices,state.docs,state.audit,state.communications,state.team,state.agenda,state.pct,state.time,state.clients,state.bills,state.portalInvites,state.teamInvites,state.portalDocs,state.notifications]=rs.map(x=>x.data||[]);
+    [state.practices,state.docs,state.audit,state.communications,state.team,state.agenda,state.pct,state.pctProcedimenti,state.time,state.clients,state.bills,state.portalInvites,state.teamInvites,state.portalDocs,state.notifications]=rs.map(x=>x.data||[]);
     state.user=user; state.profile=profile;
   }
   const panel=(id,html)=>{const p=document.getElementById('panel-'+id); if(p)p.innerHTML=html;};
@@ -168,9 +169,61 @@
   }
 
   function renderPct(){
-    panel('pct-deposit','<div class="card"><h3>🏛️ Deposito Telematico PCT</h3><div style="font-size:12px;color:#64748b">Gestione della pratica di deposito persistente. Nessun invio ministeriale viene simulato.</div><div class="card" style="margin-top:14px;background:#f8fafc"><form id="pctForm" style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;align-items:end"><select id="pctPractice" required>'+practiceOptions()+'</select><input id="pctType" placeholder="Tipo atto" required><input id="pctRecipient" placeholder="Ufficio / destinatario"><button class="btn btn-success">Crea deposito</button></form><div id="pctStatus" style="font-size:12px;margin-top:8px"></div></div><table><thead><tr><th>Data</th><th>Pratica</th><th>Tipo</th><th>Ufficio</th><th>Stato</th><th>Azioni</th></tr></thead><tbody data-module-body>'+(state.pct.map(p=>'<tr><td>'+fmt(p.created_at)+'</td><td>'+esc(state.practices.find(x=>x.id===p.pratica_id)?.client_name||p.pratica_id)+'</td><td>'+esc(p.type)+'</td><td>'+esc(p.recipient||'—')+'</td><td>'+esc(p.status)+'</td><td><select data-pct-status="'+p.id+'"><option>preparazione</option><option>pronto</option><option>inviato</option><option>ricevuto</option><option>rifiutato</option><option>annullato</option></select></td></tr>').join('')||'<tr><td colspan="6">Nessun deposito.</td></tr>')+'</tbody></table></div>');
-    document.getElementById('pctForm').onsubmit=async e=>{e.preventDefault();const {error}=await getClient().from('studio_pct_depositi').insert({pratica_id:pctPractice.value,created_by:state.user.id,type:pctType.value.trim(),recipient:pctRecipient.value.trim()||null,status:'preparazione'});document.getElementById('pctStatus').textContent=error?error.message:'Deposito creato in stato preparazione.';if(!error){e.target.reset();refreshAll()}};
-    document.querySelectorAll('[data-pct-status]').forEach(s=>{const row=state.pct.find(x=>x.id===s.dataset.pctStatus);s.value=row?.status||'preparazione';s.onchange=async()=>{const {error}=await getClient().from('studio_pct_depositi').update({status:s.value,submitted_at:s.value==='inviato'?new Date().toISOString():row.submitted_at}).eq('id',s.dataset.pctStatus);if(error)alert(error.message);else refreshAll()}});
+    const linked=state.pctProcedimenti;
+    panel('pct-deposit',`<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <div><h3>🏛️ PCT · Anagrafica Procedimento Telematico</h3><div style="font-size:12px;color:#64748b">Funzione 1 · dati strutturati del procedimento collegati al fascicolo. Il collegamento al portale esterno sarà configurato successivamente.</div></div>
+        <button class="btn btn-info" id="pctRefresh">Aggiorna</button>
+      </div>
+      <div class="card" style="margin-top:14px;background:#f8fafc">
+        <h4 style="margin:0 0 10px">➕ Nuovo procedimento telematico</h4>
+        <form id="pctProcedureForm">
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px">
+            <select id="pctProcPractice" required><option value="">— Fascicolo —</option>${state.practices.map(p=>'<option value="'+p.id+'">'+esc(p.client_name)+' · '+esc(p.legal_area||'')+'</option>').join('')}</select>
+            <input id="pctProcCourt" placeholder="Ufficio giudiziario / Tribunale" required>
+            <input id="pctProcCode" placeholder="Codice ufficio">
+            <input id="pctProcRegistry" placeholder="Registro (es. Contenzioso civile)" required>
+            <input id="pctProcRG" placeholder="Numero R.G." required>
+            <input id="pctProcYear" type="number" min="1900" max="2200" placeholder="Anno R.G." required>
+            <input id="pctProcType" placeholder="Tipo procedimento" required>
+            <input id="pctProcSection" placeholder="Sezione">
+            <input id="pctProcJudge" placeholder="Giudice">
+            <input id="pctProcParty" placeholder="Parte assistita" required>
+            <input id="pctProcPartyCode" placeholder="CF / P.IVA parte assistita">
+            <input id="pctProcOpposing" placeholder="Controparte" required>
+          </div>
+          <textarea id="pctProcNotes" placeholder="Note del procedimento / dati utili" style="width:100%;margin-top:8px;min-height:72px"></textarea>
+          <div id="pctProcedureStatus" style="font-size:12px;margin-top:8px"></div>
+          <div style="display:flex;justify-content:flex-end;margin-top:8px"><button class="btn btn-success" type="submit">Salva procedimento</button></div>
+        </form>
+      </div>
+      <table><thead><tr><th>Fascicolo</th><th>Ufficio</th><th>Registro</th><th>R.G.</th><th>Procedimento</th><th>Parte assistita</th><th>Controparte</th><th>Stato</th><th>Azioni</th></tr></thead>
+      <tbody data-module-body>${linked.map(p=>'<tr><td>'+esc(state.practices.find(x=>x.id===p.pratica_id)?.client_name||p.pratica_id)+'</td><td>'+esc(p.ufficio_giudiziario)+'</td><td>'+esc(p.registro)+'</td><td>'+esc(p.rg_numero)+'/'+esc(p.rg_anno)+'</td><td>'+esc(p.tipo_procedimento)+'</td><td>'+esc(p.parte_assistita)+'</td><td>'+esc(p.controparte)+'</td><td>'+esc(p.stato)+'</td><td><button class="btn btn-info" data-pct-proc-edit="'+p.id+'">Modifica</button></td></tr>').join('')||'<tr><td colspan="9">Nessun procedimento telematico registrato.</td></tr>'}</tbody></table>
+      <div class="card" style="margin-top:18px;background:#fffbeb;border-left:4px solid #d97706"><strong>Stato funzione:</strong> anagrafica procedimento completa e persistente. <strong>Non viene effettuato alcun invio esterno.</strong></div>
+    </div>`);
+    document.getElementById('pctRefresh').onclick=refreshAll;
+    document.getElementById('pctProcedureForm').onsubmit=async e=>{
+      e.preventDefault();
+      const s=document.getElementById('pctProcedureStatus');
+      const year=Number(pctProcYear.value);
+      if(!Number.isInteger(year)||year<1900||year>2200){s.textContent='Anno R.G. non valido.';return;}
+      s.textContent='Salvataggio…';
+      const payload={pratica_id:pctProcPractice.value,created_by:state.user.id,ufficio_giudiziario:pctProcCourt.value.trim(),codice_ufficio:pctProcCode.value.trim()||null,registro:pctProcRegistry.value.trim(),rg_numero:pctProcRG.value.trim(),rg_anno:year,tipo_procedimento:pctProcType.value.trim(),sezione:pctProcSection.value.trim()||null,giudice:pctProcJudge.value.trim()||null,parte_assistita:pctProcParty.value.trim(),parte_assistita_codice:pctProcPartyCode.value.trim()||null,controparte:pctProcOpposing.value.trim(),note:pctProcNotes.value.trim()||null};
+      const {error}=await getClient().from('studio_pct_procedimenti').insert(payload);
+      s.textContent=error?(error.code==='23505'?'Esiste già un procedimento con Ufficio, Registro e R.G. indicati.':error.message):'Procedimento telematico salvato correttamente.';
+      if(!error){e.target.reset();refreshAll();}
+    };
+    document.querySelectorAll('[data-pct-proc-edit]').forEach(b=>b.onclick=async()=>{
+      const p=state.pctProcedimenti.find(x=>x.id===b.dataset.pctProcEdit); if(!p)return;
+      const nextCourt=prompt('Ufficio giudiziario / Tribunale',p.ufficio_giudiziario); if(nextCourt===null)return;
+      const nextReg=prompt('Registro',p.registro); if(nextReg===null)return;
+      const nextType=prompt('Tipo procedimento',p.tipo_procedimento); if(nextType===null)return;
+      const nextSection=prompt('Sezione',p.sezione||''); if(nextSection===null)return;
+      const nextJudge=prompt('Giudice',p.giudice||''); if(nextJudge===null)return;
+      const nextOpp=prompt('Controparte',p.controparte); if(nextOpp===null)return;
+      const {error}=await getClient().from('studio_pct_procedimenti').update({ufficio_giudiziario:nextCourt.trim(),registro:nextReg.trim(),tipo_procedimento:nextType.trim(),sezione:nextSection.trim()||null,giudice:nextJudge.trim()||null,controparte:nextOpp.trim()}).eq('id',p.id);
+      if(error)alert(error.message);else refreshAll();
+    });
   }
 
   function renderTimer(){
