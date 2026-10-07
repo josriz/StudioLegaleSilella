@@ -1,4 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1092 282" preserveAspectRatio="none">
-  <defs><clipPath id="logoCrop"><rect x="0" y="0" width="1092" height="282" rx="30" ry="30"/></clipPath></defs>
-  <image href="sfondo_cli_login.jpg" x="-142" y="-244" width="1536" height="1024" clip-path="url(#logoCrop)"/>
+  <defs>
+    <clipPath id="logoCrop"><rect x="0" y="0" width="1092" height="282" rx="30" ry="30"/></clipPath>
+    <linearGradient id="glassCover" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a9bdc4" stop-opacity=".92"/>
+      <stop offset=".48" stop-color="#78929a" stop-opacity=".82"/>
+      <stop offset="1" stop-color="#5f7880" stop-opacity=".88"/>
+    </linearGradient>
+    <linearGradient id="silver" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".45" stop-color="#dce5e8"/>
+      <stop offset="1" stop-color="#7c8a90"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#17232a" flood-opacity=".45"/>
+    </filter>
+  </defs>
+  <g clip-path="url(#logoCrop)">
+    <image href="sfondo_cli_login.jpg" x="-142" y="-244" width="1536" height="1024"/>
+    <rect x="30" y="48" width="225" height="184" rx="24" fill="url(#glassCover)" opacity=".96"/>
+    <rect x="250" y="150" width="805" height="62" rx="12" fill="url(#glassCover)" opacity=".90"/>
+    <g transform="translate(68 83) scale(.48)" filter="url(#shadow)" fill="none" stroke="url(#silver)" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M96 24 Q170 8 244 24" stroke-width="9"/>
+      <path d="M170 22 L170 170" stroke-width="11"/>
+      <path d="M150 170 H190 L202 184 H138 Z" fill="url(#silver)" stroke-width="5"/>
+      <path d="M82 27 L48 82 M82 27 L116 82 M258 27 L224 82 M258 27 L292 82" stroke-width="4"/>
+      <path d="M42 82 Q82 100 122 82 Q118 111 82 114 Q46 111 42 82Z" fill="url(#silver)" stroke-width="4"/>
+      <path d="M218 82 Q258 100 298 82 Q294 111 258 114 Q222 111 218 82Z" fill="url(#silver)" stroke-width="4"/>
+      <circle cx="170" cy="18" r="9" fill="url(#silver)" stroke-width="4"/>
+      <path d="M150 184 H190 M144 194 H196" stroke-width="7"/>
+    </g>
+    <text x="275" y="178" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="19" font-weight="600" letter-spacing=".2">Viale Antonio Salandra, 10/C · 70124 Bari BA</text>
+    <text x="275" y="201" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="18" font-weight="600" letter-spacing=".15">080 914 6254 · studiosilella@gmail.com</text>
+  </g>
 </svg>
