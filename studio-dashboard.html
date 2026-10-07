@@ -3059,6 +3059,8 @@ aside.collapsed .sidebar-brand-city{display:none !important;}
             // Tutti i menu a scomparsa del contenuto centrale partono chiusi.
             // L'utente li apre manualmente cliccando sul relativo titolo.
             document.querySelectorAll('details').forEach(detail => { detail.open = false; });
+            const recentActivities = document.querySelector('details.recent-activities-card');
+            if (recentActivities) recentActivities.removeAttribute('open');
             document.getElementById('studioHeaderHelp')?.addEventListener('click',()=>{
                 const active=document.querySelector('.panel.active');
                 openStudioHelp(active?.id?.replace(/^panel-/,'')||'manual');
