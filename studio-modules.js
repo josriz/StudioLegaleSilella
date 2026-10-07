@@ -3,7 +3,7 @@
   const esc = v => String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const fmt = v => v ? new Date(v).toLocaleString('it-IT') : '—';
   const day = v => v ? new Date(v).toLocaleDateString('it-IT') : '—';
-  const state = {user:null,profile:null,practices:[],docs:[],audit:[],communications:[],team:[],agenda:[],pct:[],pctProcedimenti:[],pctDepositiV2:[],pctAllegatiV2:[],pctEventiV2:[],pctConfigV2:null,pctProviderConnection:null,pctExternalArtifacts:[],time:[],clients:[],bills:[],portalInvites:[],teamInvites:[],portalDocs:[],notifications:[]};
+  const state = {user:null,profile:null,practices:[],docs:[],audit:[],communications:[],team:[],agenda:[],pct:[],pctProcedimenti:[],pctDepositiV2:[],pctAllegatiV2:[],pctEventiV2:[],pctConfigV2:null,pctProviderConnection:null,pctExternalArtifacts:[],pctClosures:[],time:[],clients:[],bills:[],portalInvites:[],teamInvites:[],portalDocs:[],notifications:[]};
 
   async function loadData(){
     const c=getClient(); if(!c) throw new Error('Supabase non disponibile.');
@@ -25,6 +25,7 @@
       c.from('studio_pct_config_v2').select('*').maybeSingle(),
       c.from('studio_pct_provider_connections').select('*').maybeSingle(),
       c.from('studio_pct_external_artifacts').select('*').order('created_at',{ascending:false}),
+      c.from('studio_pct_chiusure').select('*').order('closed_at',{ascending:false}),
       c.from('studio_time_entries').select('*').order('started_at',{ascending:false}).limit(200),
       c.from('studio_clienti').select('*').order('created_at',{ascending:false}),
       c.from('studio_fatture').select('*').order('issue_date',{ascending:false}),
@@ -34,7 +35,7 @@
       c.from('studio_notifiche').select('*').eq('recipient_user_id',user.id).order('created_at',{ascending:false}).limit(100)
     ];
     const rs=await Promise.all(qs); for(const x of rs) if(x.error) throw x.error;
-    [state.practices,state.docs,state.audit,state.communications,state.team,state.agenda,state.pct,state.pctProcedimenti,state.pctDepositiV2,state.pctAllegatiV2,state.pctEventiV2,state.pctConfigV2,state.pctProviderConnection,state.pctExternalArtifacts,state.time,state.clients,state.bills,state.portalInvites,state.teamInvites,state.portalDocs,state.notifications]=rs.map(x=>x.data||null).map((x,i)=>[11,12].includes(i)?(x||null):(x||[]));
+    [state.practices,state.docs,state.audit,state.communications,state.team,state.agenda,state.pct,state.pctProcedimenti,state.pctDepositiV2,state.pctAllegatiV2,state.pctEventiV2,state.pctConfigV2,state.pctProviderConnection,state.pctExternalArtifacts,state.pctClosures,state.time,state.clients,state.bills,state.portalInvites,state.teamInvites,state.portalDocs,state.notifications]=rs.map(x=>x.data||null).map((x,i)=>[11,12].includes(i)?(x||null):(x||[]));
     state.user=user; state.profile=profile;
   }
   const panel=(id,html)=>{const p=document.getElementById('panel-'+id); if(p)p.innerHTML=html;};
@@ -181,7 +182,7 @@
     const config=state.pctConfigV2||{};
     const conn=state.pctProviderConnection||{};
     const artifacts=state.pctExternalArtifacts||[];
-    const statusLabel={preparazione:'Preparazione',verificato:'Verificato',firmato:'Firmato',busta_generata:'Busta generata',pronto_invio:'Pronto per INVIO',inviato:'INVIO registrato',ricevuta_accettazione:'Accettazione ricevuta',ricevuta_consegna:'Consegna ricevuta',controlli_ok:'Controlli OK',in_attesa_accettazione:'In attesa accettazione',accettato:'Accettato',rifiutato:'Rifiutato',errore:'Errore',annullato:'Annullato'};
+    const statusLabel={preparazione:'Preparazione',verificato:'Verificato',firmato:'Firmato',busta_generata:'Busta generata',pronto_invio:'Pronto per INVIO',inviato:'INVIO registrato',ricevuta_accettazione:'Accettazione ricevuta',ricevuta_consegna:'Consegna ricevuta',controlli_ok:'Controlli OK',in_attesa_accettazione:'In attesa accettazione',accettato:'Accettato',rifiutato:'Rifiutato',errore:'Errore',annullato:'Annullato',chiuso:'Chiuso'};
     const connectionLabel={non_configurata:'Non configurata',configurata:'Configurata',verificata:'Verificata',errore:'Errore',disabilitata:'Disabilitata'};
     const procOptions='<option value="">— seleziona procedimento —</option>'+procedures.map(p=>'<option value="'+p.id+'">'+esc(p.ufficio_giudiziario)+' · '+esc(p.registro)+' · RG '+esc(p.rg_numero)+'/'+esc(p.rg_anno)+'</option>').join('');
     const rows=deposits.map(d=>{
@@ -192,8 +193,12 @@
       else if(d.stato==='verificato') action='<button class="btn btn-info" data-pct-sign="'+d.id+'">Conferma firma</button>';
       else if(d.stato==='firmato') action='<button class="btn btn-info" data-pct-envelope="'+d.id+'">Genera busta</button>';
       else if(d.stato==='busta_generata') action='<button class="btn btn-info" data-pct-ready="'+d.id+'">Valida per INVIO</button>';
-      else if(d.stato==='pronto_invio') action='<button class="btn btn-success" data-pct-send="'+d.id+'">INVIO</button>';
-      else if(['inviato','ricevuta_accettazione','ricevuta_consegna','controlli_ok','in_attesa_accettazione'].includes(d.stato)) action='<button class="btn btn-info" data-pct-poll="'+d.id+'">Interroga servizio</button>';
+      else if(d.stato==='pronto_invio') action='<button class="btn btn-success" data-pct-send="'+d.id+'">Registra trasmissione</button>';
+      else if(d.stato==='inviato') action='<button class="btn btn-info" data-pct-accept="'+d.id+'">Registra accettazione</button>';
+      else if(d.stato==='ricevuta_accettazione') action='<button class="btn btn-info" data-pct-delivery="'+d.id+'">Registra consegna</button>';
+      else if(d.stato==='ricevuta_consegna') action='<button class="btn btn-info" data-pct-outcome="'+d.id+'">Registra esito</button>';
+      else if(['controlli_ok','in_attesa_accettazione'].includes(d.stato)) action='<button class="btn btn-info" data-pct-outcome="'+d.id+'">Registra esito</button>';
+      else if(['accettato','rifiutato','errore'].includes(d.stato)) action='<button class="btn btn-success" data-pct-close="'+d.id+'">Chiudi deposito</button>';
       return '<tr><td>'+esc(state.practices.find(x=>x.id===d.pratica_id)?.client_name||'—')+'</td><td>'+esc(p?.ufficio_giudiziario||'—')+'</td><td>'+esc(d.tipo_atto)+'</td><td>'+esc(statusLabel[d.stato]||d.stato)+'</td><td>'+esc(d.validation_status)+'</td><td>'+esc(d.envelope_status)+'</td><td>'+esc(d.external_id||'—')+'</td><td>'+aa.length+'</td><td>'+fmt(d.submitted_at)+'</td><td>'+action+'</td></tr>';
     }).join('')||'<tr><td colspan="10">Nessun deposito PCT.</td></tr>';
     const credStatus=document.getElementById('pctCredentialStatus');
@@ -290,9 +295,15 @@
       const d=deposits.find(x=>x.id===b.dataset.pctSend);if(!d)return;
       if(!config.enabled){alert('Configura e abilita prima il servizio esterno.');return}
       if(!confirm('Confermare INVIO? In modalità manuale il gestionale registra il deposito come pronto per trasmissione esterna; non simula un invio al portale.'))return;
-      const {error}=await c.from('studio_pct_depositi_v2').update({stato:'pronto_invio',submitted_at:null,external_channel:config.send_mode||'manual',updated_at:new Date().toISOString(),notes:'INVIO interno completato. Trasmissione esterna non eseguita: connettore ministeriale/provider non ancora attivo.'}).eq('id',d.id);
-      if(error)alert(error.message);else{await event(d.id,'invio_pronto','pronto_invio',{channel:config.send_mode||'manual',portal_url:config.portal_url||null,modalita:config.send_mode||'manual',external_transmission:false});alert('INVIO interno completato. Il deposito è pronto per la trasmissione sul canale esterno configurato. Nessun invio ministeriale è stato simulato.');refreshAll()}
+      const externalId=prompt('Inserisci l’ID/riferimento della trasmissione esterna (facoltativo):','');
+      if(externalId===null)return;
+      const {error}=await c.from('studio_pct_depositi_v2').update({stato:'inviato',submitted_at:new Date().toISOString(),external_channel:config.send_mode||'manual',external_id:externalId.trim()||null,updated_at:new Date().toISOString(),notes:'Trasmissione esterna registrata dal professionista. Il gestionale non ha simulato alcun invio ministeriale.'}).eq('id',d.id);
+      if(error)alert(error.message);else{await event(d.id,'trasmissione_registrata','inviato',{channel:config.send_mode||'manual',portal_url:config.portal_url||null,external_id:externalId.trim()||null});alert('Trasmissione registrata. Il deposito resta ora in attesa delle ricevute e degli esiti.');refreshAll()}
     });
+    document.querySelectorAll('[data-pct-accept]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctAccept);if(!d)return;const ext=prompt('Riferimento ricevuta di accettazione (facoltativo):',d.external_id||'');if(ext===null)return;const now=new Date().toISOString();const {error}=await c.from('studio_pct_depositi_v2').update({stato:'ricevuta_accettazione',accepted_at:now,external_id:ext.trim()||d.external_id,updated_at:now}).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'ricevuta_accettazione','ok',{external_id:ext.trim()||null});refreshAll()}});
+    document.querySelectorAll('[data-pct-delivery]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctDelivery);if(!d)return;const now=new Date().toISOString();const {error}=await c.from('studio_pct_depositi_v2').update({stato:'ricevuta_consegna',updated_at:now}).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'ricevuta_consegna','ok');refreshAll()}});
+    document.querySelectorAll('[data-pct-outcome]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctOutcome);if(!d)return;const raw=prompt('Esito cancelleria: ACCETTATO, RIFIUTATO oppure ERRORE','ACCETTATO');if(raw===null)return;const outcome=raw.trim().toLowerCase();if(!['accettato','rifiutato','errore'].includes(outcome)){alert('Esito non valido.');return}const note=prompt('Dettaglio esito (facoltativo):','')||null;const now=new Date().toISOString();const patch={stato:outcome,updated_at:now,closure_note:note};if(outcome==='rifiutato')patch.rejected_at=now;if(outcome==='errore')patch.error_message=note;const {error}=await c.from('studio_pct_depositi_v2').update(patch).eq('id',d.id);if(error)alert(error.message);else{await event(d.id,'esito_cancelleria',outcome,{note,external_id:d.external_id});refreshAll()}});
+    document.querySelectorAll('[data-pct-close]').forEach(b=>b.onclick=async()=>{const d=deposits.find(x=>x.id===b.dataset.pctClose);if(!d)return;const existing=state.pctClosures.find(x=>x.deposito_id===d.id&&!x.reopened_at);if(existing){alert('Deposito già chiuso.');return}const outcome=d.stato==='accettato'?'accettato':d.stato==='rifiutato'?'rifiutato':'errore';const summary=prompt('Nota di chiusura (facoltativa):','Chiusura del deposito nel gestionale.')||null;const now=new Date().toISOString();const {error:ce}=await c.from('studio_pct_chiusure').upsert({deposito_id:d.id,outcome,summary,closed_by:state.user.id,closed_at:now},{onConflict:'deposito_id'});if(ce){alert(ce.message);return}const {error:de}=await c.from('studio_pct_depositi_v2').update({stato:'chiuso',closure_outcome:outcome,closure_note:summary,closed_at:now,closed_by:state.user.id,updated_at:now}).eq('id',d.id);if(de){alert(de.message);return}await event(d.id,'deposito_chiuso','chiuso',{outcome,summary});refreshAll()});
     document.querySelectorAll('[data-pct-download]').forEach(b=>b.onclick=async()=>{const a=artifacts.find(x=>x.id===b.dataset.pctDownload);if(!a?.storage_path)return;b.disabled=true;try{const {data,error}=await c.storage.from('studio-legale-documenti').createSignedUrl(a.storage_path,300);if(error)throw error;await c.from('studio_pct_external_artifacts').update({status:'scaricato',downloaded_at:new Date().toISOString()}).eq('id',a.id);window.open(data.signedUrl,'_blank','noopener');}catch(e){alert('Download non riuscito: '+(e?.message||e))}finally{b.disabled=false}});
     document.querySelectorAll('[data-pct-poll]').forEach(b=>b.onclick=async()=>{
       const d=deposits.find(x=>x.id===b.dataset.pctPoll);if(!d)return;
