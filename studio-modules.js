@@ -202,7 +202,15 @@
       else if(['ricevuta_consegna','controlli_ok','in_attesa_accettazione'].includes(d.stato)) action='<button class="btn btn-info" style="color:#fff;background:#2563eb;border-color:#2563eb;font-weight:700" data-pct-outcome="'+d.id+'">Registra esito</button>';
       else if(['accettato','rifiutato','errore'].includes(d.stato)) action='<button class="btn btn-success" style="color:#fff;background:#15803d;border-color:#15803d;font-weight:700" data-pct-close="'+d.id+'">Chiudi deposito</button>';
       else if(d.stato==='chiuso') action='<div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap"><span style="font-size:12px;color:#166534;font-weight:700;padding:8px">✓ Chiuso</span><button class="btn btn-info" data-pct-reopen="'+d.id+'">Riapri</button></div>';
-      const docNames=aa.map(a=>'<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 6px;background:#f1f5f9;border-radius:6px;font-size:10px;margin:2px">'+esc(a.file_name)+' <span style="font-weight:700;color:'+(a.signed||a.signature_status==='firmato'?'#166534':'#92400e')+'">'+(a.signed||a.signature_status==='firmato'?'✓ firmato':'non firmato')+'</span> <button type="button" data-pct-mark-signed="'+a.id+'" title="Conferma/rimuovi firma del documento" style="border:0;background:transparent;color:#1d4ed8;cursor:pointer">'+(a.signed||a.signature_status==='firmato'?'↶':'✓')+'</button> <button type="button" data-pct-detach="'+a.id+'" title="Rimuovi dal deposito" style="border:0;background:transparent;color:#b91c1c;cursor:pointer">×</button></span>').join('');
+      const docNames=aa.map(a=>'<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:5px 7px;background:#f1f5f9;border-radius:7px;font-size:10px;margin:3px 0">'+
+'<span style="font-weight:700">'+esc(a.file_name)+'</span>'+
+'<span style="font-weight:800;color:'+(a.signed||a.signature_status==='firmato'?'#166534':'#92400e')+'">'+(a.signed||a.signature_status==='firmato'?'✓ firmato':'○ da firmare')+'</span>'+
+'<select data-pct-sign-mode="'+a.id+'" style="font-size:10px;padding:3px;border:1px solid #cbd5e1;border-radius:5px"><option value="carta_usb" '+((a.signature_mode||'carta_usb')==='carta_usb'?'selected':'')+'>Carta / USB firma</option><option value="file" '+(a.signature_mode==='file'?'selected':'')+'>File firmato</option><option value="servizio_esterno" '+(a.signature_mode==='servizio_esterno'?'selected':'')+'>Servizio esterno</option></select>'+
+(a.signed||a.signature_status==='firmato'?'<span style="font-size:10px;color:#166534">dispositivo usato: '+esc(a.signature_device||'registrato')+'</span>':'<button type="button" data-pct-sign-device="'+a.id+'" style="font-size:10px;padding:4px 7px;border:1px solid #2563eb;border-radius:6px;background:#fff;color:#1d4ed8;cursor:pointer;font-weight:700">🔐 Leggi carta / USB</button>')+
+'<button type="button" data-pct-mark-signed="'+a.id+'" title="Conferma firma effettivamente completata" style="border:0;background:transparent;color:#1d4ed8;cursor:pointer">'+(a.signed||a.signature_status==='firmato'?'↶':'✓')+'</button>'+
+'<button type="button" data-pct-detach="'+a.id+'" title="Rimuovi dal deposito" style="border:0;background:transparent;color:#b91c1c;cursor:pointer">×</button>'+
+(a.signature_error?'<div style="width:100%;font-size:10px;color:#b91c1c">Errore firma: '+esc(a.signature_error)+'</div>':'')+
+'</div>').join('');
       const docOptions=state.docs.filter(x=>x.pratica_id===d.pratica_id&&!aa.some(a=>a.documento_id===x.id)).map(x=>'<option value="'+x.id+'">'+esc(x.file_name)+'</option>').join('');
       const flowMini=pctFlow.map((s,idx)=>'<span title="'+s[2]+'" style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;min-width:28px;border-radius:999px;font-size:10px;font-weight:800;background:'+(idx<current?'#dbeafe':idx===current?'#2563eb':'#f1f5f9')+' !important;color:'+(idx===current?'#fff':idx<current?'#1e3a8a':'#475569')+' !important;border:1px solid '+(idx<=current?'#93c5fd':'#cbd5e1')+' !important;box-shadow:0 1px 3px rgba(15,23,42,.08)">'+s[1]+'</span>').join('<span style="color:#94a3b8;padding:0 2px">›</span>');
       return '<tr><td style="padding:8px 6px"><div style="border:1px solid #dbe3ec;border-radius:10px;padding:12px;background:#fff">'+
@@ -419,6 +427,30 @@
     };
     const event=async(id,type,status,details={})=>{const {error}=await c.from('studio_pct_eventi_v2').insert({deposito_id:id,event_type:type,status,created_by:state.user.id,details});if(error)throw error};
     const pctUpdatePractice=async(praticaId,depositoId,pctStatus,outcome=null)=>{const {error}=await c.from('studio_pratiche').update({pct_status:pctStatus,pct_last_deposito_id:depositoId,pct_last_outcome:outcome,pct_last_event_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',praticaId);if(error)throw error};
+    document.querySelectorAll('[data-pct-sign-mode]').forEach(s=>s.onchange=async()=>{const {error}=await c.from('studio_pct_allegati_v2').update({signature_mode:s.value,signature_error:null}).eq('id',s.dataset.pctSignMode);if(error)alert(error.message);else refreshAll()});
+    document.querySelectorAll('[data-pct-sign-device]').forEach(b=>b.onclick=async()=>{
+      const a=state.pctAllegatiV2.find(x=>x.id===b.dataset.pctSignDevice); if(!a)return;
+      if((a.signature_mode||'carta_usb')!=='carta_usb'){alert('Seleziona prima “Carta / USB firma”.');return}
+      b.disabled=true;b.textContent='Lettura dispositivo…';
+      try{
+        let dev=null,kind='';
+        if(navigator.usb?.requestDevice){
+          try{dev=await navigator.usb.requestDevice({filters:[]});kind='USB';}catch(e){if(e?.name!=='NotFoundError')throw e}
+        }
+        if(!dev&&navigator.hid?.requestDevice){
+          const hs=await navigator.hid.requestDevice({filters:[]}); if(hs?.length){dev=hs[0];kind='HID/USB';}
+        }
+        if(!dev)throw new Error('Il browser non espone una API di lettura del dispositivo. Usa Chrome/Edge con il dispositivo collegato e il relativo middleware di firma.');
+        const label=[dev.manufacturerName||dev.vendorName,dev.productName||dev.productName].filter(Boolean).join(' · ')||('Dispositivo '+kind);
+        await c.from('studio_pct_allegati_v2').update({signature_device:label,signature_requested_at:new Date().toISOString(),signature_error:null}).eq('id',a.id);
+        await event(a.deposito_id,'dispositivo_firma_rilevato','ok',{allegato_id:a.id,device:label,interface:kind});
+        alert('Dispositivo rilevato: '+label+'\n\nOra completa la firma tramite il middleware/redattore di firma installato sul computer. Il documento NON viene marcato come firmato finché la firma reale non è completata.');
+        refreshAll();
+      }catch(e){
+        await c.from('studio_pct_allegati_v2').update({signature_error:e?.message||String(e),signature_requested_at:new Date().toISOString()}).eq('id',a.id);
+        alert('Lettura carta/USB non riuscita: '+(e?.message||e));
+      }finally{b.disabled=false;b.textContent='🔐 Leggi carta / USB'}
+    });
     document.querySelectorAll('[data-pct-mark-signed]').forEach(b=>b.onclick=async()=>{const a=state.pctAllegatiV2.find(x=>x.id===b.dataset.pctMarkSigned);if(!a)return;const signed=!(a.signed||a.signature_status==='firmato');const {error}=await c.from('studio_pct_allegati_v2').update({signed,signature_status:signed?'firmato':'da_firmare'}).eq('id',a.id);if(error)alert(error.message);else{await event(a.deposito_id,signed?'firma_allegato_confermata':'firma_allegato_rimossa',signed?'ok':'info',{allegato_id:a.id,file_name:a.file_name});refreshAll()}});
     document.querySelectorAll('[data-pct-attach]').forEach(b=>b.onclick=async()=>{const sel=document.querySelector('[data-pct-doc-select="'+b.dataset.pctAttach+'"]');const docId=sel?.value;if(!docId){alert('Seleziona un documento del fascicolo.');return}const d=deposits.find(x=>x.id===b.dataset.pctAttach),doc=state.docs.find(x=>x.id===docId);if(!d||!doc)return;const exists=state.pctAllegatiV2.some(a=>a.deposito_id===d.id&&a.documento_id===doc.id);if(exists){alert('Documento già allegato.');return}const {error}=await c.from('studio_pct_allegati_v2').insert({deposito_id:d.id,documento_id:doc.id,file_name:doc.file_name,storage_path:doc.storage_path||null,ruolo:'allegato',obbligatorio:false,signature_status:'da_firmare',signed:false,created_by:state.user.id});if(error)alert(error.message);else{await event(d.id,'allegato_aggiunto','ok',{documento_id:doc.id,file_name:doc.file_name});refreshAll()}});
     document.querySelectorAll('[data-pct-detach]').forEach(b=>b.onclick=async()=>{if(!confirm('Rimuovere questo documento dal deposito? Il file resta nel fascicolo.'))return;const {error}=await c.from('studio_pct_allegati_v2').delete().eq('id',b.dataset.pctDetach);if(error)alert(error.message);else refreshAll()});
