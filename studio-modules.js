@@ -214,7 +214,43 @@
         '<div style="text-align:right"><div style="font-size:10px;text-transform:uppercase;color:#64748b;font-weight:800;margin-bottom:5px">Prossima azione</div>'+action+'</div></div></div></td></tr>';
     }).join('')||'<tr><td><div style="padding:18px;text-align:center;color:#64748b">Nessun deposito PCT.</div></td></tr>';
     const credStatus=document.getElementById('pctCredentialStatus');
-    panel('pct-deposit',`<div class="card"><style>
+    panel('pct-deposit',`<div class="card"><style id="pct-light-buttons">
+#pct-deposit .btn,
+#pct-deposit a.btn,
+#pct-deposit button.btn,
+#pct-deposit input[type="button"].btn,
+#pct-deposit input[type="submit"].btn{
+  background:#ffffff!important;
+  color:#1e3a8a!important;
+  border:1px solid #93c5fd!important;
+  border-radius:12px!important;
+  font-weight:700!important;
+  box-shadow:0 2px 6px rgba(15,23,42,.08)!important;
+}
+#pct-deposit .btn:hover:not(:disabled),
+#pct-deposit a.btn:hover,
+#pct-deposit button.btn:hover:not(:disabled){
+  background:#eff6ff!important;
+  color:#1e3a8a!important;
+  border-color:#60a5fa!important;
+}
+#pct-deposit .btn.btn-success{
+  background:#ffffff!important;
+  color:#166534!important;
+  border-color:#86efac!important;
+}
+#pct-deposit .btn.btn-success:hover:not(:disabled){
+  background:#f0fdf4!important;
+  color:#166534!important;
+  border-color:#4ade80!important;
+}
+#pct-deposit .btn:disabled{
+  background:#f1f5f9!important;
+  color:#64748b!important;
+  border-color:#cbd5e1!important;
+  box-shadow:none!important;
+}
+</style><style>
 #pct-deposit .btn{border-radius:12px!important;padding:9px 14px!important;transition:transform .15s ease,box-shadow .15s ease,filter .15s ease!important;box-shadow:0 2px 6px rgba(15,23,42,.10)!important}
 #pct-deposit .btn:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.04);box-shadow:0 5px 12px rgba(15,23,42,.16)!important}
 #pct-deposit .btn:active:not(:disabled){transform:translateY(0)}
