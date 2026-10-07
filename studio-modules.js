@@ -293,7 +293,7 @@
 <h4 style="margin:12px 0 8px;color:#0f172a">4. Modalità AUTOMATICA · Namirial API</h4>
 <p style="margin:0 0 8px">Con Namirial API il gestionale utilizza il connettore server-side per comunicare con Namirial. Le credenziali non vengono esposte nel JavaScript della pagina.</p>
 <ol style="margin:0 0 12px;padding-left:22px">
-<li>Lo Studio attiva presso Namirial il servizio <strong>PCT-API</strong> adatto all'integrazione con il gestionale. La documentazione ufficiale Namirial include una specifica <strong>Scheda di Trattamento PCT-API</strong>. urlDocumentazione B2B Namirialhttps://documentation.namirial.com/it/b2b</li>
+<li>Lo Studio attiva presso Namirial il servizio <strong>PCT-API</strong> adatto all'integrazione con il gestionale. La documentazione ufficiale Namirial include una specifica <strong>Scheda di Trattamento PCT-API</strong>. <a href="https://documentation.namirial.com/it/b2b" target="_blank" rel="noopener noreferrer">Documentazione ufficiale Namirial PCT-API</a></li>
 <li>Inserisci nella configurazione del gestionale i parametri tecnici forniti da Namirial: URL API, autenticazione, percorsi/endpoints e formato richiesto.</li>
 <li>Inserisci le credenziali nel pannello protetto delle credenziali PCT.</li>
 <li>Seleziona <strong>Provider: Namirial</strong>, <strong>Modalità: API</strong> e <strong>Abilitato</strong>.</li>
