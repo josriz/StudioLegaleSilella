@@ -291,7 +291,11 @@
                 min-width:0;
             }
 
-            .recent-activities-card { padding:0; }
+                    /* Attività Recenti: chiusa all'apertura; si apre solo cliccando il titolo. */
+        details.recent-activities-card:not([open]) .recent-activities-body { display: none !important; }
+        details.recent-activities-card:not([open]) .recent-activities-chevron { transform: rotate(0deg); }
+
+.recent-activities-card { padding:0; }
             .recent-activities-dropdown-toggle { padding:15px 14px; }
 
             .form-group input,
