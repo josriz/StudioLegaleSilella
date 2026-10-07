@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Accesso riservato all'Area Cliente dello Studio Legale Silella.">
+<title>Studio Legale Silella | Login Cliente</title>
+<style>
+:root{--navy:#0c1730;--navy2:#162746;--gold:#c7a15a;--gold2:#e4c985;--ink:#172033;--muted:#68748a;--line:#e5e9f0;--bg:#f5f7fb;--white:#fff;--ok:#137a4b;--danger:#b42318;--shadow:0 24px 70px rgba(12,23,48,.12)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}.hidden{display:none!important}
+button,input,select,textarea{font:inherit}.container{width:min(1160px,calc(100% - 36px));margin:auto}
+.hero{min-height:700px;background:linear-gradient(90deg,rgba(6,16,31,.88) 0%,rgba(8,20,37,.72) 48%,rgba(8,20,37,.56) 100%),url("https://images.unsplash.com/photo-1767277680055-34f1eeec0c26?auto=format&fit=crop&w=2200&q=85") center/cover no-repeat;color:#fff;position:relative;overflow:hidden}.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,13,29,.35),rgba(5,13,29,.18) 45%,rgba(5,13,29,.65));pointer-events:none}.hero:after{display:none}.hero .container:after{display:none}.accessGrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:32px;max-width:900px}.accessCard{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 24px;border:1px solid rgba(255,255,255,.18);border-radius:18px;background:rgba(255,255,255,.075);backdrop-filter:blur(14px);box-shadow:0 18px 55px rgba(0,0,0,.16);transition:.2s}.accessCard:hover{transform:translateY(-3px);border-color:rgba(228,201,133,.5);background:rgba(255,255,255,.11)}.accessIcon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:rgba(199,161,90,.16);color:var(--gold2);font-size:23px;flex:0 0 auto}.accessCard h3{font:600 22px Georgia,serif;margin:0 0 5px}.accessCard p{margin:0;color:#c5cfdd;font-size:13px;line-height:1.45}.accessCard .btn{white-space:nowrap}.portalTag{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border:1px solid rgba(228,201,133,.3);border-radius:999px;background:rgba(199,161,90,.08);color:#e4c985;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.hero:after{content:"";position:absolute;inset:auto -10% -42% 42%;height:520px;border:1px solid rgba(255,255,255,.09);border-radius:50%;transform:rotate(-12deg)}
+.nav{height:82px;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2}.brand{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;justify-content:center;width:max-content;max-width:70vw}.brandContact{align-items:center;text-align:center;justify-content:center}.brandContact{margin-top:10px;align-items:center;text-align:center}.brand img{width:100%;height:auto;max-width:100%;display:block;object-fit:contain;object-position:center;transform:scale(1.5) scaleY(0.75);}.brandContact{display:flex!important;flex-direction:column;gap:4px;color:#fff;font-size:11px;line-height:1.3;white-space:nowrap}.heroContact{margin-bottom:14px;display:flex!important;flex-direction:column;gap:4px;color:#fff;font-size:11px;line-height:1.3;white-space:nowrap}.brandContact b{color:#e4c985}.brandContact a{color:#fff;text-decoration:none}.brandContact a:hover{text-decoration:underline}.navlinks{display:flex;align-items:center;gap:10px}.navlinks a,.navlinks button{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);padding:10px 14px;border-radius:9px;cursor:pointer}
+.heroGrid{display:grid;grid-template-columns:1.15fr .85fr;gap:60px;align-items:start;padding:78px 0 100px;position:relative;z-index:1}.heroGrid>div:first-child{max-width:760px}.heroSide{display:flex;flex-direction:column;gap:14px;align-self:start}.heroGrid .heroCard{background:rgba(7,18,34,.62);border-color:rgba(255,255,255,.22);box-shadow:0 24px 80px rgba(0,0,0,.28)}.eyebrow{color:var(--gold2);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:800}.hero h1{font:600 clamp(42px,6vw,68px)/1.02 Georgia,serif;margin:17px 0 20px;max-width:720px}.hero h1 em{color:var(--gold2);font-style:normal}.heroLead{font-size:18px;line-height:1.7;color:#d7dfeb;max-width:650px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}.btn{border:0;border-radius:10px;padding:12px 17px;background:var(--navy);color:#fff;font-weight:750;cursor:pointer;transition:.18s}.btn:hover{transform:translateY(-1px)}.btn.gold{background:var(--gold);color:var(--navy)}.btn.light{background:#fff;color:var(--navy)}.btn.outline{background:transparent;border:1px solid var(--line);color:var(--navy)}.hero .btn.outline{border-color:rgba(255,255,255,.24);color:#fff}.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.heroCard{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:22px;padding:25px;backdrop-filter:blur(12px);box-shadow:0 20px 70px rgba(0,0,0,.18)}.heroCard .mini{font-size:12px;color:#c9d2df;text-transform:uppercase;letter-spacing:.1em}.heroCard h3{font:600 27px Georgia,serif;margin:10px 0 22px}.feature{display:flex;gap:13px;padding:15px 0;border-top:1px solid rgba(255,255,255,.12)}.feature b{display:block}.feature small{display:block;color:#bec9d8;margin-top:3px}
+.section{padding:80px 0}.section h2{font:600 38px Georgia,serif;margin:0 0 12px;color:var(--navy)}.sectionLead{color:var(--muted);max-width:700px;line-height:1.7}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:35px}.infoCard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:25px;box-shadow:0 10px 35px rgba(12,23,48,.05)}.icon{width:42px;height:42px;border-radius:12px;background:#f3ead7;color:#8a6a2e;display:grid;place-items:center;font-size:20px}.infoCard h3{margin:18px 0 8px}.infoCard p{color:var(--muted);line-height:1.65;margin:0}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:35px}.step{padding:20px;border-top:2px solid var(--gold)}.num{font-size:12px;color:#8a6a2e;font-weight:800}.step h3{margin:10px 0 6px}.step p{color:var(--muted);line-height:1.6;font-size:14px}
+.footer{background:var(--navy);color:#bfc9d8;padding:34px 0}.footerInner{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:13px}.footer a{color:#fff;text-decoration:none;margin-left:16px}
+.portal{min-height:100vh;background:linear-gradient(135deg,rgba(255,255,255,.20),rgba(255,255,255,.08)),url('loghi_sfondi/scrivania2_studio.jpg') center/cover fixed no-repeat}.topbar{min-height:112px;background:rgba(255,255,255,.20);backdrop-filter:blur(22px) saturate(135%);-webkit-backdrop-filter:blur(22px) saturate(135%);border-bottom:1px solid rgba(228,201,133,.25);display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:22px;padding:14px 32px;position:sticky;top:0;z-index:10;box-shadow:0 12px 35px rgba(7,19,41,.18)}.topbrand{display:contents}.topbrandLogo{width:360px;height:110px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto}.topbrandLogo img{width:100%;height:100%;display:block;object-fit:contain;object-position:center;transform:scale(1.7)}.topbrandInfo{min-width:0;display:flex;flex-direction:column;gap:5px;padding-left:22px;border-left:1px solid rgba(228,201,133,.28);color:#d7dfeb;font-size:12px;line-height:1.35}.topbrandInfo strong{font-family:Georgia,serif;font-size:19px;color:#fff;font-weight:600}.topbrandInfo a{color:#fff;text-decoration:none;display:inline-block;max-width:100%;overflow-wrap:anywhere}.topbrandInfo a:hover{text-decoration:underline}.topbrandInfo b{color:#e4c985}.userTools{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex:0 0 auto;white-space:nowrap}.userTools .iconBtn{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff}.userTools .btn.outline{border-color:rgba(0,0,0,.28);color:#000;background:rgba(255,255,255,.30)}.helpBtn{border-color:rgba(228,201,133,.45)!important;color:#e4c985!important;background:rgba(199,161,90,.10)!important}.helpModal .modalBox{width:min(680px,100%);max-height:min(82vh,760px);overflow:auto}.helpIntro{color:var(--muted);line-height:1.6;margin:0 0 16px}.helpSteps{margin:0;padding-left:22px;color:var(--ink);line-height:1.7}.helpSteps li{margin-bottom:7px}.helpNote{margin-top:18px;padding:14px 16px;border-radius:10px;background:#f7f8fb;color:var(--muted);font-size:13px;line-height:1.55}.iconBtn{position:relative;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;cursor:pointer}.bellCount{position:absolute;top:-5px;right:-5px;background:#b42318;color:#fff;border-radius:20px;font-size:10px;padding:2px 6px}.portalMain{width:min(1180px,calc(100% - 32px));margin:28px auto}.welcome{background:rgba(255,255,255,.24);backdrop-filter:blur(18px) saturate(130%);-webkit-backdrop-filter:blur(18px) saturate(130%);border:1px solid rgba(255,255,255,.48);box-shadow:0 18px 50px rgba(12,23,48,.12);color:#fff;border-radius:22px;padding:30px;display:flex;justify-content:space-between;gap:25px;align-items:end}.welcome h1{font:600 34px Georgia,serif;margin:8px 0}.welcome p{color:#d3dbe7;margin:0}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:22px 0}.tab{border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.28);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:10px 13px;border-radius:9px;cursor:pointer;color:#000;font-weight:700}.tab.active{background:rgba(255,255,255,.62);color:#000;border-color:rgba(255,255,255,.72);box-shadow:0 8px 22px rgba(12,23,48,.10)}.panel{background:rgba(255,255,255,.34);border:1px solid rgba(255,255,255,.58);border-radius:16px;padding:22px;box-shadow:0 14px 40px rgba(12,23,48,.10);backdrop-filter:blur(18px) saturate(125%);-webkit-backdrop-filter:blur(18px) saturate(125%);margin-bottom:18px}#privacyClientCard{margin-top:24px}.panel h2{font:600 25px Georgia,serif;color:var(--navy);margin:0 0 16px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{margin-bottom:14px}.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:800;margin-bottom:6px;color:#4c586c}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:9px;background:#fbfcfe;padding:11px 12px;color:var(--ink)}.field textarea{min-height:110px;resize:vertical}.status{font-size:13px;color:var(--muted);line-height:1.5}.ok{color:var(--ok)}.err{color:var(--danger);font-size:13px;min-height:18px}.fileList{display:grid;gap:10px}.doc{border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:14px}.docMain{min-width:0}.docName{font-weight:750;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.docMeta{font-size:12px;color:var(--muted);margin-top:4px}.badge{display:inline-flex;padding:4px 8px;border-radius:999px;background:#eef2f7;color:#516075;font-size:11px;font-weight:800}.badge.gold{background:#f6ecd8;color:#8a6a2e}.badge.green{background:#e7f6ee;color:#137a4b}.notice{padding:13px 15px;border-radius:10px;background:#f7f8fb;color:#536075;font-size:13px}.empty{padding:35px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}.practiceCard{border:1px solid rgba(255,255,255,.58);border-radius:14px;padding:18px;background:rgba(255,255,255,.34);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}.practiceHead{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}.practiceTitle{font:600 21px Georgia,serif;color:var(--navy)}.practiceMeta{font-size:12px;color:var(--muted);margin-top:5px}.practiceStatus{display:inline-flex;padding:6px 10px;border-radius:999px;background:#eef2f7;color:#516075;font-size:11px;font-weight:800}.practiceStatus.active{background:#e7f6ee;color:#137a4b}.practiceStatus.closed{background:#f1f2f4;color:#596273}.practiceNote{margin-top:12px;padding:11px 13px;border-radius:10px;background:#f7f8fb;color:#536075;font-size:13px;line-height:1.55}.practiceEvents{margin-top:15px;display:grid;gap:9px}.practiceEvent{display:grid;grid-template-columns:10px 1fr;gap:11px}.practiceEventDot{width:10px;height:10px;border-radius:50%;background:var(--gold);margin-top:6px}.practiceEventBody{border-left:1px solid var(--line);padding-left:13px;padding-bottom:8px}.practiceEventTitle{font-weight:800;color:var(--navy)}.practiceEventMeta{font-size:12px;color:var(--muted);margin-top:3px}.practiceDocs{margin-top:12px;display:flex;gap:7px;flex-wrap:wrap}.practiceDocs .badge{cursor:default}
+.modal{position:fixed;inset:0;background:rgba(7,15,31,.58);display:grid;place-items:center;padding:20px;z-index:30}.modalBox{width:min(520px,100%);background:#fff;border-radius:18px;padding:25px;box-shadow:var(--shadow)}.modalHead{display:flex;justify-content:space-between;align-items:center}.modalHead h2{font:600 25px Georgia,serif;color:var(--navy);margin:0}.check{display:flex;gap:9px;align-items:flex-start;font-size:13px;color:var(--muted);line-height:1.5}.check input{margin-top:3px}.notification{padding:13px;border-bottom:1px solid var(--line)}.notification:last-child{border-bottom:0}.notification.unread{background:#f8fbff}.notification strong{display:block;color:var(--navy)}.notification small{color:var(--muted)}
+.authWrap{min-height:100vh;display:flex;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;padding:24px;overflow:auto;background:linear-gradient(135deg,rgba(8,18,36,.62),rgba(15,23,42,.34)),url('loghi_sfondi/stanza_vetro.jpg') center center/cover no-repeat}.authCard{width:min(440px,100%);padding:30px 32px 24px;border:1px solid rgba(255,255,255,.58);border-radius:24px;background:linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.10));box-shadow:0 28px 80px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.55);backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%);color:#fff;display:block}.authIntro{padding:0;background:transparent;color:#fff;border:0;backdrop-filter:none;-webkit-backdrop-filter:none}.authIntro img{display:block;width:100%;height:96px;max-width:none;max-height:none;object-fit:fill;object-position:center;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.42);border-radius:18px;padding:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 10px 30px rgba(0,0,0,.12);filter:drop-shadow(0 5px 12px rgba(0,0,0,.22));margin:0 0 18px}.authIntro h1{margin:0;text-align:center;font-size:28px;letter-spacing:.01em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.28)}.authIntro p{margin:7px 0 22px;text-align:center;color:rgba(255,255,255,.84);font-size:13px;line-height:1.5}.authForm{padding:0;background:transparent;color:#fff;backdrop-filter:none;-webkit-backdrop-filter:none}.authForm form{display:grid;gap:7px}.authForm h2{margin:0;text-align:center;font-size:10px;font-weight:800;letter-spacing:.22em;color:rgba(255,255,255,.78);text-shadow:0 2px 12px rgba(0,0,0,.28)}.authForm .status{color:rgba(255,255,255,.84);text-align:center;font-size:13px;line-height:1.5}.authForm .field{margin-top:4px;margin-bottom:0}.authForm .field label{display:block;color:rgba(255,255,255,.92);font-size:12px;font-weight:700;margin-top:4px;margin-bottom:0}.authForm .field input{width:100%;box-sizing:border-box;margin:0 0 6px;padding:12px 14px;border:1px solid rgba(255,255,255,.48);border-radius:12px;outline:none;background:rgba(255,255,255,.82);color:#0f172a;font-size:14px;box-shadow:inset 0 1px 3px rgba(15,23,42,.08),0 5px 18px rgba(0,0,0,.08);transition:border-color .2s,box-shadow .2s,background .2s}.authForm .field input::placeholder{color:#64748b}.authForm .field input:focus{background:rgba(255,255,255,.96);border-color:rgba(255,255,255,.92);box-shadow:0 0 0 3px rgba(255,255,255,.16),0 8px 24px rgba(0,0,0,.12)}.authForm .err{min-height:20px;color:#ffe4e6;font-size:12px;line-height:1.4;margin:1px 0 3px;text-shadow:0 1px 3px rgba(0,0,0,.25)}.authForm .btn:not(.outline){width:100%;margin-top:3px;padding:12px 16px;border:1px solid rgba(255,255,255,.58);border-radius:12px;cursor:pointer;color:#fff;font-size:13px;font-weight:800;letter-spacing:.01em;background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.16));box-shadow:0 10px 28px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.42);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .2s,background .2s,box-shadow .2s}.authForm .btn:not(.outline):hover{transform:translateY(-1px);background:linear-gradient(135deg,rgba(255,255,255,.46),rgba(255,255,255,.22));box-shadow:0 14px 32px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.52)}.authForm .btn.outline{width:100%;margin-top:3px;padding:12px 16px;border:1px solid rgba(255,255,255,.38);border-radius:12px;cursor:pointer;color:#fff;font-size:13px;font-weight:800;background:rgba(255,255,255,.10);box-shadow:0 10px 28px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.24);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .2s,background .2s,box-shadow .2s}.authForm .btn.outline:hover{transform:translateY(-1px);background:rgba(255,255,255,.18)}.authForm .check{color:rgba(255,255,255,.84)}
+
+@media(max-width:850px){.brand img{width:235px;height:74px}.heroGrid,.authCard{grid-template-columns:1fr}.hero{min-height:auto}.heroGrid{padding:55px 0 75px}.cards,.steps{grid-template-columns:1fr 1fr}.heroCard{margin-top:10px}}
+@media(max-width:600px){.topbar{min-height:0;padding:10px 12px;display:grid;grid-template-columns:1fr auto;grid-template-areas:"brand tools" "info info";align-items:center;gap:8px 10px}.topbrandLogo{grid-area:brand;width:145px;height:58px}.topbrandInfo{grid-area:info;border-left:0;border-top:1px solid rgba(228,201,133,.25);padding:8px 0 0;display:flex;gap:2px;font-size:10px;line-height:1.35}.topbrandInfo strong{font-size:15px}.topbrandInfo div{max-width:none;white-space:normal;overflow-wrap:anywhere}.userTools{grid-area:tools;align-self:center;gap:6px}.userTools .btn,.userTools .iconBtn{padding:8px 10px}.brand img{width:205px;height:66px}.container{width:min(100% - 24px,1160px)}.navlinks a{display:none}.hero h1{font-size:44px}.cards,.steps,.grid2,.accessGrid{grid-template-columns:1fr}.topbrand span{display:none}.portalMain{width:calc(100% - 20px)}.welcome{padding:23px;display:block}.welcome h1{font-size:28px}.doc{align-items:flex-start;flex-direction:column}.doc .actions{margin-top:0}}
+</style>
+<style id="client-login-glass-final">
+.authWrap.studio-login-overlay{display:flex;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;padding:18px;overflow:auto;background:linear-gradient(135deg,rgba(8,18,36,.62),rgba(15,23,42,.34)),url('loghi_sfondi/stanza_vetro.jpg') center center/cover no-repeat}
+.authCard.studio-login-card{width:min(440px,100%);padding:24px 30px 18px;border:1px solid rgba(255,255,255,.58);border-radius:24px;background:linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.10));box-shadow:0 28px 80px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.55);backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%);color:#fff}
+.authCard .studio-login-logo-wrap{display:flex;justify-content:center;align-items:stretch;margin:0 auto 14px;padding:0;width:90%;height:auto;aspect-ratio:1092/282;box-sizing:border-box;border:0;border-radius:0;background:transparent;box-shadow:none;overflow:hidden}
+.authCard .studio-login-logo{display:block;width:100%;height:100%;min-width:100%;min-height:100%;max-width:none;max-height:none;object-fit:fill;object-position:center;border:0;border-radius:0;filter:none;transform:scale(1.35,3.15);transform-origin:center center;flex:0 0 100%;margin:0;padding:0}
+.authCard .studio-login-kicker{text-align:center;font-size:10px;font-weight:800;letter-spacing:.22em;color:rgba(255,255,255,.78);margin-bottom:4px}
+.authCard h2{margin:0;text-align:center;font-size:26px;letter-spacing:.01em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.28)}
+.authCard .studio-login-subtitle{margin:5px 0 16px;text-align:center;color:rgba(255,255,255,.84);font-size:12.5px;line-height:1.45}
+.authCard #loginForm{display:grid;gap:5px}
+.authCard #loginForm label{color:rgba(255,255,255,.92);font-size:12px;font-weight:700;margin-top:3px}
+.authCard #loginForm input{width:100%;box-sizing:border-box;margin:0 0 4px;padding:10px 13px;border:1px solid rgba(255,255,255,.48);border-radius:12px;outline:none;background:rgba(255,255,255,.82);color:#0f172a;font-size:14px;box-shadow:inset 0 1px 3px rgba(15,23,42,.08),0 5px 18px rgba(0,0,0,.08);transition:border-color .2s,box-shadow .2s,background .2s}
+.authCard #loginForm input::placeholder{color:#64748b}
+.authCard #loginForm input:focus{background:rgba(255,255,255,.96);border-color:rgba(255,255,255,.92);box-shadow:0 0 0 3px rgba(255,255,255,.16),0 8px 24px rgba(0,0,0,.12)}
+.authCard .studio-login-error{min-height:17px;color:#ffe4e6;font-size:12px;line-height:1.35;margin:0;text-shadow:0 1px 3px rgba(0,0,0,.25)}
+.authCard .studio-login-submit{width:100%;margin-top:2px;padding:11px 16px;border:1px solid rgba(255,255,255,.58);border-radius:12px;cursor:pointer;color:#fff;font-size:13px;font-weight:800;letter-spacing:.01em;background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,.16));box-shadow:0 10px 28px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.42);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .2s,background .2s,box-shadow .2s}
+.authCard .studio-login-submit:hover{transform:translateY(-1px);background:linear-gradient(135deg,rgba(255,255,255,.46),rgba(255,255,255,.22));box-shadow:0 14px 32px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.52)}
+.client-login-links{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:10px}
+.client-login-links button,.client-login-links .registerLink{border:1px solid rgba(228,201,133,.55);background:rgba(199,161,90,.12);padding:8px 12px;color:#f4dfaa;font-size:11px;font-weight:750;text-decoration:none;text-underline-offset:3px;cursor:pointer;font:inherit;border-radius:10px;transition:.18s}.client-login-links .registerLink{display:inline-flex;align-items:center;justify-content:center}.client-login-links button{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.06);color:rgba(255,255,255,.84)}
+.client-login-links button:hover,.client-login-links .registerLink:hover{color:#fff}
+.client-login-links span{color:rgba(255,255,255,.45);font-size:11px}
+.authCard .studio-login-footer{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.22);text-align:center;color:rgba(255,255,255,.68);font-size:9px;letter-spacing:.03em}
+@media(max-width:600px){
+.authWrap.studio-login-overlay{padding:12px}
+.authCard.studio-login-card{padding:20px 17px 15px;border-radius:20px}
+.authCard .studio-login-logo-wrap{height:auto;aspect-ratio:1092/282;margin-bottom:12px}
+.authCard h2{font-size:23px}
+.authCard .studio-login-subtitle{font-size:12px;margin-bottom:14px}
+.client-login-links{margin-top:9px}
+}
+</style>
+<style>
+body{margin:0}
+.authWrap{display:flex!important;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;padding:18px;overflow:auto;background:linear-gradient(135deg,rgba(8,18,36,.62),rgba(15,23,42,.34)),url('loghi_sfondi/stanza_vetro.jpg') center/cover no-repeat}
+</style>
+</head>
+<body>
+<div id="authView" class="authWrap studio-login-overlay">
+  <div class="authCard studio-login-card">
+    <div class="studio-login-logo-wrap">
+      <img class="studio-login-logo" src="loghi_sfondi/sfondo_cli_login_banner.svg?v=20261007-1" alt="Studio Legale Silella">
+    </div>
+    <div class="studio-login-kicker">AREA RISERVATA</div>
+    <h2>Accesso Area Cliente</h2>
+    <p class="studio-login-subtitle">Accedi al portale dello Studio Legale Silella per gestire pratiche, documenti e comunicazioni in modo ordinato e riservato.</p>
+    <div id="loginBox">
+      <form id="loginForm">
+        <label for="loginEmail">Email</label>
+        <input id="loginEmail" type="email" autocomplete="username" required placeholder="La tua email">
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="La tua password">
+        <div id="loginErr" class="studio-login-error"></div>
+        <button id="loginBtn" type="submit" class="studio-login-submit">Accedi all'Area Cliente</button>
+      </form>
+      <div class="client-login-links">
+        <a id="showRegister" class="registerLink" href="https://josriz.github.io/StudioLegaleSilella/registrazione-cliente.html?v=20261004-2">➕ Nuovo cliente · Registrati</a>
+        <span aria-hidden="true">·</span>
+        <button id="forgotBtn" type="button">Ho dimenticato la password</button>
+      </div>
+    </div>
+    <div id="resetBox" class="hidden" style="margin-top:18px">
+      <div style="text-align:center;font-size:11px;font-weight:800;letter-spacing:.16em;color:rgba(255,255,255,.78);margin-bottom:8px">RECUPERO PASSWORD</div>
+      <p style="margin:0 0 12px;text-align:center;color:rgba(255,255,255,.82);font-size:12px;line-height:1.45">Imposta una nuova password per il tuo accesso all’Area Cliente.</p>
+      <form id="resetForm" style="display:grid;gap:8px">
+        <label for="newPassword" style="color:rgba(255,255,255,.92);font-size:12px;font-weight:700">Nuova password</label>
+        <input id="newPassword" type="password" minlength="8" autocomplete="new-password" required placeholder="Almeno 8 caratteri">
+        <label for="newPasswordConfirm" style="color:rgba(255,255,255,.92);font-size:12px;font-weight:700">Conferma nuova password</label>
+        <input id="newPasswordConfirm" type="password" minlength="8" autocomplete="new-password" required placeholder="Ripeti la password">
+        <div id="resetErr" class="studio-login-error"></div>
+        <button id="resetBtn" type="submit" class="studio-login-submit">Salva nuova password</button>
+      </form>
+    </div>
+    <div class="studio-login-footer">Accesso riservato ai Clienti autorizzati</div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@Supabase/supabase-js@2"></script> 
+<script src="config.js?v=20261005-1"></script> 
+ 
+<script> 
+const STUDIO_SUPABASE_URL=window.STUDIO_SUPABASE_URL; 
+const STUDIO_SUPABASE_PUBLISHABLE_KEY=window.STUDIO_SUPABASE_PUBLISHABLE_KEY; 
+const sb=supabase.createClient(STUDIO_SUPABASE_URL,STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-client-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}); 
+const $=id=>document.getElementById(id); 
+let activePrivacyNotice=null; 
+async function loadPrivacy(){ 
+  const today=new Date().toISOString().slice(0,10); 
+  const {data,error}=await sb.from('studio_privacy_informative').select('id,titolo,versione,contenuto,valida_dal,valida_al').eq('tipo','clienti').eq('stato','attiva').or('valida_dal.is.null,valida_dal.lte.'+today).or('valida_al.is.null,valida_al.gte.'+today).order('valida_dal',{ascending:false}).limit(1).maybeSingle(); 
+  if(error){console.error('Informativa privacy:',error);return} 
+  activePrivacyNotice=data||null; 
+  const el=$('privacySignupInfo'); 
+  if(el)el.textContent=activePrivacyNotice?'Informativa privacy vigente disponibile.':'Informativa privacy vigente non disponibile: registrazione temporaneamente sospesa.'; 
+} 
+$('forgotBtn').onclick=async()=>{ 
+  const email=$('loginEmail').value.trim(); 
+  if(!email){$('loginErr').textContent='Inserisci prima l’email.';return} 
+  $('forgotBtn').disabled=true; 
+  const resetRedirect=new URL(location.href); 
+  resetRedirect.hash=''; 
+  resetRedirect.search=''; 
+  resetRedirect.pathname=resetRedirect.pathname.replace(/[^/]+$/,'cliente.html'); 
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:resetRedirect.toString()}); 
+  $('forgotBtn').disabled=false; 
+  $('loginErr').textContent=error?error.message:'Controlla la posta: troverai il link per impostare una nuova password.'; 
+  $('loginErr').className=error?'studio-login-error':'studio-login-error ok'; 
+}; 
+$('loginForm').onsubmit=async e=>{ 
+  e.preventDefault();$('loginErr').textContent='';$('loginBtn').disabled=true; 
+  const {data,error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value}); 
+  $('loginBtn').disabled=false; 
+  if(error){$('loginErr').textContent=error.message;return} 
+  let {data:profile,error:roleError}=await sb.from('studio_utenti').select('role').eq('user_id',data.user.id).maybeSingle(); 
+  if(roleError){ 
+    await sb.auth.signOut(); 
+    $('loginErr').textContent='Impossibile verificare il tipo di account.'; 
+    return; 
+  } 
+  if(!profile){ 
+    const {data:boot,error:bootError}=await sb.rpc('studio_bootstrap_cliente'); 
+    if(bootError){ 
+      await sb.auth.signOut(); 
+      $('loginErr').textContent=bootError.message||'Impossibile completare l’attivazione dell’Area Cliente.'; 
+      return; 
+    } 
+    const {data:profileAfter,error:profileAfterError}=await sb.from('studio_utenti').select('role').eq('user_id',data.user.id).maybeSingle(); 
+    if(profileAfterError||profileAfter?.role!=='cliente'){ 
+      await sb.auth.signOut(); 
+      $('loginErr').textContent='Profilo Cliente non attivato.'; 
+      return; 
+    } 
+    profile=profileAfter; 
+  } 
+  if(profile.role!=='cliente'){ 
+    await sb.auth.signOut(); 
+    $('loginErr').textContent='Questo account è abilitato all’Area Studio e non può entrare nell’Area Cliente.'; 
+    return; 
+  } 
+  // Completa la richiesta salvata localmente quando Supabase richiede prima la conferma email. 
+  const pendingRaw=localStorage.getItem('studio_onboarding_request_v1'); 
+  if(pendingRaw){ 
+    let pending; 
+    try{pending=JSON.parse(pendingRaw)}catch(_){pending=null} 
+    if(pending && pending.customer_type && pending.request_description && pending.privacy_notice_id){ 
+      $('loginErr').textContent='Invio della richiesta allo Studio in corso…'; 
+      $('loginErr').className='studio-login-error'; 
+      $('loginBtn').disabled=true; 
+      const {error:requestError}=await sb.rpc('studio_registra_richiesta_cliente',{ 
+        p_customer_type:pending.customer_type, 
+        p_tax_id:pending.tax_id||'', 
+        p_vat_number:pending.vat_number||'', 
+        p_request_description:pending.request_description, 
+        p_privacy_notice_id:pending.privacy_notice_id, 
+        p_terms_accepted:pending.terms_accepted===true, 
+        p_privacy_notice_seen:pending.privacy_notice_seen===true 
+      }); 
+      $('loginBtn').disabled=false; 
+      if(requestError){ 
+        const msg=String(requestError.message||''); 
+        if(/già abilitato|gia abilitato|non può inviare una nuova richiesta|non puo inviare una nuova richiesta/i.test(msg)){ 
+          // La richiesta locale è obsoleta: l'account risulta già abilitato. Non ripetere l'onboarding. 
+          localStorage.removeItem('studio_onboarding_request_v1'); 
+          location.replace('cliente-portale.html?v=20261005-1'); 
+          return; 
+        } 
+        $('loginErr').textContent='Accesso effettuato, ma la richiesta non è ancora stata inviata allo Studio: '+msg+'. Non ripetere la registrazione; riprova l’accesso o contatta lo Studio.'; 
+        return; 
+      } 
+      localStorage.removeItem('studio_onboarding_request_v1'); 
+      $('loginErr').textContent='✓ Richiesta inviata correttamente allo Studio. È in attesa di valutazione; l’invio non comporta l’accettazione dell’incarico.'; 
+      $('loginErr').className='studio-login-error ok'; 
+      setTimeout(()=>location.replace('cliente-portale.html?v=20261005-1'),1800); 
+      return; 
+    } 
+  } 
+  location.replace('cliente-portale.html?v=20261005-1'); 
+}; 
+async function showPasswordRecovery(){ 
+  $('loginBox').classList.add('hidden'); 
+  $('resetBox').classList.remove('hidden'); 
+  $('loginErr').textContent=''; 
+  $('resetErr').textContent=''; 
+  $('newPassword').focus(); 
+} 
+$('resetForm').onsubmit=async e=>{ 
+  e.preventDefault(); 
+  const password=$('newPassword').value; 
+  const confirm=$('newPasswordConfirm').value; 
+  $('resetErr').textContent=''; 
+  if(password.length<8){$('resetErr').textContent='La password deve contenere almeno 8 caratteri.';return} 
+  if(password!==confirm){$('resetErr').textContent='Le due password non coincidono.';return} 
+  $('resetBtn').disabled=true; 
+  const {error}=await sb.auth.updateUser({password}); 
+  $('resetBtn').disabled=false; 
+  if(error){$('resetErr').textContent=error.message;return} 
+  $('resetErr').textContent='✓ Password aggiornata correttamente. Ora puoi accedere con la nuova password.'; 
+  $('resetErr').className='studio-login-error ok'; 
+  $('newPassword').value=''; 
+  $('newPasswordConfirm').value=''; 
+  setTimeout(()=>{ 
+    $('resetBox').classList.add('hidden'); 
+    $('loginBox').classList.remove('hidden'); 
+    $('loginErr').textContent='Password aggiornata. Inserisci la nuova password per accedere.'; 
+    $('loginErr').className='studio-login-error ok'; 
+    $('loginPassword').value=''; 
+    $('loginPassword').focus(); 
+  },1400); 
+}; 
+sb.auth.onAuthStateChange((event)=>{ 
+  if(event==='PASSWORD_RECOVERY') showPasswordRecovery(); 
+}); 
+loadPrivacy(); 
+</script> 
+</body> 
+</html>
