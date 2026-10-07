@@ -214,7 +214,27 @@
         '<div style="text-align:right"><div style="font-size:10px;text-transform:uppercase;color:#64748b;font-weight:800;margin-bottom:5px">Prossima azione</div>'+action+'</div></div></div></td></tr>';
     }).join('')||'<tr><td><div style="padding:18px;text-align:center;color:#64748b">Nessun deposito PCT.</div></td></tr>';
     const credStatus=document.getElementById('pctCredentialStatus');
-    panel('pct-deposit',`<div class="card"><style id="pct-light-buttons">
+    panel('pct-deposit',`<div class="card"><style id="pct-compact-ui">
+#pct-deposit{width:100%;max-width:100%;overflow-x:hidden}
+#pct-deposit>.card{padding:14px!important;margin-bottom:12px!important}
+#pct-deposit .card{padding:12px!important}
+#pct-deposit h3{font-size:18px!important}
+#pct-deposit h4{font-size:14px!important}
+#pct-deposit input,#pct-deposit select,#pct-deposit textarea{font-size:12px!important;padding:8px!important;max-width:100%}
+#pct-deposit .btn{font-size:12px!important;padding:7px 11px!important}
+#pct-deposit [data-pct-guide-panel]{max-height:270px;overflow-y:auto;overflow-x:hidden}
+#pct-deposit table{font-size:11px!important}
+#pct-deposit th,#pct-deposit td{padding:7px!important}
+#pct-deposit [style*="grid-template-columns"]{min-width:0!important;max-width:100%!important}
+@media (max-width:1100px){
+  #pct-deposit [style*="grid-template-columns"]{grid-template-columns:1fr 1fr!important}
+}
+@media (max-width:700px){
+  #pct-deposit [style*="grid-template-columns"]{grid-template-columns:1fr!important}
+  #pct-deposit .btn{width:auto;max-width:100%}
+  #pct-deposit [data-pct-guide-panel]{max-height:240px}
+}
+</style><style id="pct-light-buttons">
 #pct-deposit .btn,
 #pct-deposit a.btn,
 #pct-deposit button.btn,
