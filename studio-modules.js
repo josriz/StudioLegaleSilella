@@ -12,7 +12,7 @@
     if(pe) throw pe; if(!profile || !['studio','admin'].includes(profile.role)) throw new Error('Utente non autorizzato.');
     const qs=[
       c.from('studio_pratiche').select('id,client_name,tax_id,legal_area,counterparty,status,created_at,updated_at,owner_user_id,ai_status,description').order('created_at',{ascending:false}),
-      c.from('studio_documenti').select('id,pratica_id,file_name,size_bytes,created_at').order('created_at',{ascending:false}),
+      c.from('studio_documenti').select('id,pratica_id,file_name,storage_path,mime_type,size_bytes,created_at').order('created_at',{ascending:false}),
       c.from('studio_audit').select('*').order('created_at',{ascending:false}).limit(100),
       c.from('studio_comunicazioni').select('*').order('sent_at',{ascending:false}).limit(100),
       c.from('studio_utenti').select('user_id,role,full_name,created_at').in('role',['studio','admin']).order('created_at',{ascending:true}),
