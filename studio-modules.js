@@ -214,7 +214,13 @@
         '<div style="text-align:right"><div style="font-size:10px;text-transform:uppercase;color:#64748b;font-weight:800;margin-bottom:5px">Prossima azione</div>'+action+'</div></div></div></td></tr>';
     }).join('')||'<tr><td><div style="padding:18px;text-align:center;color:#64748b">Nessun deposito PCT.</div></td></tr>';
     const credStatus=document.getElementById('pctCredentialStatus');
-    panel('pct-deposit',`<div class="card">
+    panel('pct-deposit',`<div class="card"><style>
+#pct-deposit .btn{border-radius:12px!important;padding:9px 14px!important;transition:transform .15s ease,box-shadow .15s ease,filter .15s ease!important;box-shadow:0 2px 6px rgba(15,23,42,.10)!important}
+#pct-deposit .btn:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.04);box-shadow:0 5px 12px rgba(15,23,42,.16)!important}
+#pct-deposit .btn:active:not(:disabled){transform:translateY(0)}
+#pct-deposit input,#pct-deposit select,#pct-deposit textarea{border-radius:10px!important}
+#pct-deposit details{border-radius:14px!important}
+</style>
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
         <div><h3>🏛️ PCT / PEC · Depositi</h3><div style="font-size:12px;color:#64748b">Gestisci tutto il deposito nel gestionale, fino alla chiusura.</div></div>
         <button class="btn btn-info" style="color:#fff;background:#2563eb;border-color:#2563eb;font-weight:700" id="pctRefresh">Aggiorna</button>
