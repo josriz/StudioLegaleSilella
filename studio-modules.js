@@ -262,50 +262,48 @@
         <button class="btn btn-info" style="color:#fff;background:#2563eb;border-color:#2563eb;font-weight:700" id="pctRefresh">Aggiorna</button>
       </div>
       <div class="card" style="margin-top:14px;background:#eff6ff;border:1px solid #bfdbfe;border-left:4px solid #2563eb"><div style="font-size:15px;font-weight:800;color:#1e3a8a">🧭 Come funziona il deposito</div>
-<div style="font-size:12px;color:#475569;margin-top:5px;line-height:1.5">Qui trovi due guide interattive: scegli <strong>MANUALE</strong> oppure <strong>NAMIRIAL API</strong> e segui i passaggi uno alla volta.</div>
+<div style="font-size:12px;color:#475569;margin-top:5px;line-height:1.5">Scegli una delle due guide. Premi il pulsante per aprire e richiudere il manuale passo passo.</div>
 <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
-<details style="flex:1 1 300px;min-width:280px;border:1px solid #bfdbfe;border-radius:12px;background:#fff;box-shadow:0 2px 8px rgba(15,23,42,.06)">
-<summary style="cursor:pointer;list-style:none;padding:12px 14px;font-weight:800;color:#1e3a8a">📘 MANUALE · Come si usa passo passo</summary>
-<div style="padding:14px;font-size:12px;color:#334155;line-height:1.6">
-<p style="margin:0 0 9px"><strong>Quando si usa?</strong><br>Usa questa modalità quando il deposito viene trasmesso tramite il canale esterno dello Studio e vuoi registrare nel gestionale ciò che è realmente avvenuto.</p>
-<ol style="margin:0;padding-left:20px">
-<li><strong>Apri il fascicolo</strong> e verifica che sia la pratica corretta.</li>
-<li><strong>Apri il procedimento</strong> e controlla ufficio, registro, RG, anno e parti.</li>
-<li><strong>Crea il deposito</strong> indicando tipo di atto, oggetto e ufficio destinatario.</li>
-<li><strong>Aggiungi i documenti</strong> dal fascicolo. Controlla che ci siano atto principale e allegati necessari.</li>
-<li><strong>Premi Verifica</strong>. Se ci sono problemi, correggili prima di proseguire.</li>
-<li><strong>Premi Conferma firma</strong> dopo aver completato la firma prevista.</li>
-<li><strong>Premi Genera busta</strong> per preparare la busta telematica.</li>
-<li><strong>Premi Valida per INVIO</strong>. Il deposito passa a <strong>PRONTO PER INVIO</strong>.</li>
-<li><strong>Effettua realmente la trasmissione</strong> tramite il canale esterno usato dallo Studio.</li>
-<li><strong>Premi Manuale / Registra trasmissione</strong> e inserisci, se disponibile, il riferimento della trasmissione.</li>
-<li><strong>Registra le ricevute</strong>: accettazione, consegna ed esito.</li>
-<li><strong>Chiudi il deposito</strong> solo dopo aver verificato che il ciclo sia concluso e che lo storico sia completo.</li>
-</ol>
-<div style="margin-top:10px;padding:9px;border-radius:9px;background:#fff7ed;border:1px solid #fed7aa"><strong>⚠️ Importante:</strong> <strong>PRONTO PER INVIO</strong> non significa che il deposito sia stato inviato. La trasmissione deve essere realmente eseguita fuori dal connettore automatico e poi registrata.</div>
+<button type="button" class="btn" data-pct-guide="manuale" aria-expanded="false">📘 MANUALE · Come si usa passo passo</button>
+<button type="button" class="btn" data-pct-guide="namirial" aria-expanded="false">🤖 NAMIRIAL API · Come si usa passo passo</button>
 </div>
-</details>
-<details style="flex:1 1 300px;min-width:280px;border:1px solid #bfdbfe;border-radius:12px;background:#fff;box-shadow:0 2px 8px rgba(15,23,42,.06)">
-<summary style="cursor:pointer;list-style:none;padding:12px 14px;font-weight:800;color:#1e3a8a">🤖 NAMIRIAL API · Come si usa passo passo</summary>
-<div style="padding:14px;font-size:12px;color:#334155;line-height:1.6">
-<p style="margin:0 0 9px"><strong>Quando si usa?</strong><br>Usa questa modalità quando lo Studio dispone del servizio <strong>Namirial PCT-API</strong> e ha ricevuto da Namirial i parametri tecnici e le credenziali necessari.</p>
+<div data-pct-guide-panel="manuale" hidden style="margin-top:10px;padding:15px;border:1px solid #bfdbfe;border-radius:12px;background:#fff;color:#334155;font-size:12px;line-height:1.6">
+<h4 style="margin:0 0 8px;color:#0f172a">📘 MANUALE · Procedura completa</h4>
+<p style="margin:0 0 9px"><strong>Quando usarlo:</strong> quando la trasmissione viene effettuata tramite il canale esterno dello Studio.</p>
 <ol style="margin:0;padding-left:20px">
-<li><strong>Attiva il servizio Namirial PCT-API</strong> presso Namirial. <a href="https://documentation.namirial.com/it/b2b" target="_blank" rel="noopener noreferrer">Documentazione ufficiale Namirial</a></li>
-<li>Apri <strong>⚙️ Configurazione integrazione</strong> nella pagina PCT/PEC.</li>
+<li><strong>Apri il fascicolo</strong> corretto.</li>
+<li><strong>Controlla il procedimento:</strong> ufficio, registro, RG, anno e parti.</li>
+<li><strong>Crea il deposito:</strong> tipo di atto, oggetto e ufficio destinatario.</li>
+<li><strong>Aggiungi atto e allegati</strong> dal fascicolo.</li>
+<li>Premi <strong>Verifica</strong> e correggi eventuali errori.</li>
+<li>Completa la firma e premi <strong>Conferma firma</strong>.</li>
+<li>Premi <strong>Genera busta</strong>.</li>
+<li>Premi <strong>Valida per INVIO</strong>: deve risultare <strong>PRONTO PER INVIO</strong>.</li>
+<li><strong>Effettua realmente l'invio</strong> tramite il canale esterno dello Studio.</li>
+<li>Torna qui e premi <strong>Manuale / Registra trasmissione</strong>.</li>
+<li>Registra <strong>accettazione, consegna ed esito</strong> quando disponibili.</li>
+<li>Controlla lo storico e premi <strong>Chiudi</strong> solo a ciclo concluso.</li>
+</ol>
+<div style="margin-top:10px;padding:9px;border-radius:9px;background:#fff7ed;border:1px solid #fed7aa"><strong>⚠️ Attenzione:</strong> <strong>PRONTO PER INVIO</strong> significa pronto, non trasmesso.</div>
+</div>
+<div data-pct-guide-panel="namirial" hidden style="margin-top:10px;padding:15px;border:1px solid #bfdbfe;border-radius:12px;background:#fff;color:#334155;font-size:12px;line-height:1.6">
+<h4 style="margin:0 0 8px;color:#0f172a">🤖 NAMIRIAL API · Procedura completa</h4>
+<p style="margin:0 0 9px"><strong>Quando usarlo:</strong> quando lo Studio dispone del servizio Namirial PCT-API e dei parametri tecnici/credenziali forniti da Namirial.</p>
+<ol style="margin:0;padding-left:20px">
+<li>Attiva presso Namirial il servizio <strong>PCT-API</strong>. <a href="https://documentation.namirial.com/it/b2b" target="_blank" rel="noopener noreferrer">Documentazione ufficiale Namirial</a>.</li>
+<li>Apri <strong>⚙️ Configurazione integrazione</strong>.</li>
 <li>Imposta <strong>Provider = Namirial</strong>, <strong>Modalità = API</strong> e <strong>Abilitato</strong>.</li>
-<li>Inserisci <strong>solo i parametri forniti da Namirial</strong>: Base URL API, autenticazione, percorsi TEST/CREA/STATO/SINCRONIZZA e formato della richiesta.</li>
-<li>Inserisci le <strong>credenziali</strong> nel pannello protetto. Il segreto non viene mostrato nella pagina.</li>
-<li>Premi <strong>Test API Namirial</strong>. Se il test non è positivo, <strong>non inviare</strong>: correggi prima la configurazione.</li>
-<li><strong>Crea e prepara il deposito</strong> esattamente come nella modalità manuale: procedimento, atto, allegati, verifica, firma, busta.</li>
-<li>Premi <strong>Valida per INVIO</strong>. Il deposito deve risultare <strong>PRONTO PER INVIO</strong>.</li>
-<li>Premi <strong>Invia con Namirial</strong>. Il connettore server-side trasmette la richiesta e registra l'eventuale ID esterno restituito.</li>
-<li>Premi <strong>Interroga servizio</strong> per verificare lo stato oppure usa <strong>Sincronizza depositi Namirial</strong>.</li>
-<li>Quando disponibili, il gestionale registra <strong>accettazione, consegna, esito e documenti/ricevute restituiti</strong>.</li>
-<li><strong>Chiudi il deposito</strong> solo quando l'esito e lo storico sono completi.</li>
+<li>Inserisci i parametri API forniti da Namirial.</li>
+<li>Inserisci le credenziali nel pannello protetto.</li>
+<li>Premi <strong>Test API Namirial</strong>. Se fallisce, non inviare.</li>
+<li>Prepara il deposito: procedimento, atto, allegati, verifica, firma e busta.</li>
+<li>Premi <strong>Valida per INVIO</strong> e verifica <strong>PRONTO PER INVIO</strong>.</li>
+<li>Premi <strong>Invia con Namirial</strong>.</li>
+<li>Premi <strong>Interroga servizio</strong> oppure <strong>Sincronizza depositi Namirial</strong>.</li>
+<li>Controlla accettazione, consegna, esito e ricevute/documenti restituiti.</li>
+<li>Controlla lo storico e premi <strong>Chiudi</strong> quando il ciclo è completo.</li>
 </ol>
-<div style="margin-top:10px;padding:9px;border-radius:9px;background:#eff6ff;border:1px solid #bfdbfe"><strong>💡 In breve:</strong> con Namirial il gestionale prepara il deposito, lo invia tramite il connettore e può sincronizzare gli stati; i parametri API e le credenziali devono essere quelli ufficialmente forniti da Namirial.</div>
-</div>
-</details>
+<div style="margin-top:10px;padding:9px;border-radius:9px;background:#eff6ff;border:1px solid #bfdbfe"><strong>💡 In breve:</strong> il gestionale prepara, Namirial trasmette tramite il connettore configurato e il gestionale sincronizza gli stati restituiti.</div>
 </div>
 </div></div><div class="card" style="margin-top:14px;background:#f8fafc"><h4 style="margin:0 0 10px">➕ Nuovo deposito</h4>
         <form id="pctDepositForm"><div style="display:grid;grid-template-columns:2fr 1fr 2fr 1fr;gap:8px"><select id="pctDepProc" required>${procOptions}</select><input id="pctDepType" placeholder="Tipo atto" required><input id="pctDepSubject" placeholder="Oggetto"><input id="pctDepRecipient" placeholder="Ufficio destinatario"></div><textarea id="pctDepNotes" placeholder="Note operative" style="width:100%;margin-top:8px;min-height:60px"></textarea><div id="pctDepositStatus" style="font-size:12px;margin-top:8px"></div><div style="display:flex;justify-content:flex-end;margin-top:8px"><button class="btn btn-success" style="color:#fff;background:#15803d;border-color:#15803d;font-weight:700">Crea deposito</button></div></form>
