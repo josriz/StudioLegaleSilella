@@ -290,8 +290,8 @@
       const d=deposits.find(x=>x.id===b.dataset.pctSend);if(!d)return;
       if(!config.enabled){alert('Configura e abilita prima il servizio esterno.');return}
       if(!confirm('Confermare INVIO? In modalità manuale il gestionale registra il deposito come pronto per trasmissione esterna; non simula un invio al portale.'))return;
-      const {error}=await c.from('studio_pct_depositi_v2').update({stato:'inviato',submitted_at:new Date().toISOString(),external_channel:config.send_mode||'manual',updated_at:new Date().toISOString()}).eq('id',d.id);
-      if(error)alert(error.message);else{await event(d.id,'invio','inviato',{channel:config.send_mode||'manual',portal_url:config.portal_url||null,modalita:config.send_mode||'manual'});refreshAll()}
+      const {error}=await c.from('studio_pct_depositi_v2').update({stato:'pronto_invio',submitted_at:null,external_channel:config.send_mode||'manual',updated_at:new Date().toISOString(),notes:'INVIO interno completato. Trasmissione esterna non eseguita: connettore ministeriale/provider non ancora attivo.'}).eq('id',d.id);
+      if(error)alert(error.message);else{await event(d.id,'invio_pronto','pronto_invio',{channel:config.send_mode||'manual',portal_url:config.portal_url||null,modalita:config.send_mode||'manual',external_transmission:false});alert('INVIO interno completato. Il deposito è pronto per la trasmissione sul canale esterno configurato. Nessun invio ministeriale è stato simulato.');refreshAll()}
     });
     document.querySelectorAll('[data-pct-download]').forEach(b=>b.onclick=async()=>{const a=artifacts.find(x=>x.id===b.dataset.pctDownload);if(!a?.storage_path)return;b.disabled=true;try{const {data,error}=await c.storage.from('studio-legale-documenti').createSignedUrl(a.storage_path,300);if(error)throw error;await c.from('studio_pct_external_artifacts').update({status:'scaricato',downloaded_at:new Date().toISOString()}).eq('id',a.id);window.open(data.signedUrl,'_blank','noopener');}catch(e){alert('Download non riuscito: '+(e?.message||e))}finally{b.disabled=false}});
     document.querySelectorAll('[data-pct-poll]').forEach(b=>b.onclick=async()=>{
