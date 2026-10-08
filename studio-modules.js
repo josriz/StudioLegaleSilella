@@ -160,13 +160,88 @@
   }
 
   function renderAgenda(){
-    panel('agenda',`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div><h3>📅 Agenda Legale & Scadenze</h3><div style="font-size:12px;color:#64748b">Scadenze e udienze persistenti in studio_agenda</div></div><button class="btn btn-info" id="agendaRefresh">Aggiorna</button></div>
-    <div class="card" style="margin-top:14px;background:#f8fafc"><h4 style="margin:0 0 8px">➕ Nuovo evento</h4><form id="agendaForm" style="display:grid;grid-template-columns:2fr 1.2fr 1fr 1.2fr 1fr auto;gap:8px;align-items:end"><input id="agTitle" placeholder="Titolo" required><select id="agPractice">${practiceOptions()}</select><select id="agType"><option value="udienza">Udienza</option><option value="termine">Termine</option><option value="deposito">Deposito</option><option value="adempimento">Adempimento</option><option value="appuntamento">Appuntamento</option><option value="altro">Altro</option></select><input id="agStart" type="datetime-local" required><select id="agPriority"><option value="normale">Normale</option><option value="alta">Alta</option><option value="urgente">Urgente</option><option value="bassa">Bassa</option></select><button class="btn btn-success">Salva</button></form>
-      <div id="hearingFields" style="display:none;margin-top:12px;padding:12px;background:#fff;border:1px solid #e2e8f0;border-radius:8px"><div style="font-size:12px;font-weight:700;margin-bottom:8px">⚖️ Dati dell'udienza</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px"><input id="agCourt" placeholder="Tribunale"><input id="agSection" placeholder="Sezione"><input id="agJudge" placeholder="Giudice"><input id="agRG" placeholder="Numero R.G."><input id="agRoom" placeholder="Aula"><input id="agAddress" placeholder="Indirizzo"><input id="agNotes" placeholder="Note / adempimenti collegati" style="grid-column:span 2"><label style="grid-column:span 4;display:flex;gap:8px;align-items:center;font-size:12px"><input id="agClientVisible" type="checkbox" checked> Mostra questa informazione al cliente nel Portale</label></div></div><div id="agendaStatus" style="font-size:12px;margin-top:8px"></div></div>
-    <table><thead><tr><th>Data</th><th>Cliente/Fascicolo</th><th>Evento</th><th>Tipo</th><th>Sede</th><th>Priorità</th><th>Stato</th><th>Azioni</th></tr></thead><tbody data-module-body>${state.agenda.map(a=>{const p=state.practices.find(p=>p.id===a.pratica_id);const location=a.location||'—';return '<tr><td>'+fmt(a.starts_at)+'</td><td>'+esc(p?.client_name||'—')+'</td><td>'+esc(a.title)+'</td><td>'+esc(a.type)+'</td><td>'+esc(location)+'</td><td>'+esc(a.priority)+'</td><td>'+esc(a.status)+'</td><td>'+(a.status==='da_fare'?'<button class="btn btn-success" data-ag-done="'+a.id+'">Completa</button> ':'')+'<button class="btn btn-danger" data-ag-del="'+a.id+'">Elimina</button></td></tr>'}).join('')||'<tr><td colspan="8">Nessun evento.</td></tr>'}</tbody></table></div>`);
-    document.getElementById('agendaRefresh').onclick=refreshAll;const type=document.getElementById('agType'),hf=document.getElementById('hearingFields');const toggleHearing=()=>{hf.style.display=type.value==='udienza'?'block':'none';};type.onchange=toggleHearing;toggleHearing();
-    document.getElementById('agendaForm').onsubmit=async e=>{e.preventDefault();const isH=type.value==='udienza';const location=isH?[agCourt.value.trim(),agSection.value.trim(),agRoom.value.trim(),agAddress.value.trim()].filter(Boolean).join(' · ')||null:null;const notes=isH?[agJudge.value.trim()?('Giudice: '+agJudge.value.trim()):'',agRG.value.trim()?('R.G.: '+agRG.value.trim()):'',agNotes.value.trim()].filter(Boolean).join(' · ')||null:null;const {error}=await getClient().from('studio_agenda').insert({title:agTitle.value.trim(),pratica_id:agPractice.value||null,type:type.value,starts_at:new Date(agStart.value).toISOString(),priority:agPriority.value,created_by:state.user.id,location,notes,client_visible:isH&&agClientVisible.checked,client_note:isH?(agNotes.value.trim()||null):null});document.getElementById('agendaStatus').textContent=error?'Errore: '+error.message:(isH?'Udienza salvata in agenda e collegata al fascicolo.':'Evento salvato in agenda.');if(!error){e.target.reset();toggleHearing();refreshAll();}};
-    document.querySelectorAll('[data-ag-done]').forEach(b=>b.onclick=async()=>{const {error}=await getClient().from('studio_agenda').update({status:'completata'}).eq('id',b.dataset.agDone);if(error)alert(error.message);else refreshAll()});document.querySelectorAll('[data-ag-del]').forEach(b=>b.onclick=async()=>{if(!confirm("Eliminare evento?"))return;const {error}=await getClient().from('studio_agenda').delete().eq('id',b.dataset.agDel);if(error)alert(error.message);else refreshAll()});
+    const c=getClient();
+    const editingId={value:null};
+    const teamOptions='<option value="">— non assegnato —</option>'+state.team.map(u=>'<option value="'+u.user_id+'">'+esc(u.full_name||u.user_id)+'</option>').join('');
+    const rows=state.agenda.map(a=>{
+      const p=state.practices.find(x=>x.id===a.pratica_id);
+      const assignee=state.team.find(x=>x.user_id===a.assigned_user_id);
+      const visibility=a.client_visible?'Visibile al cliente':'Solo Studio';
+      return '<tr><td>'+fmt(a.starts_at)+'</td><td>'+esc(p?.client_name||'—')+'</td><td><strong>'+esc(a.title)+'</strong><div style="font-size:11px;color:#64748b">'+esc(a.client_note||'')+'</div></td><td>'+esc(a.type)+'</td><td>'+esc(a.location||'—')+'</td><td>'+esc(a.priority)+'</td><td>'+esc(assignee?.full_name||'—')+'</td><td><span class="badge '+(a.client_visible?'green':'')+'">'+visibility+'</span><br>'+esc(a.status)+'</td><td>'+(a.status==='da_fare'?'<button class="btn btn-info" data-ag-edit="'+a.id+'">Modifica</button> <button class="btn btn-success" data-ag-done="'+a.id+'">Completa</button> ':'')+'<button class="btn btn-danger" data-ag-del="'+a.id+'">Elimina</button></td></tr>';
+    }).join('');
+    panel('agenda',`<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <div><h3>📅 Agenda Legale & Scadenze</h3><div style="font-size:12px;color:#64748b">Calendario persistente di udienze, termini, depositi, adempimenti e appuntamenti collegati ai fascicoli.</div></div>
+        <button class="btn btn-info" id="agendaRefresh">Aggiorna</button>
+      </div>
+      <div class="card" style="margin-top:14px;background:#f8fafc">
+        <h4 id="agendaFormTitle" style="margin:0 0 8px">➕ Nuovo evento</h4>
+        <form id="agendaForm" style="display:grid;grid-template-columns:2fr 1.3fr 1fr 1.2fr 1fr 1.3fr auto;gap:8px;align-items:end">
+          <input id="agTitle" placeholder="Titolo" required>
+          <select id="agPractice">${practiceOptions()}</select>
+          <select id="agType"><option value="udienza">Udienza</option><option value="termine">Termine</option><option value="deposito">Deposito</option><option value="adempimento">Adempimento</option><option value="appuntamento">Appuntamento</option><option value="altro">Altro</option></select>
+          <input id="agStart" type="datetime-local" required>
+          <select id="agPriority"><option value="normale">Normale</option><option value="alta">Alta</option><option value="urgente">Urgente</option><option value="bassa">Bassa</option></select>
+          <select id="agAssignee">${teamOptions}</select>
+          <button class="btn btn-success" id="agendaSaveBtn">Salva</button>
+        </form>
+        <div style="margin-top:12px;padding:12px;background:#fff;border:1px solid #e2e8f0;border-radius:8px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:8px">👤 Visibilità e comunicazione al Cliente</div>
+          <div style="display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:10px;align-items:center">
+            <input id="agClientNote" placeholder="Nota che il Cliente vedrà nel Portale (facoltativa)">
+            <label style="display:flex;gap:8px;align-items:center;font-size:12px;white-space:nowrap"><input id="agClientVisible" type="checkbox"> Mostra evento al Cliente nel Portale</label>
+          </div>
+          <div style="font-size:11px;color:#64748b;margin-top:6px">La pubblicazione è separata dalla registrazione interna: se attivata, il Cliente vedrà l'evento solo nella propria pratica collegata.</div>
+        </div>
+        <div id="hearingFields" style="display:none;margin-top:12px;padding:12px;background:#fff;border:1px solid #e2e8f0;border-radius:8px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:8px">⚖️ Dati dell'udienza</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px">
+            <input id="agCourt" placeholder="Tribunale"><input id="agSection" placeholder="Sezione"><input id="agJudge" placeholder="Giudice"><input id="agRG" placeholder="Numero R.G.">
+            <input id="agRoom" placeholder="Aula"><input id="agAddress" placeholder="Indirizzo"><input id="agNotes" placeholder="Note / adempimenti collegati" style="grid-column:span 2">
+          </div>
+        </div>
+        <div id="agendaStatus" style="font-size:12px;margin-top:8px"></div>
+      </div>
+      <div style="overflow:auto"><table><thead><tr><th>Data</th><th>Cliente/Fascicolo</th><th>Evento</th><th>Tipo</th><th>Sede</th><th>Priorità</th><th>Professionista</th><th>Visibilità/Stato</th><th>Azioni</th></tr></thead><tbody data-module-body>${rows||'<tr><td colspan="9">Nessun evento.</td></tr>'}</tbody></table></div>
+    </div>`);
+    const refresh=document.getElementById('agendaRefresh'), form=document.getElementById('agendaForm'), type=document.getElementById('agType'), hf=document.getElementById('hearingFields');
+    const toggleHearing=()=>{hf.style.display=type.value==='udienza'?'block':'none';};
+    const resetForm=()=>{form.reset();editingId.value=null;document.getElementById('agendaFormTitle').textContent='➕ Nuovo evento';document.getElementById('agendaSaveBtn').textContent='Salva';toggleHearing();};
+    refresh.onclick=refreshAll; type.onchange=toggleHearing; toggleHearing();
+    document.querySelectorAll('[data-ag-edit]').forEach(b=>b.onclick=()=>{
+      const a=state.agenda.find(x=>x.id===b.dataset.agEdit); if(!a)return;
+      editingId.value=a.id; document.getElementById('agendaFormTitle').textContent='✏️ Modifica evento'; document.getElementById('agendaSaveBtn').textContent='Aggiorna';
+      agTitle.value=a.title||''; agPractice.value=a.pratica_id||''; agType.value=a.type||'altro'; agStart.value=a.starts_at?new Date(a.starts_at).toISOString().slice(0,16):''; agPriority.value=a.priority||'normale'; agAssignee.value=a.assigned_user_id||'';
+      agClientVisible.checked=!!a.client_visible; agClientNote.value=a.client_note||'';
+      const isH=a.type==='udienza', parts=(a.location||'').split(' · ');
+      agCourt.value=isH?(parts[0]||''):''; agSection.value=isH?(parts[1]||''):''; agRoom.value=isH?(parts[2]||''):''; agAddress.value=isH?(parts[3]||''):'';
+      const n=a.notes||''; agJudge.value=(n.match(/Giudice:\s*([^·]+)/)||[])[1]?.trim()||''; agRG.value=(n.match(/R\.G\.:\s*([^·]+)/)||[])[1]?.trim()||''; agNotes.value=agClientNote.value||'';
+      toggleHearing(); window.scrollTo({top:document.getElementById('panel-agenda').offsetTop||0,behavior:'smooth'});
+    });
+    form.onsubmit=async e=>{
+      e.preventDefault(); const isH=type.value==='udienza'; const visible=agClientVisible.checked;
+      if(visible&&!agPractice.value){document.getElementById('agendaStatus').textContent='Per mostrare un evento al Cliente devi collegarlo a un fascicolo.';return;}
+      const location=isH?[agCourt.value.trim(),agSection.value.trim(),agRoom.value.trim(),agAddress.value.trim()].filter(Boolean).join(' · ')||null:null;
+      const notes=isH?[agJudge.value.trim()?('Giudice: '+agJudge.value.trim()):'',agRG.value.trim()?('R.G.: '+agRG.value.trim()):'',agNotes.value.trim()].filter(Boolean).join(' · ')||null:null;
+      const payload={title:agTitle.value.trim(),pratica_id:agPractice.value||null,type:type.value,starts_at:new Date(agStart.value).toISOString(),priority:agPriority.value,assigned_user_id:agAssignee.value||null,location,notes,client_visible:visible,client_note:agClientNote.value.trim()||null,updated_at:new Date().toISOString()};
+      let error=null,id=editingId.value;
+      if(id){const r=await c.from('studio_agenda').update(payload).eq('id',id).select('id').single();error=r.error;id=r.data?.id||id;if(!error)await c.from('studio_audit').insert({pratica_id:payload.pratica_id||null,actor_user_id:state.user.id,event_type:'agenda_evento_modificato',details:{agenda_id:id,title:payload.title}});}
+      else{const r=await c.from('studio_agenda').insert({...payload,created_by:state.user.id}).select('id').single();error=r.error;id=r.data?.id;if(!error)await c.from('studio_audit').insert({pratica_id:payload.pratica_id||null,actor_user_id:state.user.id,event_type:'agenda_evento_creato',details:{agenda_id:id,title:payload.title,type:payload.type,client_visible:visible}});}
+      const s=document.getElementById('agendaStatus'); s.textContent=error?'Errore: '+error.message:(editingId.value?'Evento aggiornato correttamente.':'Evento salvato correttamente.'); if(!error){resetForm();await refreshAll();}
+    };
+    document.querySelectorAll('[data-ag-done]').forEach(b=>b.onclick=async()=>{
+      const a=state.agenda.find(x=>x.id===b.dataset.agDone); if(!a)return;
+      const {error}=await c.from('studio_agenda').update({status:'completata',updated_at:new Date().toISOString()}).eq('id',a.id);
+      if(error)alert(error.message); else {await c.from('studio_audit').insert({pratica_id:a.pratica_id||null,actor_user_id:state.user.id,event_type:'agenda_evento_completato',details:{agenda_id:a.id,title:a.title}});await refreshAll();}
+    });
+    document.querySelectorAll('[data-ag-del]').forEach(b=>b.onclick=async()=>{
+      const a=state.agenda.find(x=>x.id===b.dataset.agDel); if(!a)return;
+      if(!confirm('Eliminare definitivamente questo evento dall’Agenda?'))return;
+      const audit=await c.from('studio_audit').insert({pratica_id:a.pratica_id||null,actor_user_id:state.user.id,event_type:'agenda_evento_eliminato',details:{agenda_id:a.id,title:a.title,type:a.type}});
+      if(audit.error){alert('Impossibile registrare l’operazione di audit: '+audit.error.message);return;}
+      const {error}=await c.from('studio_agenda').delete().eq('id',a.id);
+      if(error)alert(error.message);else await refreshAll();
+    });
   }
 
   function renderPec(){
