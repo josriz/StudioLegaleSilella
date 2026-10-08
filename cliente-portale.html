@@ -80,7 +80,7 @@ button,input,select,textarea{font:inherit}.container{width:min(1160px,calc(100% 
 <div id="clientHelpModal" class="modal helpModal hidden"><div class="modalBox"><div class="modalHead"><h2 id="clientHelpTitle">Aiuto Area Cliente</h2><button class="iconBtn" id="closeClientHelp">✕</button></div><div id="clientHelpBody" style="margin-top:15px"></div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js?v=20261002-6"></script>
+<script src="config.js?v=20261002-6"></script><script src="cliente-assistente.js?v=20261008-1"></script>
 <script>
 const sb=supabase.createClient(window.STUDIO_SUPABASE_URL,window.STUDIO_SUPABASE_PUBLISHABLE_KEY,{auth:{storageKey:'silella-client-auth',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const FN=window.STUDIO_SUPABASE_URL+'/functions/v1/studio-ricevi-pratica';
