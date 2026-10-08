@@ -1,4 +1,4 @@
-<!-- MANUALE_UFFICIALE: true | SOURCE_OF_TRUTH: StudioLegaleSilella/manuale.html | BRANCH: main | VERSION: 1.1 | UPDATED: 2026-10-08 -->
+<!-- MANUALE_UFFICIALE: true | SOURCE_OF_TRUTH: StudioLegaleSilella/manuale.html | BRANCH: main | VERSION: 1.2 | UPDATED: 2026-10-08 -->
 
 <!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Manuale Operativo Online — Studio Legale Silella</title>
@@ -470,11 +470,90 @@
 <ol><li>Nel campo <span class="ui">Quesito / Parola chiave:</span> scrivi il termine da cercare.</li><li>Premi <span class="ui">Cerca nei dati dello Studio 🔎</span>.</li><li>Leggi <span class="ui">Risultati</span>.</li><li>Verifica il fascicolo o la fonte prima di utilizzare l'informazione.</li></ol>
 <div class="warning">La ricerca interna non è una fonte giuridica esterna e non sostituisce la verifica del documento originale.</div></section>
 
-<section id="agenda"><h2>11. Agenda &amp; Scadenze</h2><div class="where"><strong>Titolo effettivo della schermata:</strong> <span class="ui">📅 Agenda Legale &amp; Scadenze</span>. La funzione usa il calendario persistente dello Studio.</div>
+<section id="agenda"><h2>11. Agenda &amp; Scadenze</h2>
+<div class="where"><strong>Titolo effettivo della schermata:</strong> <span class="ui">📅 Agenda Legale &amp; Scadenze</span>. È il calendario operativo persistente dello Studio: serve a trasformare ogni attività futura in un elemento registrato, collegabile a un fascicolo, assegnabile a un professionista e, quando deciso dallo Studio, comunicabile al Cliente.</div>
 <div class="where"><strong>Dove:</strong> <span class="ui">Gestione pratiche e attività → Agenda &amp; Scadenze</span>.</div>
-<h3>Creare un evento</h3><ol><li>Premi <span class="ui">➕ Nuovo evento</span>. Il modulo mostra i campi <span class="ui">Titolo</span>, <span class="ui">Cliente/Fascicolo</span>, <span class="ui">Tipo</span>, <span class="ui">Data e ora</span>, <span class="ui">Priorità</span> e <span class="ui">Salva</span>.</li><li>Inserisci <span class="ui">Titolo</span>.</li><li>Collega <span class="ui">Cliente/Fascicolo</span> quando disponibile.</li><li>Scegli il tipo: <strong>Udienza, Scadenza, Deposito, Adempimento, Appuntamento, Altro</strong>.</li><li>Inserisci <span class="ui">Data e ora *</span>.</li><li>Per gli eventi che lo prevedono inserisci <span class="ui">Luogo</span>.</li><li>Inserisci la <span class="ui">Nota visibile al Cliente</span> solo se deve essere realmente pubblicata.</li><li>Se previsto, seleziona <span class="ui">Rendi subito visibile al Cliente</span>.</li><li>Premi <span class="ui">Salva evento</span>.</li></ol>
-<h3>Dati aggiuntivi per un'udienza</h3><p>Quando il tipo è Udienza possono essere richiesti Tribunale, Sezione, Giudice, Numero R.G., Aula, Indirizzo e note. Compilali con i dati ufficiali dell'atto/calendario.</p>
-<h3>Gestione</h3><p>Usa <span class="ui">Completa</span> quando l'evento è realmente concluso. Usa <span class="ui">Elimina</span> solo dopo aver verificato che non serva più allo storico operativo.</section>
+
+<h3>Perché usare l'Agenda: benefici operativi</h3>
+<ul>
+<li><strong>Non perdere termini e appuntamenti:</strong> udienze, termini, depositi, adempimenti e appuntamenti restano registrati in un unico punto.</li>
+<li><strong>Collegare ogni attività al fascicolo:</strong> il contesto della pratica rimane associato all'evento e il Cliente può vedere l'evento solo nella propria pratica collegata.</li>
+<li><strong>Stabilire le priorità:</strong> ogni evento può essere classificato come <span class="ui">Bassa</span>, <span class="ui">Normale</span>, <span class="ui">Alta</span> o <span class="ui">Urgente</span>.</li>
+<li><strong>Attribuire il lavoro:</strong> l'evento può essere assegnato a un professionista del Team.</li>
+<li><strong>Distinguere interno e comunicato al Cliente:</strong> la registrazione nell'Agenda è interna; la pubblicazione nel Portale è una scelta separata e controllata.</li>
+<li><strong>Tenere traccia delle attività concluse:</strong> un evento può passare da <span class="ui">da_fare</span> a <span class="ui">completata</span>.</li>
+<li><strong>Correggere un evento senza ricrearlo:</strong> <span class="ui">Modifica</span> permette di aggiornare dati, assegnazione, priorità e visibilità.</li>
+<li><strong>Mantenere una traccia delle operazioni:</strong> creazione, modifica, completamento ed eliminazione vengono registrati nell'audit dello Studio.</li>
+<li><strong>Vedere le prossime scadenze dalla Dashboard:</strong> gli eventi ancora aperti e futuri alimentano il riquadro <span class="ui">Prossime scadenze</span>.</li>
+<li><strong>Informare il Cliente in modo controllato:</strong> quando un evento è pubblicato, il Cliente lo vede nella propria pratica con data/ora, tipo, eventuale luogo e nota destinata a lui.</li>
+</ul>
+
+<div class="result"><strong>Vantaggio pratico:</strong> l'Agenda non è un semplice elenco di appuntamenti. È il punto di raccordo tra fascicolo, lavoro del professionista, scadenze operative e comunicazione controllata con il Cliente.</div>
+
+<h3>Come appare visivamente allo Studio</h3>
+<p>Aprendo la funzione viene mostrata una scheda <span class="ui">📅 Agenda Legale &amp; Scadenze</span>, il pulsante <span class="ui">Aggiorna</span> e il riquadro <span class="ui">➕ Nuovo evento</span>. Sotto compare una tabella con <strong>Data, Cliente/Fascicolo, Evento, Tipo, Sede, Priorità, Professionista, Visibilità/Stato e Azioni</strong>.</p>
+
+<h3>Creare un evento</h3>
+<ol>
+<li>Premi <span class="ui">➕ Nuovo evento</span>.</li>
+<li>Compila <span class="ui">Titolo</span>.</li>
+<li>Seleziona <span class="ui">Cliente/Fascicolo</span> quando l'evento riguarda una pratica. È obbligatorio collegare un fascicolo se vuoi pubblicare l'evento al Cliente.</li>
+<li>Scegli il tipo: <strong>Udienza, Termine, Deposito, Adempimento, Appuntamento, Altro</strong>.</li>
+<li>Inserisci <span class="ui">Data e ora</span>.</li>
+<li>Scegli la <span class="ui">Priorità</span>: Bassa, Normale, Alta o Urgente.</li>
+<li>Se necessario assegna l'evento a un <span class="ui">Professionista</span>.</li>
+<li>Seleziona <span class="ui">Mostra evento al Cliente nel Portale</span> solo quando il contenuto è verificato e destinato al Cliente.</li>
+<li>Se vuoi accompagnare l'evento con una comunicazione, inserisci la <span class="ui">Nota che il Cliente vedrà nel Portale</span>.</li>
+<li>Premi <span class="ui">Salva</span>. Il messaggio conferma che l'evento è stato registrato.</li>
+</ol>
+
+<h3>Udienza: dati specialistici</h3>
+<p>Se scegli <span class="ui">Udienza</span>, la schermata apre il blocco <span class="ui">⚖️ Dati dell'udienza</span> con i campi <span class="ui">Tribunale</span>, <span class="ui">Sezione</span>, <span class="ui">Giudice</span>, <span class="ui">Numero R.G.</span>, <span class="ui">Aula</span>, <span class="ui">Indirizzo</span> e <span class="ui">Note / adempimenti collegati</span>. La sede viene composta e mostrata nella colonna <span class="ui">Sede</span>. I dati devono essere inseriti sulla base della documentazione/calendario ufficiale.</p>
+
+<h3>Modificare un evento</h3>
+<ol>
+<li>Nella tabella individua l'evento.</li>
+<li>Premi <span class="ui">Modifica</span>.</li>
+<li>Il modulo viene ripopolato con i dati già registrati.</li>
+<li>Correggi data/ora, fascicolo, tipo, priorità, professionista, dati udienza o visibilità.</li>
+<li>Premi <span class="ui">Aggiorna</span>.</li>
+<li>Verifica il messaggio <span class="ui">Evento aggiornato correttamente.</span> e controlla la riga aggiornata.</li>
+</ol>
+
+<h3>Completare un evento</h3>
+<p>Quando l'attività è realmente conclusa, premi <span class="ui">Completa</span>. L'evento passa allo stato <span class="ui">completata</span> e non viene più considerato una scadenza aperta. L'operazione viene registrata nell'audit.</p>
+
+<h3>Eliminare un evento</h3>
+<p>Usa <span class="ui">Elimina</span> solo quando l'evento non deve più esistere nell'Agenda. Il sistema chiede una conferma esplicita e registra nell'audit l'eliminazione prima di procedere. Per una semplice correzione è preferibile <span class="ui">Modifica</span>.</p>
+
+<h3>Come funziona la visibilità al Cliente</h3>
+<div class="step"><b>1. Interno:</b> un evento salvato senza pubblicazione resta disponibile nell'Area Studio e non viene mostrato al Cliente.</div>
+<div class="step"><b>2. Pubblicato:</b> selezionando <span class="ui">Mostra evento al Cliente nel Portale</span>, l'evento deve essere collegato a un fascicolo del Cliente.</div>
+<div class="step"><b>3. Sicurezza:</b> il Portale interroga solo gli eventi <span class="ui">client_visible = true</span> collegati alle pratiche del Cliente autenticato.</div>
+<div class="step"><b>4. Visualizzazione:</b> il Cliente non vede la tabella interna dell'Agenda. Vede gli eventi pubblicati dentro la propria scheda pratica, nella sezione degli aggiornamenti/eventi.</div>
+<div class="step"><b>5. Contenuto:</b> il Cliente può vedere titolo, tipo, data/ora, luogo quando presente e la <span class="ui">Nota che il Cliente vedrà nel Portale</span>.</div>
+
+<div class="result"><strong>Esperienza visiva del Cliente:</strong> entrando nel Portale, il Cliente apre la propria pratica e trova la sequenza degli eventi resa disponibile dallo Studio. Un evento pubblicato può apparire come una voce con titolo, tipo, data/ora, luogo e nota. In alto alla pratica viene inoltre indicato il <span class="ui">Prossimo evento</span> quando esiste un evento futuro visibile.</div>
+
+<h3>Regola fondamentale sulla pubblicazione</h3>
+<div class="warning"><strong>Registrare un evento non significa comunicarlo al Cliente.</strong> La pubblicazione è una seconda decisione. Prima di attivarla controlla destinatario, fascicolo, data/ora, luogo e testo della nota. Non inserire nel campo destinato al Cliente informazioni interne dello Studio.</div>
+
+<h3>Agenda e Dashboard</h3>
+<p>La Dashboard conta gli eventi nello stato <span class="ui">da_fare</span> come <strong>Scadenze aperte</strong> e mostra tra le <span class="ui">Prossime scadenze</span> gli eventi futuri ancora aperti, ordinati per data. Questo permette di usare la Dashboard come controllo giornaliero e l'Agenda come registro operativo dettagliato.</p>
+
+<h3>Workflow consigliato</h3>
+<ol>
+<li><strong>Apri il fascicolo</strong> e individua ciò che deve essere fatto.</li>
+<li><strong>Registra l'evento</strong> in Agenda con data/ora, tipo e priorità.</li>
+<li><strong>Assegna il professionista</strong> quando serve.</li>
+<li><strong>Controlla i dati</strong>, soprattutto per udienze e termini.</li>
+<li><strong>Decidi la visibilità</strong> al Cliente solo se appropriato.</li>
+<li><strong>Completa</strong> l'evento quando l'attività è realmente conclusa.</li>
+<li><strong>Controlla la Dashboard</strong> per verificare che non rimangano scadenze aperte inattese.</li>
+</ol>
+
+<div class="result"><strong>Obiettivo finale:</strong> ogni attività futura importante deve avere un posto nell'Agenda, un contesto (fascicolo quando necessario), una priorità, un responsabile quando opportuno e uno stato coerente con ciò che è realmente accaduto.</div>
+</section>
 
 <section id="pct"><h2>12. Registro Depositi PCT</h2>
 <div class="where"><strong>Dove:</strong> <span class="ui">Gestione pratiche e attività → Registro Depositi PCT</span>. Il pannello attuale mostra <strong>PCT / PEC · Depositi</strong>.</div>
