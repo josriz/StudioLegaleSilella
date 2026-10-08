@@ -1,0 +1,605 @@
+<!-- MANUALE_UFFICIALE: true | SOURCE_OF_TRUTH: StudioLegaleSilella/manuale.html | BRANCH: main | VERSION: 1.1 | UPDATED: 2026-10-08 -->
+
+<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Manuale Operativo Online — Studio Legale Silella</title>
+<style>
+:root{--nav:#0f172a;--ink:#172033;--muted:#5b6678;--line:#dbe2ea;--bg:#f4f7fb;--card:#fff;--ok:#166534;--warn:#92400e;--danger:#991b1b;--blue:#1d4ed8}
+*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.58}header{background:linear-gradient(135deg,#0f172a,#243447);color:#fff;padding:34px 5vw}header h1{margin:0 0 8px;font-size:30px}header p{margin:0;color:#dbeafe;max-width:1000px}.wrap{display:grid;grid-template-columns:285px minmax(0,1fr);max-width:1500px;margin:auto}.toc{position:sticky;top:0;height:100vh;overflow:auto;background:#fff;border-right:1px solid var(--line);padding:20px}.toc a{display:block;color:#334155;text-decoration:none;padding:6px 4px;font-size:13px}.toc a:hover{color:var(--blue)}main{padding:28px 34px 80px;min-width:0}section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px;margin:0 0 24px;box-shadow:0 4px 16px rgba(15,23,42,.04)}h2{margin:0 0 14px;font-size:23px;border-bottom:1px solid var(--line);padding-bottom:10px}h3{margin:24px 0 8px;font-size:18px}h4{margin:17px 0 6px;font-size:15px}.where{background:#eef5ff;border-left:4px solid var(--blue);padding:12px 14px;border-radius:7px;margin:12px 0}.step{border:1px solid #e3e8ef;border-radius:10px;padding:14px;margin:10px 0;background:#fbfcfe}.step b{color:#0f3f91}.result{background:#f0fdf4;border-left:4px solid #16a34a;padding:11px 14px;border-radius:7px}.warning{background:#fff7ed;border-left:4px solid #ea580c;padding:11px 14px;border-radius:7px}.error{background:#fef2f2;border-left:4px solid #dc2626;padding:11px 14px;border-radius:7px}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}th,td{border:1px solid var(--line);padding:8px;vertical-align:top;text-align:left}th{background:#f1f5f9}code,.ui{font-family:Consolas,monospace;background:#eef2f7;padding:2px 5px;border-radius:4px;font-size:.92em}.badge{display:inline-block;border-radius:12px;padding:2px 8px;background:#e2e8f0;font-size:12px}.small{font-size:13px;color:var(--muted)}ul,ol{padding-left:22px}.top{font-size:12px;text-align:right}.no{color:var(--danger);font-weight:600}.yes{color:var(--ok);font-weight:600}@media(max-width:900px){.wrap{display:block}.toc{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--line)}main{padding:16px}section{padding:18px}header{padding:24px 18px}}
+</style></head><body>
+<header><h1>Manuale Operativo Online — Studio Legale Silella</h1><p>Manuale per l'utilizzatore dell'Area Studio. Le istruzioni sotto sono state ricostruite leggendo l'interfaccia attuale di <strong>studio-dashboard.html</strong> e i moduli JavaScript collegati. Il criterio è operativo: dove cliccare, cosa compilare, cosa aspettarsi, quando si può proseguire e cosa fare se un'operazione non riesce.</p></header>
+<div class="wrap"><nav class="toc"><strong>Indice operativo</strong>
+<a href="#accesso">1. Accesso e regole</a><a href="#dashboard">2. Dashboard</a><a href="#demo">3. Demo — Una giornata nello Studio</a><a href="#team">4. Professionisti &amp; Team</a><a href="#clients">5. Anagrafica Clienti</a><a href="#portal">6. Portale Clienti</a><a href="#received">7. Pratiche ricevute</a><a href="#conflict">8. Conflict Check</a><a href="#matters">9. Fascicoli &amp; Contenzioso</a><a href="#search">10. Ricerca interna</a><a href="#agenda">11. Agenda &amp; Scadenze</a><a href="#pct">12. Registro Depositi PCT</a><a href="#pst">13. PST Ministero · Consultazione</a><a href="#time">14. Time Tracker</a><a href="#ai-letters">15. Lettere &amp; Comunicazioni AI</a><a href="#ai-acts">16. Redazione Atti AI</a><a href="#lab">17. Lexroom LAB</a><a href="#communications">18. Registro Comunicazioni</a><a href="#billing">19. Fatturazione</a><a href="#archive">20. Archivio &amp; Audit</a><a href="#privacy">21. Gestione Privacy</a><a href="#errors">22. Errori e controlli</a><a href="#workflow">23. Flusso completo consigliato</a>
+</nav><main>
+<section id="accesso"><h2>1. Accesso e regole di utilizzo</h2>
+<div class="where"><strong>Dove:</strong> accedi dalla pagina di login dell'Area Studio. Dopo l'autenticazione viene aperto il dashboard riservato.</div>
+<div class="step"><b>1. Controlla di essere nell'Area Studio.</b> L'intestazione mostra <span class="ui">Area Riservata - Avv. Titolare Silella</span>. Il pulsante <span class="ui">Esci</span> chiude la sessione locale e riporta alla pagina di accesso Studio.</div>
+<div class="step"><b>2. Usa il menu laterale.</b> Sul desktop è sempre visibile; su smartphone si apre con <span class="ui">☰</span>. Le voci statiche sono quelle elencate in questo manuale. Alcune funzioni vengono aggiunte dinamicamente dai moduli e quindi possono comparire solo dopo il caricamento.</div>
+<div class="step"><b>3. Usa <span class="ui">🔔</span> per le notifiche.</b> Il contatore rosso compare quando sono presenti notifiche non lette. Apri il pannello, leggi la notifica e usa il collegamento operativo quando presente.</div>
+<div class="step"><b>4. Usa <span class="ui">HELP</span> quando presente.</b> Apre la guida contestuale del modulo. Il pulsante <span class="ui">🖨️ Stampa</span> stampa la schermata corrente.</div>
+<div class="warning"><strong>Regola:</strong> il manuale non considera un'operazione conclusa solo perché la schermata è cambiata. Verifica sempre il messaggio di successo, lo stato della riga o il dato registrato.</div>
+</section>
+
+<section id="dashboard"><h2>2. Dashboard</h2>
+<div class="where"><strong>Dove:</strong> menu <span class="ui">Studio → Dashboard</span>. È la schermata iniziale dell'Area Studio.</div>
+<h3>Cosa controllare appena entri</h3>
+<ol><li>Leggi i contatori sintetici: fascicoli, scadenze aperte, comunicazioni e gli altri indicatori mostrati.</li><li>Controlla <strong>Attività recenti reali</strong> per capire cosa è stato registrato.</li><li>Controlla <strong>Prossime scadenze</strong> prima di iniziare il lavoro giornaliero.</li><li>Se il dato sembra vecchio, usa <span class="ui">Aggiorna</span> dove disponibile oppure rientra nella funzione interessata.</li></ol>
+<div class="result"><strong>Risultato corretto:</strong> la Dashboard è una vista di controllo; la modifica dei dati operativi si effettua nei relativi moduli.</div>
+</section>
+
+<section id="demo"><h2>3. Demo — Una giornata tipo nello Studio</h2>
+<div class="where"><strong>Dove:</strong> <span class="ui">Studio → Demo — Una giornata nello Studio</span>. Questa sezione non è una funzione automatica che esegue operazioni sul fascicolo: è una simulazione operativa che spiega, nell'ordine corretto, come utilizzare le funzioni dell'Area Studio durante una normale giornata di lavoro.</div>
+
+<h3>Obiettivo della giornata</h3>
+<p>La giornata tipo parte da una richiesta di assistenza e arriva alla gestione ordinata del fascicolo. Il percorso collega le funzioni dello Studio senza saltare i controlli professionali: <strong>richiesta → verifica cliente → conflict check → decisione professionale → onboarding/privacy → documenti → fascicolo → agenda e attività → comunicazioni → AI → eventuale PCT → ricevute/esiti → fatturazione → audit</strong>.</p>
+
+<h3>08:30 — Apertura dello Studio</h3>
+<div class="step"><b>1.</b> Accedi all'<span class="ui">Area Studio</span> con l'utenza professionale.</div>
+<div class="step"><b>2.</b> Controlla la <span class="ui">Dashboard</span>: fascicoli, scadenze aperte, comunicazioni, attività recenti e prossime scadenze.</div>
+<div class="step"><b>3.</b> Controlla <span class="ui">🔔 Notifiche</span> e apri quelle che richiedono un'azione.</div>
+<div class="result"><strong>Risultato:</strong> sai quali attività sono nuove, quali scadenze sono imminenti e quali richieste richiedono una presa in carico.</div>
+
+<h3>09:00 — Arriva una nuova richiesta cliente</h3>
+<div class="step"><b>1.</b> Apri <span class="ui">Clienti → Pratiche ricevute</span> quando la richiesta proviene dal Portale Clienti.</div>
+<div class="step"><b>2.</b> Apri la richiesta e leggi <strong>identità del richiedente, descrizione del problema e documenti allegati</strong>.</div>
+<div class="step"><b>3.</b> Apri gli allegati disponibili e controlla che siano leggibili e pertinenti.</div>
+<div class="step"><b>4.</b> Non confondere la <strong>ricezione</strong> della richiesta con l'<strong>accettazione dell'incarico</strong>: la prima registra ciò che è arrivato allo Studio; la seconda è una decisione professionale.</div>
+
+<h3>09:15 — Verifica anagrafica e conflitto di interessi</h3>
+<div class="step"><b>1.</b> Vai in <span class="ui">Clienti → Anagrafica Clienti</span> e verifica che il cliente sia correttamente identificato.</div>
+<div class="step"><b>2.</b> Se il cliente non esiste ancora, crea la scheda con i dati richiesti dalla schermata.</div>
+<div class="step"><b>3.</b> Vai in <span class="ui">Gestione pratiche e attività → Conflict Check</span>.</div>
+<div class="step"><b>4.</b> Inserisci il nome della controparte e, quando disponibile, il <strong>Codice Fiscale / P.IVA</strong>.</div>
+<div class="step"><b>5.</b> Premi <span class="ui">Esegui Verifica Incrociata 🔍</span>.</div>
+<div class="step"><b>6.</b> Esamina gli eventuali risultati e apri la pratica di origine quando disponibile.</div>
+<div class="warning"><strong>Regola professionale:</strong> il risultato del Conflict Check è un elemento di verifica. Non è il gestionale a decidere automaticamente se esiste un conflitto: la decisione resta al professionista.</div>
+
+<h3>09:30 — Decisione dello Studio</h3>
+<p>Il professionista decide se procedere con la richiesta. Se non si procede, la gestione si ferma secondo le procedure dello Studio. Se si procede, si passa all'onboarding del cliente e alla costruzione del fascicolo.</p>
+
+<h3>10:00 — Onboarding e privacy</h3>
+<div class="step"><b>1.</b> Apri la scheda del cliente in <span class="ui">Anagrafica Clienti</span>.</div>
+<div class="step"><b>2.</b> Controlla in <span class="ui">Gestione Privacy</span> che esista un'informativa <strong>attiva e vigente</strong>.</div>
+<div class="step"><b>3.</b> Usa <span class="ui">Prepara informativa per il cliente</span>, seleziona il cliente e premi <span class="ui">Prepara documento</span>.</div>
+<div class="step"><b>4.</b> Controlla il PDF generato. Il cliente non lo vede ancora in questa fase.</div>
+<div class="step"><b>5.</b> Solo dopo il controllo usa <span class="ui">Approva e invia al cliente</span>.</div>
+<div class="step"><b>6.</b> L'informativa viene inviata nel <strong>Portale Cliente</strong>; non viene eseguito automaticamente un invio PEC.</div>
+<div class="result"><strong>Risultato:</strong> il documento privacy è stato preparato, verificato e, dopo l'approvazione dello Studio, reso disponibile al cliente nel canale previsto.</div>
+
+<h3>10:30 — Documenti e apertura del fascicolo</h3>
+<div class="step"><b>1.</b> Torna in <span class="ui">Anagrafica Clienti</span> e apri il cliente.</div>
+<div class="step"><b>2.</b> Se necessario usa <span class="ui">Nuova pratica</span> e compila <strong>Area legale, Controparte e Descrizione / oggetto</strong>.</div>
+<div class="step"><b>3.</b> Premi <span class="ui">Crea fascicolo</span> e verifica il messaggio di conferma.</div>
+<div class="step"><b>4.</b> Quando il cliente restituisce documenti dal portale, esaminali e usa <span class="ui">Convalida</span> solo dopo il controllo professionale.</div>
+<div class="result"><strong>Risultato:</strong> il fascicolo diventa il contenitore centrale della pratica e collega cliente, controparte, documenti e attività.</div>
+
+<h3>11:00 — Lavorazione del fascicolo</h3>
+<div class="step"><b>1.</b> Apri <span class="ui">Gestione pratiche e attività → Fascicoli &amp; Contenzioso</span>.</div>
+<div class="step"><b>2.</b> Apri il fascicolo interessato e controlla stato, descrizione, documenti e attività.</div>
+<div class="step"><b>3.</b> Se devi cercare informazioni già presenti nello Studio, usa <span class="ui">Ricerca interna</span>.</div>
+<div class="step"><b>4.</b> Se devi registrare tempo lavorato, usa <span class="ui">Time Tracker → Avvia sessione</span> e, al termine, <span class="ui">Ferma</span>.</div>
+
+<h3>11:30 — Agenda e scadenze</h3>
+<div class="step"><b>1.</b> Apri <span class="ui">Agenda &amp; Scadenze</span>, la cui schermata è <span class="ui">📅 Agenda Legale &amp; Scadenze</span>.</div>
+<div class="step"><b>2.</b> Premi <span class="ui">➕ Nuovo evento</span>.</div>
+<div class="step"><b>3.</b> Inserisci <strong>Titolo, Cliente/Fascicolo, Tipo, Data e ora e Priorità</strong> secondo le esigenze dell'evento.</div>
+<div class="step"><b>4.</b> Se si tratta di un'udienza, completa i dati aggiuntivi richiesti dalla schermata, come tribunale, sezione, giudice, R.G., aula e indirizzo.</div>
+<div class="step"><b>5.</b> Usa la visibilità al cliente solo quando l'informazione è stata verificata ed è effettivamente destinata al portale.</div>
+<div class="step"><b>6.</b> Premi <span class="ui">Salva evento</span>.</div>
+
+<h3>12:00 — Comunicazioni</h3>
+<div class="step"><b>1.</b> Se devi predisporre una comunicazione, usa <span class="ui">Intelligenza Artificiale → Lettere &amp; Comunicazioni AI</span>.</div>
+<div class="step"><b>2.</b> Seleziona il fascicolo, il tipo di comunicazione, il destinatario quando necessario, l'oggetto e inserisci le <strong>Istruzioni dell'avvocato</strong>.</div>
+<div class="step"><b>3.</b> Premi <span class="ui">Genera comunicazione con AI 🚀</span>.</div>
+<div class="step"><b>4.</b> Leggi e correggi la bozza. L'AI non sostituisce il controllo professionale.</div>
+<div class="step"><b>5.</b> Se la comunicazione deve essere semplicemente registrata, usa <span class="ui">Registro Comunicazioni</span>. La registrazione non equivale a un invio PEC.</div>
+
+<h3>14:30 — Redazione di un atto o analisi AI</h3>
+<div class="step"><b>1.</b> Per una bozza di atto apri <span class="ui">Redazione Atti AI</span>, indica il fascicolo quando previsto e inserisci istruzioni precise.</div>
+<div class="step"><b>2.</b> Premi <span class="ui">Genera Bozza con IA 🚀</span> quando disponibile.</div>
+<div class="step"><b>3.</b> Leggi l'intero testo generato, confrontalo con il fascicolo e correggi ogni dato necessario.</div>
+<div class="step"><b>4.</b> Per le funzioni di prova usa <span class="ui">Lexroom LAB</span>, compresi <span class="ui">Analisi LAB</span>, <span class="ui">Bozza LAB</span>, <span class="ui">Approva bozza</span> e le funzioni AI gratuite disponibili.</div>
+<div class="warning">Una bozza AI non è un atto definitivo e non equivale a firma digitale, deposito PCT o invio PEC.</div>
+
+<h3>15:30 — Eventuale deposito PCT</h3>
+<p>Quando la pratica richiede un deposito, il lavoro passa nel <span class="ui">Registro Depositi PCT</span>. L'ordine operativo è:</p>
+<ol>
+<li>selezionare/creare il <strong>procedimento</strong>;</li>
+<li>creare il <strong>Nuovo deposito</strong>;</li>
+<li>compilare <strong>Tipo atto, Oggetto, Ufficio destinatario e Note operative</strong>;</li>
+<li>collegare gli <strong>allegati</strong> dal fascicolo;</li>
+<li>eseguire <span class="ui">Verifica</span> e correggere gli errori prima di proseguire;</li>
+<li>gestire la <strong>firma</strong> dei documenti con il metodo effettivamente configurato;</li>
+<li>verificare lo stato della firma;</li>
+<li>generare e validare la <strong>busta</strong>;</li>
+<li>portare il deposito allo stato <strong>Pronto per invio</strong> dopo la conferma professionale richiesta;</li>
+<li>eseguire o registrare l'<strong>INVIO</strong> solo quando esiste una trasmissione reale attraverso il canale configurato;</li>
+<li>acquisire <strong>ricevute, esiti e documenti recuperati</strong>;</li>
+<li>chiudere il deposito con l'esito reale.</li>
+</ol>
+<div class="warning"><strong>Importante:</strong> il gestionale non deve dichiarare inviato un deposito solo perché è stato preparato. Se il collegamento esterno non è attivo, la trasmissione deve essere eseguita con il canale reale previsto dallo Studio e poi registrata nel gestionale.</div>
+
+<h3>16:30 — Controllo finale della giornata</h3>
+<div class="step"><b>1.</b> Controlla <span class="ui">Agenda &amp; Scadenze</span> per verificare che nessun termine o udienza sia rimasto senza registrazione.</div>
+<div class="step"><b>2.</b> Controlla i depositi PCT in corso e assicurati che ogni deposito abbia lo stato coerente con ciò che è realmente avvenuto.</div>
+<div class="step"><b>3.</b> Controlla <span class="ui">Registro Comunicazioni</span> e la documentazione prodotta durante la giornata.</div>
+<div class="step"><b>4.</b> Controlla <span class="ui">Fatturazione</span> se è necessario registrare una bozza.</div>
+<div class="step"><b>5.</b> Apri <span class="ui">Archivio &amp; Audit</span> e verifica gli eventi che devono risultare tracciati.</div>
+<div class="result"><strong>Fine giornata corretta:</strong> ogni attività importante è collegata al fascicolo corretto, le scadenze sono registrate, i documenti sono verificati, le comunicazioni sono tracciate, gli eventuali depositi riportano lo stato reale e l'audit consente di ricostruire le operazioni eseguite.</div>
+
+<h3>Che cosa la demo NON deve mai far credere</h3>
+<ul>
+<li>che una richiesta ricevuta sia automaticamente un incarico accettato;</li>
+<li>che il Conflict Check produca da solo una decisione professionale;</li>
+<li>che una bozza AI sia automaticamente un atto definitivo;</li>
+<li>che una firma venga eseguita solo perché è stato rilevato un dispositivo USB/HID;</li>
+<li>che una registrazione nel Registro Comunicazioni sia un invio PEC;</li>
+<li>che la preparazione di un deposito PCT equivalga alla trasmissione;</li>
+<li>che il gestionale riceva ricevute ministeriali se il canale esterno non è realmente collegato;</li>
+<li>che la fatturazione in bozza equivalga a un'emissione SDI reale.</li>
+</ul>
+
+<div class="result"><strong>La giornata tipo, quindi, non è una sequenza dimostrativa generica:</strong> è il percorso operativo completo che collega le funzioni dell'Area Studio, mantenendo sempre separati <strong>preparazione, verifica, approvazione professionale, invio reale e registrazione dell'esito</strong>.</div>
+</section><section id="faq-operativa">
+<h2>FAQ operativa completa — “Cosa devo fare?”</h2>
+<p>Questa è la sezione da usare quando non sai da dove partire. Non devi interpretare il manuale: cerca la domanda più vicina al tuo problema e segui il percorso indicato. In ogni risposta trovi <strong>dove andare → cosa cliccare → cosa compilare → cosa controllare → cosa significa il risultato</strong>.</p>
+
+<h3>1. Accesso, menu e orientamento</h3>
+<p><strong>Come entro nell'Area Studio?</strong> Apri la pagina di accesso Studio e autentica l'utenza professionale. Se l'autenticazione è valida e l'utente ha ruolo <strong>studio</strong> o <strong>admin</strong>, viene mostrata la Dashboard.</p>
+<p><strong>Perché vedo “Accesso Studio richiesto”?</strong> La sessione non è disponibile o non è più valida. Ricarica la pagina; se non basta, esegui nuovamente l'accesso. Non tentare di aggirare il controllo.</p>
+<p><strong>Come esco?</strong> Usa <span class="ui">Esci</span>. La sessione locale viene chiusa e vieni riportato alla pagina di accesso.</p>
+<p><strong>Dove trovo una funzione?</strong> Parti dal gruppo del menu: <strong>Studio</strong>, <strong>Professionisti e Team</strong>, <strong>Clienti</strong>, <strong>Gestione pratiche e attività</strong>, <strong>Intelligenza Artificiale</strong>, <strong>Comunicazioni e amministrazione</strong> oppure <strong>Controllo e conformità</strong>. Alcune voci, come <span class="ui">Pratiche ricevute</span> e alcune funzioni AI, vengono aggiunte dinamicamente dopo il caricamento.</p>
+<p><strong>Uso lo Studio da smartphone: dove trovo il menu?</strong> Premi <span class="ui">☰</span>. La sidebar si apre in sovrapposizione; scegli la funzione e poi lavora nel pannello visualizzato.</p>
+<p><strong>Come aggiorno i dati?</strong> Usa <span class="ui">Aggiorna</span> nel modulo interessato. Se una funzione non risponde o la sessione sembra incoerente, ricarica la pagina e verifica nuovamente l'accesso.</p>
+<p><strong>A cosa serve 🔔?</strong> Apre le notifiche dello Studio. Leggi ogni notifica e usa il collegamento operativo quando presente; una notifica non sostituisce la verifica della pratica.</p>
+<p><strong>A cosa serve HELP?</strong> Quando presente apre la guida contestuale del modulo. Usalo se sei già nella funzione e vuoi sapere come procedere senza uscire dalla schermata.</p>
+
+<h3>2. Dashboard</h3>
+<p><strong>Cosa devo controllare appena entro?</strong> Vai in <span class="ui">Studio → Dashboard</span>. Controlla contatori, <strong>Attività recenti reali</strong> e <strong>Prossime scadenze</strong>, poi apri le funzioni che richiedono intervento.</p>
+<p><strong>La Dashboard modifica le pratiche?</strong> No: è una vista di controllo. Per modificare un dato devi entrare nella funzione specifica.</p>
+<p><strong>Un numero della Dashboard sembra vecchio: cosa faccio?</strong> Premi <span class="ui">Aggiorna</span> dove disponibile; se il dato continua a non coincidere, apri direttamente il modulo operativo e verifica la registrazione reale.</p>
+
+<h3>3. Professionisti &amp; Team</h3>
+<p><strong>Come invito un professionista?</strong> Vai in <span class="ui">Professionisti e Team → Professionisti &amp; Team</span>. Compila <span class="ui">Nome</span>, <span class="ui">Email</span>, scegli <span class="ui">Professionista</span> oppure <span class="ui">Admin</span> e premi <span class="ui">Invia invito</span>. Attendi il messaggio di esito.</p>
+<p><strong>Come so se l'invito è riuscito?</strong> Verifica il messaggio <span class="ui">Invito inviato. Il professionista completerà l’attivazione tramite email.</span> e poi controlla la tabella del Team.</p>
+<p><strong>Posso usare un altro ruolo?</strong> Nella schermata attuale i ruoli previsti sono <strong>Professionista</strong> e <strong>Admin</strong>. Non inventare ruoli diversi.</p>
+<p><strong>L'invito dà subito accesso?</strong> No: l'invito avvia l'attivazione tramite email. Il professionista deve completare la propria attivazione.</p>
+<p><strong>L'invito fallisce: cosa controllo?</strong> Controlla sessione Studio, nome, email e messaggio restituito. Non ripetere l'invio molte volte prima di verificare se il primo tentativo è già partito.</p>
+<p><strong>Come aggiorno la tabella del Team?</strong> Premi <span class="ui">Aggiorna</span>.</p>
+
+<h3>4. Anagrafica Clienti</h3>
+<p><strong>Come creo un cliente?</strong> Vai in <span class="ui">Clienti → Anagrafica Clienti</span>. In <span class="ui">Nuovo cliente</span> compila <span class="ui">Nome / società</span>, <span class="ui">CF / P.IVA</span>, <span class="ui">Email</span> e <span class="ui">Telefono</span>, quindi premi <span class="ui">Salva</span>. Verifica <span class="ui">Cliente salvato.</span>.</p>
+<p><strong>Qual è il campo obbligatorio?</strong> <span class="ui">Nome / società</span>. Gli altri dati vengono registrati quando disponibili.</p>
+<p><strong>Come apro un cliente?</strong> Nella tabella premi <span class="ui">Apri</span>. Si apre la scheda con portale, privacy, pratiche e documenti.</p>
+<p><strong>Come creo una pratica dal cliente?</strong> Apri il cliente → <span class="ui">Nuova pratica</span> → compila <span class="ui">Area legale</span>, <span class="ui">Controparte</span>, <span class="ui">Descrizione / oggetto</span> → <span class="ui">Crea fascicolo</span>.</p>
+<p><strong>Come verifico che il fascicolo sia stato creato?</strong> Controlla il messaggio di conferma e la sezione <strong>Pratiche del cliente</strong>.</p>
+<p><strong>Come vedo i documenti del cliente?</strong> Apri il cliente e guarda <strong>Documenti del portale</strong>. Per una richiesta appena ricevuta puoi partire anche da <span class="ui">Pratiche ricevute → Apri pratica → Apri allegato</span>.</p>
+<p><strong>Quando uso “Convalida”?</strong> Solo dopo avere aperto e controllato il documento restituito dal cliente. <span class="ui">Convalida</span> serve a registrare che il documento è stato verificato.</p>
+<p><strong>Come verifico la privacy di un cliente?</strong> Nella scheda cliente controlla il riquadro <strong>Privacy</strong>: mostra se esiste una presa visione e quale versione attiva è disponibile.</p>
+<p><strong>Come invito il cliente al Portale dalla sua scheda?</strong> Nella scheda usa l'azione di invito/informativa quando disponibile; se devi gestire solo l'accesso, usa <span class="ui">Clienti → Portale Clienti → Invita / attiva</span>.</p>
+<p><strong>Posso eliminare un cliente?</strong> Sì, ma <span class="ui">Elimina</span> richiede conferma e può rimuovere dati/documenti del portale collegati. Verifica cliente e conseguenze prima di confermare.</p>
+<p><strong>Ho eliminato per errore: cosa faccio?</strong> Non ripetere l'operazione. Verifica subito se esiste un backup/procedura di recupero dello Studio e segnala l'accaduto al responsabile.</p>
+
+<h3>5. Portale Clienti</h3>
+<p><strong>Come attivo il Portale per un cliente?</strong> Vai in <span class="ui">Clienti → Portale Clienti</span> → seleziona il cliente → verifica <span class="ui">Email cliente</span> → <span class="ui">Invita / attiva</span>. Verifica il messaggio <span class="ui">Invito cliente inviato via Auth.</span>.</p>
+<p><strong>Perché non posso inviare un documento?</strong> Il cliente deve avere un accesso attivo. Se compare <span class="ui">Il cliente non ha ancora un accesso attivo.</span>, attiva prima il Portale.</p>
+<p><strong>Come invio un documento?</strong> Seleziona cliente, pratica quando pertinente, modalità di firma e file; poi premi <span class="ui">Invia</span>. Il file deve essere presente e non superare <strong>10 MB</strong>.</p>
+<p><strong>Quali modalità di firma posso scegliere?</strong> <span class="ui">Nessuna firma</span>, <span class="ui">Scarica · firma · ricarica</span>, <span class="ui">Firma online (servizio esterno)</span>, <span class="ui">Firma qualificata (servizio esterno)</span> e <span class="ui">Firma con SPID (servizio esterno)</span>.</p>
+<p><strong>La firma esterna viene eseguita automaticamente dal gestionale?</strong> No. La modalità esterna indica il canale previsto; l'effettiva firma dipende dal servizio esterno configurato e dal suo esito.</p>
+<p><strong>Come capisco se il documento è partito?</strong> Controlla <strong>Ultimi documenti portale</strong> e lo stato del documento.</p>
+<p><strong>Il file è più grande di 10 MB: cosa faccio?</strong> Riduci il file secondo la procedura dello Studio e riprova; non usare un file diverso senza verificare che sia quello corretto.</p>
+
+<h3>6. Pratiche ricevute</h3>
+<p><strong>Dove trovo una richiesta inviata dal cliente?</strong> Vai in <span class="ui">Pratiche ricevute</span>. La voce è caricata dinamicamente dall'Area Studio dopo l'autenticazione.</p>
+<p><strong>Cosa devo controllare per prima cosa?</strong> Apri la pratica e verifica <strong>cliente, codice fiscale/P.IVA, area legale, controparte, descrizione e allegati</strong>.</p>
+<p><strong>Come apro un allegato?</strong> Premi <span class="ui">Apri allegato</span> e controlla il documento originale.</p>
+<p><strong>La pratica ricevuta è già accettata?</strong> No. <strong>Ricezione</strong> e <strong>accettazione dell'incarico</strong> sono fasi diverse.</p>
+<p><strong>Come elimino una pratica ricevuta?</strong> Premi <span class="ui">Elimina</span> solo dopo avere verificato l'ID/cliente corretto. Il sistema chiede conferma ed elimina anche i file collegati alla pratica.</p>
+
+<h3>7. Conflict Check</h3>
+<p><strong>Come faccio il controllo conflitti?</strong> Vai in <span class="ui">Gestione pratiche e attività → Conflict Check</span>. Inserisci <span class="ui">Nome / Denominazione Controparte</span> e, se disponibile, <span class="ui">Codice Fiscale / P.IVA</span>; premi <span class="ui">Esegui Verifica Incrociata 🔍</span>.</p>
+<p><strong>Cosa significa un risultato?</strong> Significa che esiste un elemento da esaminare. Apri la pratica di origine quando disponibile e valuta il contesto.</p>
+<p><strong>Il sistema decide se esiste un conflitto?</strong> No. La decisione professionale resta all'avvocato.</p>
+<p><strong>Se non trovo risultati posso accettare automaticamente?</strong> No. Il risultato del controllo è una verifica, non una sostituzione della valutazione professionale.</p>
+
+<h3>8. Fascicoli &amp; Contenzioso</h3>
+<p><strong>Dove trovo un fascicolo?</strong> Vai in <span class="ui">Gestione pratiche e attività → Fascicoli &amp; Contenzioso</span>. Usa <span class="ui">Cerca fascicolo</span> e, se utile, il filtro <span class="ui">Stato</span>.</p>
+<p><strong>Come apro il fascicolo corretto?</strong> Controlla cliente, controparte e materia prima di aprire la scheda. Se ci sono più risultati, non scegliere solo in base al nome.</p>
+<p><strong>Cosa trovo dentro un fascicolo?</strong> Cliente, controparte, materia, stato, descrizione e le funzioni collegate a documenti, attività, agenda, comunicazioni, AI, tempi, fatturazione e PCT.</p>
+<p><strong>Come cerco un documento partendo dal fascicolo?</strong> Apri il fascicolo e usa la sezione documenti/azioni disponibili. Per documenti ricevuti dal portale, verifica anche la scheda cliente.</p>
+<p><strong>Come collego una scadenza al fascicolo?</strong> Vai in <span class="ui">Agenda &amp; Scadenze</span> e seleziona il <span class="ui">Cliente/Fascicolo</span> durante la creazione dell'evento.</p>
+<p><strong>Come passo dal fascicolo al PCT?</strong> Usa <span class="ui">Gestisci PCT</span> quando presente, oppure apri <span class="ui">Registro Depositi PCT</span>.</p>
+<p><strong>Come registro i tempi di quel fascicolo?</strong> Usa <span class="ui">Gestisci tempi</span> o apri <span class="ui">Time Tracker</span> e seleziona la pratica.</p>
+
+<h3>9. Ricerca interna</h3>
+<p><strong>Come cerco una parola?</strong> Vai in <span class="ui">Gestione pratiche e attività → Ricerca interna</span>, inserisci <span class="ui">Quesito / Parola chiave</span> e premi <span class="ui">Cerca nei dati dello Studio 🔎</span>.</p>
+<p><strong>Ho trovato un risultato: posso considerarlo vero?</strong> No. Apri/verifica la fonte e confronta il dato con il documento o fascicolo originale.</p>
+<p><strong>La ricerca sostituisce una ricerca giuridica esterna?</strong> No. Cerca nei dati dello Studio e non sostituisce fonti normative, banche dati o documenti ufficiali.</p>
+
+<h3>10. Agenda &amp; Scadenze</h3>
+<p><strong>Come inserisco una scadenza?</strong> Vai in <span class="ui">Agenda &amp; Scadenze</span> → <span class="ui">📅 Agenda Legale &amp; Scadenze</span> → <span class="ui">➕ Nuovo evento</span>. Compila <span class="ui">Titolo</span>, <span class="ui">Cliente/Fascicolo</span>, <span class="ui">Tipo</span>, <span class="ui">Data e ora</span>, <span class="ui">Priorità</span> e premi <span class="ui">Salva</span>.</p>
+<p><strong>Quali tipi posso scegliere?</strong> <strong>Udienza, Termine, Deposito, Adempimento, Appuntamento, Altro</strong>.</p>
+<p><strong>Come inserisco un'udienza?</strong> Scegli <span class="ui">Udienza</span>. Si apre <strong>Dati dell'udienza</strong>: <span class="ui">Tribunale, Sezione, Giudice, Numero R.G., Aula, Indirizzo, Note / adempimenti collegati</span>. Se previsto, lascia attiva <span class="ui">Mostra questa informazione al cliente nel Portale</span> solo dopo avere verificato i dati.</p>
+<p><strong>Come completo un evento?</strong> Nell'elenco individua l'evento con stato <span class="ui">da_fare</span> e premi <span class="ui">Completa</span>. Controlla poi che lo stato sia <span class="ui">completata</span>.</p>
+<p><strong>Come elimino un evento?</strong> Premi <span class="ui">Elimina</span> sulla riga corretta e conferma. Verifica prima cliente, data e titolo.</p>
+<p><strong>Posso modificare un evento già salvato?</strong> Nella schermata attuale non è presente un comando di modifica dedicato: se il dato è errato, valuta la procedura disponibile nello Studio (ad esempio eliminazione e ricreazione) e conserva la corretta tracciabilità.</p>
+<p><strong>Come pubblico un evento al cliente?</strong> Per un'udienza usa il checkbox <span class="ui">Mostra questa informazione al cliente nel Portale</span>. Prima di attivarlo verifica che dati e note siano effettivamente destinati al cliente.</p>
+<p><strong>Perché un evento non appare?</strong> Premi <span class="ui">Aggiorna</span>, verifica data/fascicolo e controlla che il salvataggio abbia restituito un messaggio positivo.</p>
+
+<h3>11. Registro Depositi PCT</h3>
+<p><strong>Da dove parto?</strong> Vai in <span class="ui">Gestione pratiche e attività → Registro Depositi PCT</span>. Seleziona o crea il procedimento e poi usa <span class="ui">➕ Nuovo deposito</span>.</p>
+<p><strong>Come creo un procedimento?</strong> Compila i dati del procedimento mostrati dalla schermata, inclusi ufficio giudiziario, codice ufficio quando previsto, registro, RG numero/anno, tipo procedimento, sezione, giudice, parte assistita, codice della parte, controparte e note. Salva e verifica che il procedimento compaia nel selettore.</p>
+<p><strong>Come creo il deposito?</strong> Seleziona il procedimento e compila <span class="ui">Tipo atto</span>, <span class="ui">Oggetto</span>, <span class="ui">Ufficio destinatario</span> e <span class="ui">Note operative</span>; premi <span class="ui">Crea deposito</span>.</p>
+<p><strong>Come aggiungo gli allegati?</strong> Nel deposito usa la sezione documenti e aggiungi i documenti dal fascicolo secondo le azioni disponibili. Controlla nome, ruolo, obbligatorietà, percorso del file e presenza dell'hash quando previsto.</p>
+<p><strong>Come verifico il deposito?</strong> Con deposito in <span class="ui">Preparazione</span> premi <span class="ui">Verifica</span>. Se il controllo restituisce errori, correggili e ripeti la verifica.</p>
+<p><strong>Quando posso passare a “Verificato”?</strong> Solo quando la validazione è <strong>OK</strong> e gli allegati richiesti hanno i dati tecnici necessari.</p>
+<p><strong>Come funziona la firma?</strong> In base al metodo scelto per l'allegato. Con <span class="ui">Carta / USB firma</span>, <span class="ui">🔐 Leggi carta / USB</span> può rilevare un dispositivo, ma <strong>rilevare il dispositivo non significa avere firmato il documento</strong>. La firma crittografica deve essere completata con middleware/redattore/provider effettivo.</p>
+<p><strong>Quando un allegato è davvero firmato?</strong> Quando lo stato dell'allegato risulta <span class="ui">firmato</span> e la firma è stata effettivamente completata dal metodo previsto.</p>
+<p><strong>Come genero/confermo la busta?</strong> Dopo la firma usa <span class="ui">Conferma busta generata</span> quando il deposito è nello stato previsto. La busta deve risultare generata e validata.</p>
+<p><strong>Quando diventa “Pronto per INVIO”?</strong> Quando busta e controlli sono validi e sono presenti la <strong>conferma professionale</strong> e l'utente che l'ha effettuata, secondo le regole del deposito.</p>
+<p><strong>Come faccio l'INVIO?</strong> Se il canale è manuale, usa <span class="ui">Registra trasmissione</span> solo per registrare una trasmissione reale già eseguita attraverso il canale esterno previsto. Se è configurato Namirial API, usa <span class="ui">Invia con Namirial</span> e attendi l'esito reale del servizio.</p>
+<p><strong>Posso segnare “inviato” solo perché ho preparato la busta?</strong> No. La preparazione non è una trasmissione.</p>
+<p><strong>Come recupero le ricevute?</strong> Dopo l'invio usa <span class="ui">Interroga servizio</span> quando il provider lo supporta e controlla <span class="ui">📥 Ricevute, esiti e documenti recuperati</span>. Verifica ID esterno, tipo, stato e data.</p>
+<p><strong>Come registro accettazione e consegna?</strong> Usa le azioni di esito del deposito e registra solo eventi realmente ricevuti. Non inventare ricevute o esiti.</p>
+<p><strong>Come chiudo un deposito?</strong> Chiudilo solo quando l'esito reale è stato registrato e sono presenti le informazioni di chiusura richieste. La chiusura è una fase distinta dall'invio.</p>
+<p><strong>Un deposito è in errore: cosa faccio?</strong> Leggi <span class="ui">error_code</span>/<span class="ui">error_message</span> quando disponibili, correggi la causa e ripeti il passaggio consentito. Non forzare una transizione di stato.</p>
+<p><strong>Namirial non risponde: posso dire che è inviato?</strong> No. Se non esiste un esito reale del servizio, lascia il deposito nello stato coerente e risolvi la connessione prima di dichiarare un invio riuscito.</p>
+<p><strong>Posso usare SPID come password del gestionale?</strong> No. Le credenziali personali/di autenticazione non devono essere archiviate in chiaro nel manuale o nel database.</p>
+
+<h3>12. PST Ministero · Consultazione</h3>
+<p><strong>A cosa serve questa funzione?</strong> Serve a predisporre/gestire la consultazione PST secondo il canale tecnico effettivamente abilitato dallo Studio. La schermata non deve simulare dati ministeriali.</p>
+<p><strong>Cosa devo configurare?</strong> Nella sezione di configurazione, quando presente, verifica <span class="ui">Modalità</span>, <span class="ui">Proxy / endpoint</span>, <span class="ui">Codice Software House / soggetto</span>, <span class="ui">Codice fiscale soggetto</span>, <span class="ui">Etichetta certificato</span>, <span class="ui">Scadenza certificato</span> e <span class="ui">Note / requisiti</span>; abilita la configurazione solo quando i dati sono corretti e usa <span class="ui">Salva configurazione PST</span>.</p>
+<p><strong>Perché vedo “PST non verificato”?</strong> Perché la connessione tecnica/certificato/abilitazione necessaria non è stata verificata. Non interpretare la schermata come collegamento ministeriale già funzionante.</p>
+<p><strong>Posso consultare dati reali senza il canale tecnico?</strong> No. La funzione non deve inventare risposte.</p>
+
+<h3>13. Time Tracker</h3>
+<p><strong>Come registro il tempo?</strong> Vai in <span class="ui">Time Tracker</span>, seleziona <span class="ui">Fascicolo</span> e, quando richiesto, <span class="ui">Professionista</span>; premi <span class="ui">Avvia sessione</span>.</p>
+<p><strong>Come capisco che il cronometro è attivo?</strong> Controlla il timer visualizzato, ad esempio <span class="ui">00:00:00</span>, che inizia a registrare il tempo.</p>
+<p><strong>Come fermo la sessione?</strong> Premi <span class="ui">Ferma</span>. Poi controlla la tabella con inizio, fine, durata, fascicolo e attività.</p>
+<p><strong>Posso avviare due sessioni contemporaneamente?</strong> Il modulo impedisce una seconda sessione quando ne esiste già una attiva.</p>
+<p><strong>Ho dimenticato di fermare il timer: cosa faccio?</strong> Fermalo appena te ne accorgi e verifica la durata registrata. Se la durata è anomala, segnala la correzione secondo la procedura amministrativa dello Studio.</p>
+
+<h3>14. Lettere &amp; Comunicazioni AI</h3>
+<p><strong>Come creo una lettera?</strong> Vai in <span class="ui">Intelligenza Artificiale → Lettere &amp; Comunicazioni AI</span>. Seleziona <span class="ui">Fascicolo di riferimento</span>, scegli il <span class="ui">Tipo di comunicazione</span>, compila <span class="ui">Destinatario</span> e <span class="ui">Oggetto</span> quando pertinenti, inserisci <span class="ui">Istruzioni dell'avvocato</span> e premi <span class="ui">Genera comunicazione con AI 🚀</span>.</p>
+<p><strong>Quali tipi di comunicazione posso generare?</strong> Lettera al cliente, lettera alla controparte, diffida, sollecito di pagamento, richiesta documentazione, riscontro a comunicazione ricevuta, comunicazione professionale, email professionale e altro.</p>
+<p><strong>Come correggo una bozza AI?</strong> Non usare la bozza senza revisione. Rileggi il testo, correggi i dati e, se vuoi rigenerare, modifica le <span class="ui">Istruzioni dell'avvocato</span> specificando esattamente cosa deve cambiare, quindi rigenera e ricontrolla.</p>
+<p><strong>L'AI invia la lettera?</strong> No. La generazione produce una bozza e la registra nello storico. L'invio reale deve essere eseguito con il canale effettivamente previsto e registrato separatamente.</p>
+<p><strong>Dove vedo le bozze recenti?</strong> Controlla <span class="ui">📨 Comunicazioni generate recentemente</span>.</p>
+
+<h3>15. Redazione Atti AI</h3>
+<p><strong>Come preparo una bozza di atto?</strong> Vai in <span class="ui">Intelligenza Artificiale → Redazione Atti AI</span>. Seleziona il fascicolo quando previsto, compila <span class="ui">Istruzioni Redazione</span> con tipo di atto, rito, ufficio, obiettivo, fatti, richieste e vincoli, quindi premi <span class="ui">Genera Bozza con IA 🚀</span>.</p>
+<p><strong>Cosa devo controllare nella bozza?</strong> Tutto: parti, date, numeri di ruolo, fatti, riferimenti normativi, richieste, allegati e coerenza con il fascicolo.</p>
+<p><strong>La bozza è già firmata o depositata?</strong> No. La bozza AI non è firma digitale, non è deposito PCT e non è invio PEC.</p>
+<p><strong>Vedo “Firma Digitale &amp; Invio PEC”: significa che è partito?</strong> No, soprattutto in LAB. La presenza dell'area non prova che una firma o un invio reale siano stati eseguiti.</p>
+
+<h3>16. Lexroom LAB</h3>
+<p><strong>Come analizzo un fascicolo con l'AI?</strong> Vai in <span class="ui">Lexroom LAB</span>, individua il fascicolo e usa <span class="ui">Analisi LAB</span> / <span class="ui">Analizza fascicolo con AI</span> secondo il comando disponibile. Leggi il risultato e confrontalo con i documenti originali.</p>
+<p><strong>Come faccio una domanda all'AI?</strong> Usa <span class="ui">Interroga AI gratuitamente</span>, inserisci una domanda precisa e leggi la risposta come supporto, non come decisione professionale.</p>
+<p><strong>Come preparo una bozza LAB?</strong> Premi <span class="ui">Bozza LAB</span>, attendi <span class="ui">Lexroom in elaborazione…</span>, leggi la bozza e usa <span class="ui">Approva bozza</span> solo dopo la revisione.</p>
+<p><strong>Come preparo una comunicazione LAB?</strong> Usa <span class="ui">Prepara comunicazione LAB</span> e verifica il contenuto prima di utilizzarlo.</p>
+<p><strong>Come creo un modello dello Studio?</strong> In <span class="ui">📚 Modelli dello Studio</span> compila <span class="ui">Nome modello</span>, <span class="ui">Materia</span>, inserisci il modello/istruzioni e premi <span class="ui">Salva modello</span>.</p>
+<p><strong>Come correggo una bozza LAB?</strong> Non approvarla subito. Leggi il testo, correggilo secondo la procedura disponibile e approva solo la versione effettivamente controllata.</p>
+<p><strong>LAB invia email o PEC?</strong> No, non devi considerare una funzione LAB come invio reale se non esiste un provider/canale collegato e un esito di trasmissione.</p>
+
+<h3>17. Registro Comunicazioni</h3>
+<p><strong>Come registro una comunicazione?</strong> Vai in <span class="ui">Comunicazioni e amministrazione → Registro Comunicazioni</span>. Seleziona <span class="ui">Email</span>, <span class="ui">PEC</span> o <span class="ui">PCT</span>, collega la pratica, inserisci destinatario e <span class="ui">Oggetto / contenuto</span>, poi premi <span class="ui">Registra</span>.</p>
+<p><strong>Come verifico la registrazione?</strong> Controlla la riga nello storico: data, canale, pratica, destinatario, oggetto e stato.</p>
+<p><strong>“Registrata” significa inviata?</strong> No. Il modulo comunica esplicitamente che <strong>nessun invio PEC automatico è stato eseguito</strong>.</p>
+<p><strong>Come registro una PEC realmente inviata fuori dal gestionale?</strong> Dopo avere effettuato l'invio con il canale reale dello Studio, registra nel modulo i dati della comunicazione e conserva la prova/ricevuta secondo la procedura dello Studio.</p>
+
+<h3>18. Fatturazione</h3>
+<p><strong>Come creo una fattura in bozza?</strong> Vai in <span class="ui">Comunicazioni e amministrazione → Fatturazione</span>. Seleziona <span class="ui">Cliente</span> e <span class="ui">Pratica</span>, inserisci <span class="ui">Descrizione</span>, <span class="ui">Imponibile</span> e <span class="ui">IVA</span>, quindi premi <span class="ui">Salva</span>.</p>
+<p><strong>Come verifico che sia stata salvata?</strong> Controlla il messaggio <span class="ui">Fattura salvata in bozza.</span> e l'elenco risultante.</p>
+<p><strong>La bozza è una fattura SDI emessa?</strong> No. Se SDI non è collegato, è una registrazione interna.</p>
+<p><strong>Come correggo una fattura?</strong> Usa solo i comandi di modifica effettivamente presenti nella schermata. Se non è disponibile una modifica, non creare copie a caso: verifica la procedura amministrativa dello Studio.</p>
+
+<h3>19. Archivio &amp; Audit</h3>
+<p><strong>Dove vedo lo storico?</strong> Vai in <span class="ui">Controllo e conformità → Archivio &amp; Audit</span> → <span class="ui">🗄️ Archivio Storico e Audit Trail</span>.</p>
+<p><strong>Cosa devo leggere?</strong> <strong>Data, attività, fascicolo, utente e dettagli</strong>. Usa questi dati per ricostruire chi ha fatto cosa e quando.</p>
+<p><strong>Come aggiorno lo storico?</strong> Premi <span class="ui">Aggiorna</span>.</p>
+<p><strong>Posso cancellare un evento audit?</strong> Non usare l'audit come una lista da ripulire. Lo storico serve alla ricostruzione delle operazioni e non va cancellato arbitrariamente.</p>
+<p><strong>Non trovo l'operazione che cerco: cosa faccio?</strong> Premi <span class="ui">Aggiorna</span>, controlla il fascicolo e l'utente e verifica se l'azione è stata realmente registrata. Se manca, non dichiarare che è stata tracciata.</p>
+
+<h3>20. Gestione Privacy</h3>
+<p><strong>Come registro un trattamento?</strong> Vai in <span class="ui">Controllo e conformità → Gestione Privacy → Trattamenti</span> → <span class="ui">+ Nuovo trattamento</span>. Compila nome, finalità, base giuridica, categorie interessati, categorie dati, destinatari, conservazione e misure di sicurezza; scegli <span class="ui">Attivo</span>, <span class="ui">In revisione</span> o <span class="ui">Archiviato</span> e salva.</p>
+<p><strong>Come creo un modello privacy?</strong> Apri <span class="ui">Modello Privacy dello Studio</span>, compila <span class="ui">Nome modello</span> e <span class="ui">Versione</span>, allega il file originale se previsto, inserisci/modifica il testo e premi <span class="ui">Salva modello</span>.</p>
+<p><strong>Come imposto logo e identità dello Studio?</strong> Apri <span class="ui">Studio e logo</span>, compila identità, indirizzo, contatti, PEC, sito e footer; seleziona JPG/PNG fino a 2 MB e premi <span class="ui">Salva identità</span>.</p>
+<p><strong>Come creo una nuova informativa?</strong> In <span class="ui">Informativa pubblicata</span> premi <span class="ui">+ Nuova informativa</span>; compila <span class="ui">Titolo, Tipo, Versione, Valida dal, Valida al, Stato, Testo informativa, Note</span> e salva.</p>
+<p><strong>Quale informativa devo usare per un cliente?</strong> Quella <strong>attiva e vigente</strong> prevista dalla procedura dello Studio. Se non esiste, non preparare un documento privacy come se fosse valido: correggi prima la configurazione.</p>
+<p><strong>Come modifico una informativa?</strong> Usa <span class="ui">Modifica</span> sulla versione interessata, correggi i dati e salva. Mantieni la corretta versione/storicizzazione secondo le regole dello Studio.</p>
+<p><strong>Come registro un consenso o una presa visione?</strong> Vai in <span class="ui">Consensi / prese visione</span>, seleziona cliente e informativa/versione, poi registra <strong>Presa visione</strong>, <strong>Consenso</strong> o <strong>Revoca</strong>.</p>
+<p><strong>Come registro un responsabile?</strong> Usa <span class="ui">+ Nuovo responsabile</span>, indica soggetto/fornitore, servizio, stato contratto/nomina, collegamento al trattamento e scadenze quando previste.</p>
+<p><strong>Come gestisco una richiesta di diritti?</strong> In <span class="ui">Diritti interessati</span> premi <span class="ui">+ Nuova richiesta</span>. Registra <strong>Nome richiedente, Email, Tipo richiesta, Ricevuta il, Scadenza ordinaria, Verifica identità, Descrizione, Note interne, Risposta il, Proroga fino al, Motivazione proroga, Esito risposta, Evidenza risposta/riferimento</strong>. Aggiorna lo stato fino alla chiusura reale.</p>
+<p><strong>Come gestisco una DPIA?</strong> In <span class="ui">DPIA / rischio</span> usa <span class="ui">+ Nuova valutazione</span>, collega il trattamento, compila valutazione/rischio, imposta lo stato e la prossima revisione quando prevista.</p>
+<p><strong>Come registro un data breach?</strong> In <span class="ui">Data breach</span> usa <span class="ui">+ Nuovo evento</span> e registra descrizione, categorie dati, interessati, valutazione del rischio, azioni, misure correttive/preventive, eventuali notifiche, riferimento Garante, decisione sulla notifica e data di chiusura.</p>
+<p><strong>Registrare “Notifica Garante effettuata” significa che la notifica è stata inviata?</strong> Solo se l'invio è realmente avvenuto secondo la procedura dello Studio. Il checkbox è una registrazione, non un invio automatico.</p>
+<p><strong>Come preparo l'informativa per un cliente?</strong> Vai alla funzione <span class="ui">Prepara informativa per il cliente</span>, seleziona il cliente → <span class="ui">Prepara documento</span> → leggi il messaggio <span class="ui">Verifica il PDF generato. Il cliente non lo vede ancora.</span> → controlla il PDF → <span class="ui">Approva e invia al cliente</span>. Verifica il messaggio finale di invio al Portale.</p>
+
+<h3>20.14 Domande sui pulsanti e sui campi che l'utilizzatore può incontrare</h3>
+<p><strong>Dove trovo “➕ Aggiungi professionista”?</strong> Vai in <span class="ui">Professionisti e Team → Professionisti &amp; Team</span>. Premi <span class="ui">➕ Aggiungi professionista</span> per aprire il modulo di inserimento.</p>
+<p><strong>Cosa devo mettere in “Nome e cognome *”?</strong> Inserisci nome e cognome della persona che deve ricevere l'invito. È un campo obbligatorio.</p>
+<p><strong>Cosa devo mettere in “Email *”?</strong> Inserisci l'indirizzo email al quale il professionista deve ricevere l'invito. È obbligatorio e deve essere corretto.</p>
+<p><strong>Cosa significa “Ruolo”?</strong> Seleziona il ruolo previsto dalla schermata: <strong>Professionista</strong> oppure <strong>Admin</strong>.</p>
+<p><strong>Vedo “Invio…”: devo cliccare di nuovo?</strong> No. È lo stato temporaneo dell'invio. Attendi il risultato; evita doppi invii.</p>
+<p><strong>Vedo “Fascicolo creato correttamente.”: cosa faccio dopo?</strong> Controlla la sezione <strong>Pratiche del cliente</strong> o <span class="ui">Fascicoli &amp; Contenzioso</span> e verifica che il fascicolo sia presente.</p>
+<p><strong>Cosa devo inserire in “Nome / Denominazione Controparte”?</strong> Inserisci il nome completo della persona o società controparte che vuoi verificare nel Conflict Check.</p>
+<p><strong>Cosa devo inserire in “Codice Fiscale / P.IVA” del Conflict Check?</strong> Inserisci il codice identificativo della controparte quando lo conosci. È utile per restringere i risultati e distinguere omonimie.</p>
+<p><strong>Cosa significa “Gestisci fatturazione” nel fascicolo?</strong> Porta alla gestione della fatturazione collegata alla pratica. Prima di registrare una fattura verifica di avere aperto il fascicolo corretto.</p>
+<p><strong>Cosa significa “Rendi visibile al Cliente”?</strong> Indica che l'informazione selezionata deve essere resa disponibile nel Portale Cliente. Usalo solo dopo aver verificato che il contenuto sia destinato al cliente.</p>
+<p><strong>Come uso “Quesito / Parola chiave”?</strong> In <span class="ui">Ricerca interna</span> scrivi la parola, frase o quesito da cercare e premi il pulsante di ricerca. Poi verifica la fonte del risultato.</p>
+<p><strong>Ho premuto “Risultati”: cosa devo controllare?</strong> Leggi i risultati restituiti e verifica cliente, pratica/fascicolo e contenuto prima di utilizzare l'informazione.</p>
+<p><strong>Dove trovo “Gestione pratiche e attività → Agenda &amp; Scadenze”?</strong> Apri il gruppo <span class="ui">Gestione pratiche e attività</span> e seleziona <span class="ui">Agenda &amp; Scadenze</span>. La schermata operativa si chiama <span class="ui">📅 Agenda Legale &amp; Scadenze</span>.</p>
+<p><strong>Cosa significa “Data e ora *” nell'Agenda?</strong> È la data e l'ora dell'evento. È obbligatoria: controllala attentamente prima di salvare, soprattutto per udienze e termini.</p>
+<p><strong>Posso compilare “Luogo” nell'Agenda?</strong> Sì, quando l'evento richiede un luogo. Per un'udienza verifica anche i dati specifici di tribunale, sezione, giudice, R.G. e aula.</p>
+<p><strong>A cosa serve “Nota visibile al Cliente”?</strong> Serve per distinguere una nota destinata alla consultazione del cliente. Inserisci soltanto informazioni che lo Studio ha deciso di rendere visibili.</p>
+<p><strong>Cosa significa “Rendi subito visibile al Cliente”?</strong> Rende l'informazione disponibile al cliente secondo la funzione prevista. Usalo solo dopo avere verificato contenuto, destinatario e fascicolo.</p>
+<p><strong>Nel PCT vedo “— seleziona procedimento —”: cosa devo fare?</strong> Prima di creare o lavorare sul deposito seleziona il procedimento corretto. Se non esiste, crealo con i dati del procedimento.</p>
+<p><strong>Vedo “Deposito creato in preparazione.”: cosa faccio?</strong> Il deposito è stato creato ma non è pronto all'invio. Prosegui con allegati, verifica, firma, busta, validazione e conferma professionale secondo l'ordine previsto.</p>
+<p><strong>Come aggiungo un documento dal fascicolo?</strong> Nel deposito usa <span class="ui">+ aggiungi dal fascicolo</span>, seleziona il documento corretto e controlla che sia quello destinato al deposito.</p>
+<p><strong>A cosa serve “Allega” nel PCT?</strong> Serve ad associare un allegato al deposito quando la schermata lo prevede. Dopo l'allegazione controlla nome, ruolo e stato del file.</p>
+<p><strong>A cosa serve “Conferma firma”?</strong> Serve a registrare la conferma della firma quando gli allegati sono effettivamente firmati secondo il metodo configurato. Non usarlo per dichiarare firmato un documento che non lo è.</p>
+<p><strong>Quando posso premere “Pronto per invio”?</strong> Solo dopo verifica positiva, firma effettiva, busta valida e conferma professionale richiesta. Se manca uno di questi passaggi, non procedere.</p>
+<p><strong>A cosa serve “Chiudi deposito”?</strong> Serve a chiudere un deposito dopo che l'esito reale è stato registrato. La chiusura non deve essere usata per saltare l'invio o le ricevute.</p>
+<p><strong>Quando uso “Riapri” nel PCT?</strong> Solo quando esiste una reale necessità di riaprire un deposito già chiuso e la schermata consente la riapertura. Indica e conserva la motivazione richiesta.</p>
+<p><strong>A cosa serve “⚙️ Configurazione integrazione · opzionale”?</strong> Serve a configurare il collegamento con il provider esterno quando lo Studio decide di utilizzarlo. Non modificare endpoint o credenziali senza conoscere i dati forniti dal provider.</p>
+<p><strong>Come uso “Test API Namirial”?</strong> Prima verifica la configurazione e le credenziali del provider. Premi <span class="ui">Test API Namirial</span> e leggi l'esito; un test riuscito della connessione non equivale a un deposito inviato.</p>
+<p><strong>A cosa serve “Sincronizza depositi Namirial”?</strong> Serve a interrogare/sincronizzare gli stati disponibili dal servizio esterno quando l'integrazione è attiva. Dopo la sincronizzazione controlla gli esiti reali.</p>
+<p><strong>A cosa serve “Verifica configurazione” nel PCT?</strong> Controlla che la configurazione tecnica prevista sia coerente. Se l'esito è negativo, correggi la configurazione prima di tentare operazioni esterne.</p>
+<p><strong>Cosa significa “Fascicolo:” nel Time Tracker?</strong> È il fascicolo al quale associare il tempo lavorato. Seleziona quello corretto prima di avviare la sessione.</p>
+<p><strong>Cosa significa “Professionista:” nel Time Tracker?</strong> Identifica il professionista al quale associare la registrazione del tempo quando il campo è richiesto dalla schermata.</p>
+<p><strong>Cosa devo scrivere in “Istruzioni Redazione:”?</strong> Indica con precisione che cosa deve essere redatto: tipo di atto, rito, ufficio, fatti, obiettivo, richieste e vincoli. Più le istruzioni sono precise, più la bozza è verificabile.</p>
+<p><strong>Dove leggo “Testo Bozza:”?</strong> È il testo prodotto dalla funzione di redazione AI. Leggilo integralmente e confrontalo con il fascicolo prima di utilizzarlo.</p>
+<p><strong>“✍ Firma Digitale &amp; Invio PEC” significa che posso inviare subito?</strong> No. Il titolo dell'area non costituisce prova di firma o invio. Verifica sempre il collegamento reale al provider e l'esito della trasmissione.</p>
+<p><strong>Come faccio “Analizza archivio con AI”?</strong> In <span class="ui">Lexroom LAB</span> usa <span class="ui">Analizza archivio con AI</span>, attendi l'elaborazione e leggi il risultato come supporto. Verifica sempre le fonti nel fascicolo/archivio.</p>
+<p><strong>Dove inserisco le istruzioni per un modello?</strong> In <span class="ui">📚 Modelli dello Studio</span>, nel campo <span class="ui">Incolla qui il modello o le istruzioni dello Studio</span>. Poi premi <span class="ui">Salva modello</span>.</p>
+<p><strong>A cosa serve “Visualizza” nell'Archivio?</strong> Serve ad aprire i dettagli dell'elemento selezionato. Leggi data, attività, fascicolo, utente e dettagli prima di trarre conclusioni.</p>
+<p><strong>A cosa serve “Apri / Scarica”?</strong> Serve ad aprire o scaricare il documento disponibile quando il file è realmente presente e accessibile. Dopo il download verifica nome e contenuto.</p>
+<p><strong>Qual è la differenza tra “File originale del modulo (opzionale)” e “Testo del modello”?</strong> Il primo conserva il file sorgente del modello quando previsto; il secondo contiene il testo utilizzabile dal modulo. Verifica sempre quale versione è quella attiva.</p>
+<p><strong>Come verifico che il logo sia valido?</strong> Usa un file JPG o PNG non superiore a 2 MB. Se compare <span class="ui">Logo non valido: usa JPG o PNG fino a 2 MB.</span>, sostituisci il file.</p>
+<p><strong>Cosa significa “Informativa / versione” nei consensi?</strong> Devi associare il consenso o la presa visione alla specifica versione dell'informativa effettivamente utilizzata.</p>
+<p><strong>Cosa significa “Trattamento collegato” nella DPIA?</strong> Seleziona il trattamento al quale la valutazione del rischio si riferisce. Non lasciare un collegamento generico quando la DPIA riguarda un trattamento specifico.</p>
+<p><strong>Come compilo “Rischio” nella DPIA?</strong> Inserisci la valutazione prevista dalla procedura dello Studio e conserva le motivazioni/documentazione che la supportano.</p>
+<p><strong>Cosa devo indicare in “Categorie dati” per un data breach?</strong> Specifica le categorie di dati coinvolte nell'incidente secondo quanto effettivamente accertato. Non inserire categorie ipotetiche come se fossero confermate.</p>
+<p><strong>Cosa devo indicare in “Interessati coinvolti”?</strong> Indica chi è potenzialmente o effettivamente coinvolto, sulla base dell'analisi dell'incidente, distinguendo ciò che è accertato da ciò che è ancora da verificare.</p>
+<p><strong>Cosa devo scrivere in “Valutazione del rischio” del data breach?</strong> Registra la valutazione effettuata dallo Studio e le motivazioni che la supportano.</p>
+<p><strong>Cosa devo inserire in “Azioni intraprese”?</strong> Registra le misure effettivamente adottate per contenere, analizzare e gestire l'incidente.</p>
+<p><strong>A cosa servono “Misure preventive/correttive”?</strong> Servono a documentare le azioni adottate per evitare il ripetersi dell'incidente o correggere le cause individuate.</p>
+<p><strong>Quando compilo “Notifica Garante il” e “Notifica interessati il”?</strong> Solo quando la relativa notifica è stata effettivamente effettuata. Le date non devono essere usate come promemoria fittizi di un invio già avvenuto.</p>
+<p><strong>A cosa serve “Riferimento Garante”?</strong> Inserisci il riferimento reale della pratica/notifica quando disponibile, così da collegare il record interno alla prova esterna.</p>
+<p><strong>Cosa significa “Decisione sulla notifica”?</strong> Registra la decisione assunta dallo Studio in merito alla notifica, insieme agli elementi che la giustificano secondo la procedura interna.</p>
+<p><strong>Quando compilo “Data chiusura” del data breach?</strong> Quando la gestione dell'evento è realmente conclusa secondo la procedura dello Studio e sono state registrate le attività necessarie.</p>
+<p><strong>Come uso “Evidenza risposta / riferimento” nei diritti interessati?</strong> Inserisci il riferimento o l'evidenza che consenta di ricostruire la risposta effettivamente fornita all'interessato.</p>
+<p><strong>Cosa significa “Nome e email sono obbligatori.”?</strong> Nel modulo di invito al professionista mancano uno o entrambi i dati obbligatori. Compilali e riprova.</p>
+<p><strong>Cosa significa “Seleziona un procedimento.”?</strong> Nel PCT non è stato indicato il procedimento al quale associare il deposito. Selezionalo prima di proseguire.</p>
+<p><strong>Cosa significa “Seleziona un file.”?</strong> La funzione richiede un file ma non ne è stato scelto uno. Seleziona il documento corretto e ripeti l'azione.</p>
+<p><strong>Cosa significa “Il file supera 10 MB.”?</strong> Il documento supera il limite previsto dal Portale Clienti. Riducilo e controlla che il contenuto resti integro prima di ricaricarlo.</p>
+<p><strong>Cosa significa “Informativa vigente non disponibile.”?</strong> Non esiste una versione attiva e valida utilizzabile per quella procedura. Vai in <span class="ui">Gestione Privacy → Informativa pubblicata</span> e verifica titolo, versione, validità e stato.</p>
+<p><strong>Quale pulsante devo premere dopo aver compilato un evento?</strong> In Agenda premi <span class="ui">Salva evento</span>. Poi verifica il messaggio di conferma e controlla che l'evento compaia nell'elenco.</p>
+<p><strong>Come compilo “Nome / Denominazione Controparte:” nel Conflict Check?</strong> Inserisci la denominazione completa della controparte. Se esistono omonimie, usa anche il codice fiscale o la P.IVA per restringere la verifica.</p>
+<p><strong>Come compilo “Codice Fiscale / P.IVA:” nel Conflict Check?</strong> Inserisci il codice fiscale o la partita IVA della controparte quando disponibile. Controlla attentamente che appartenga alla controparte corretta.</p>
+<p><strong>Come uso “Quesito / Parola chiave:” nella Ricerca interna?</strong> Inserisci il termine o la frase che vuoi trovare e avvia la ricerca. Dopo il risultato apri la fonte e verifica che il dato sia pertinente al fascicolo corretto.</p>
+<p><strong>Devo attivare “Abilita la configurazione per il futuro connettore” nel PST?</strong> Solo quando lo Studio ha deciso di predisporre quella configurazione e i dati tecnici inseriti sono corretti. L'attivazione della configurazione non significa che il collegamento ministeriale sia già operativo.</p>
+<p><strong>Dove trovo il Time Tracker?</strong> Vai in <span class="ui">Gestione pratiche e attività → Time Tracker</span>. Se usi un dispositivo mobile, apri prima il menu <span class="ui">☰</span> e poi il gruppo corretto.</p>
+<p><strong>Dove trovo esattamente “✉️ Lettere &amp; Comunicazioni AI”?</strong> La voce viene aggiunta dinamicamente sotto <strong>Intelligenza Artificiale</strong>. Se non compare, controlla che la pagina abbia terminato il caricamento e che l'utenza abbia accesso al modulo.</p>
+<p><strong>Come verifico il limite del logo?</strong> Il campo <span class="ui">Logo dello Studio (JPG o PNG, max 2 MB)</span> accetta JPG o PNG fino a 2 MB. Se il file non rispetta questi requisiti, sostituiscilo prima di salvare.</p>
+<p><strong>Come tolgo un logo che non voglio più usare?</strong> In <span class="ui">Studio e logo</span> usa <span class="ui">Rimuovi logo</span> e verifica il messaggio di esito. Poi controlla l'anteprima/identità dello Studio.</p>
+<p><strong>Come verifico che l'informativa sia stata davvero inviata al cliente?</strong> Dopo <span class="ui">Approva e invia al cliente</span> verifica il messaggio <span class="ui">Documento approvato e inviato al Portale Cliente.</span> e controlla lo storico del Portale. Il messaggio indica l'operazione interna eseguita; l'effettiva disponibilità va verificata nel portale.</p>
+<p><strong>Cosa significa “Notifica Garante prevista/effettuata”?</strong> Sono registrazioni separate: <strong>prevista</strong> indica che la notifica rientra nel piano/valutazione; <strong>effettuata</strong> va selezionata solo dopo l'invio reale, conservando il relativo riferimento.</p>
+<p><strong>Cosa significa “Notifica interessati prevista/effettuata”?</strong> Come sopra, distingui sempre la previsione dall'azione realmente eseguita. Non selezionare “effettuata” solo perché la notifica è stata programmata.</p>
+<h3>21. “Non so cosa fare”: percorso universale</h3>
+<p><strong>Ho un problema e non so da dove iniziare.</strong> Segui sempre questa sequenza: <strong>1) individua il cliente → 2) individua la pratica/fascicolo → 3) individua la funzione → 4) esegui l'azione → 5) controlla il messaggio di esito → 6) verifica che il dato compaia nell'elenco/stato → 7) se riguarda un invio esterno, verifica la prova reale di trasmissione.</strong></p>
+<p><strong>Devo trovare un documento:</strong> cliente → pratica/fascicolo → documenti; se è arrivato dal cliente → <span class="ui">Pratiche ricevute → Apri pratica → Apri allegato</span>.</p>
+<p><strong>Devo correggere una bozza AI:</strong> AI → funzione che ha generato la bozza → rivedi/correggi → se serve modifica le istruzioni → rigenera → controlla nuovamente tutto.</p>
+<p><strong>Devo registrare una scadenza:</strong> Agenda → <span class="ui">➕ Nuovo evento</span> → dati evento → <span class="ui">Salva</span> → verifica elenco.</p>
+<p><strong>Devo inviare un documento al cliente:</strong> Portale Clienti → cliente attivo → pratica se pertinente → modalità firma → file → <span class="ui">Invia</span> → verifica storico.</p>
+<p><strong>Devo fare un deposito:</strong> PCT → procedimento → deposito → allegati → <span class="ui">Verifica</span> → firma → busta → validazione → conferma professionale → invio reale → ricevute/esiti → chiusura.</p>
+<p><strong>Devo capire cosa è successo:</strong> Archivio &amp; Audit → <span class="ui">Aggiorna</span> → leggi data/attività/fascicolo/utente/dettagli.</p>
+
+<h3>22. Errori: domande rapide</h3>
+<p><strong>Vedo “Sessione Studio non disponibile”:</strong> esci, rientra e riprova. Se persiste, ricarica e verifica il servizio di autenticazione.</p>
+<p><strong>Vedo “Servizio Supabase non disponibile”:</strong> ricarica la pagina e verifica che la sessione sia valida. Se l'errore continua, non procedere con operazioni che richiedono dati aggiornati.</p>
+<p><strong>Vedo “Nome e email sono obbligatori”:</strong> torna al modulo Professionisti &amp; Team e compila entrambi i campi.</p>
+<p><strong>Vedo “Seleziona un procedimento” nel PCT:</strong> seleziona/crea prima il procedimento.</p>
+<p><strong>Vedo “Il cliente non ha ancora un accesso attivo”:</strong> attiva prima il Portale Cliente.</p>
+<p><strong>Vedo “Seleziona un file”:</strong> scegli il file prima di premere <span class="ui">Invia</span>.</p>
+<p><strong>Vedo “Il file supera 10 MB”:</strong> riduci il file e verifica che sia ancora quello corretto.</p>
+<p><strong>Vedo “Informativa vigente non disponibile”:</strong> vai in <span class="ui">Gestione Privacy → Informativa pubblicata</span> e verifica versione, stato e validità.</p>
+<p><strong>Il dispositivo USB viene rilevato ma il documento non è firmato:</strong> è previsto. Il rilevamento hardware non è una firma digitale.</p>
+<p><strong>Namirial non è raggiungibile:</strong> controlla configurazione, endpoint, autenticazione e credenziali; non registrare l'invio come riuscito senza un esito reale.</p>
+<p><strong>PST non è verificato:</strong> la consultazione reale richiede il canale tecnico e le abilitazioni effettive; la schermata non simula dati ministeriali.</p>
+<p><strong>Un'operazione sembra riuscita ma non compare nell'elenco:</strong> premi <span class="ui">Aggiorna</span>, controlla i dati inseriti e verifica lo stato. Se ancora manca, considera l'operazione non confermata.</p>
+
+<div class="result"><strong>Regola fondamentale per l'utilizzatore:</strong> non dichiarare mai conclusa un'operazione solo perché hai premuto un pulsante. Una fase è conclusa quando il sistema mostra l'esito previsto e, per le attività esterne (PEC, PCT, firma, provider, PST, SDI), quando esiste anche la <strong>prova reale dell'operazione esterna</strong>.</div>
+</section>
+
+<section id="team"><h2>4. Professionisti &amp; Team</h2>
+<div class="where"><strong>Dove:</strong> <span class="ui">Professionisti e Team → Professionisti &amp; Team</span>.</div>
+<h3>Inserire un professionista</h3>
+<div class="step"><b>1.</b> Premi <span class="ui">➕ Aggiungi professionista</span>.</div>
+<div class="step"><b>2.</b> Compila <span class="ui">Nome e cognome *</span> e <span class="ui">Email *</span>.</div>
+<div class="step"><b>3.</b> In <span class="ui">In <span class="ui">Ruolo</span> scegli <strong>Professionista</strong> oppure <strong>Admin</strong>.</div>
+<div class="step"><b>4.</b> Premi <span class="ui">Invia invito</span>. Durante l'invio il pulsante diventa temporaneamente <span class="ui">Invio…</span>.</div>
+<div class="result">Messaggio corretto: invito inviato correttamente; il professionista comparirà nel Team dopo registrazione/attivazione.</div>
+<h3>Controllare il Team</h3>
+<p>La tabella mostra professionista, ruolo, numero di fascicoli assegnati, contatto quando disponibile e stato. I Clienti presenti nella Rubrica non vengono trattati come professionisti anche se un ruolo fosse incoerente.</p>
+<h3>Se l'invito fallisce</h3><p>Controlla la sessione Studio, l'email e il messaggio visualizzato. Non ripetere molte volte l'invio senza prima verificare se il primo tentativo è stato registrato.</section>
+
+<section id="clients"><h2>5. Anagrafica Clienti</h2>
+<div class="where"><strong>Dove:</strong> <span class="ui">Clienti → Anagrafica Clienti</span>.</div>
+<h3>Creare un cliente</h3>
+<div class="step"><b>1.</b> Premi <span class="ui">Nuovo cliente</span>.</div>
+<div class="step"><b>2.</b> Compila i dati anagrafici richiesti: nome/società, codice fiscale o P.IVA, email e telefono secondo i campi presenti.</div>
+<div class="step"><b>3.</b> Premi <span class="ui">Salva</span>. Attendi il messaggio di conferma.</div>
+<div class="result">Il cliente viene registrato nella Rubrica. La registrazione anagrafica non significa automaticamente accettazione dell'incarico.</div>
+<h3>Aprire la scheda</h3><p>Nella tabella premi <span class="ui">Apri</span>. La scheda raccoglie accesso al portale, privacy, pratiche e documenti disponibili.</p>
+<h3>Creare un fascicolo dal cliente</h3><ol><li>Apri il cliente.</li><li>Vai a <span class="ui">Nuova pratica</span>.</li><li>Compila <span class="ui">Area legale</span>, <span class="ui">Controparte</span> e <span class="ui">Descrizione / oggetto</span>.</li><li>Premi <span class="ui">Crea fascicolo</span>.</li><li>Verifica il messaggio <span class="ui">Fascicolo creato correttamente.</span>.</li></ol>
+<h3>Documenti del portale</h3><p>Quando un documento è disponibile puoi aprirlo e, dopo averlo controllato, usare <span class="ui">Convalida</span>. La convalida cambia lo stato del documento a verificato.</p>
+<h3>Onboarding</h3><p>Nella scheda cliente possono comparire azioni di onboarding: invio informativa privacy, aggiornamento dello stato, invio documentazione PDF e verifica documenti. L'informativa viene cercata tra quelle attive e vigenti.</p>
+<h3>Eliminazione</h3><p><span class="ui">Elimina</span> richiede conferma. Se il sistema avverte della presenza di documenti collegati, leggi attentamente la conferma prima di procedere: non eliminare un cliente reale per errore.</section>
+
+<section id="portal"><h2>6. Portale Clienti</h2>
+<div class="where"><strong>Dove:</strong> <span class="ui">Clienti → Portale Clienti</span>.</div>
+<h3>Invitare/attivare un cliente</h3><ol><li>Seleziona il cliente.</li><li>Verifica che l'indirizzo email sia corretto.</li><li>Premi <span class="ui">Invita / attiva</span>.</li><li>Attendi il messaggio di esito.</li></ol>
+<div class="warning">Se compare <span class="ui">Il cliente non ha ancora un accesso attivo.</span>, prima completa l'attivazione del portale.</div>
+<h3>Inviare un documento</h3><ol><li>Seleziona cliente e, quando richiesto, fascicolo.</li><li>Scegli il file.</li><li>Controlla la modalità di firma prevista: <strong>Nessuna firma</strong>, <strong>Scarica · firma · ricarica</strong>, oppure servizio esterno quando configurato.</li><li>Il limite del file gestito dal modulo è <strong>10 MB</strong>.</li><li>Premi <span class="ui">Invia</span>.</li><li>Controlla la lista <strong>Ultimi documenti portale</strong>.</li></ol>
+<div class="result">Il documento viene caricato nello storage e registrato nel Portale. Il modulo non deve essere interpretato come firma digitale automatica se è stata scelta una modalità esterna o download/upload.</div>
+<h3>Documento restituito dal cliente</h3><p>Apri la scheda del cliente e controlla <strong>Documenti del portale</strong>. Dopo il controllo professionale usa <span class="ui">Convalida</span> quando il documento è corretto.</section>
+
+<section id="received"><h2>7. Pratiche ricevute</h2>
+<div class="where"><strong>Dove:</strong> la funzione è caricata dal modulo <span class="ui">studio-dashboard.js</span> e riguarda le richieste provenienti dal Portale Clienti; non è una voce statica separata nel menu laterale attuale.</div>
+<ol><li>Apri la sezione delle pratiche ricevute.</li><li>Controlla stato autenticazione e numero delle pratiche.</li><li>Premi <span class="ui">Apri pratica</span>.</li><li>Leggi dati del richiedente, descrizione e allegati.</li><li>Premi <span class="ui">Apri allegato</span> per esaminare i documenti.</li><li>Valuta il conflitto di interessi e la possibilità di proseguire.</li><li>La ricezione della pratica non equivale ad accettazione dell'incarico.</li></ol>
+<div class="warning">Non creare automaticamente un rapporto professionale solo perché una richiesta è stata ricevuta.</div></section>
+
+<section id="conflict"><h2>8. Conflict Check</h2>
+<div class="where"><strong>Dove:</strong> <span class="ui">Gestione pratiche e attività → Conflict Check</span>.</div>
+<div class="step"><b>1.</b> Nel campo <span class="ui">Nome / Denominazione Controparte:</span> inserisci il nome della controparte.</div>
+<div class="step"><b>2.</b> Nel campo <span class="ui">Codice Fiscale / P.IVA:</span> inserisci il relativo identificativo quando disponibile.</div>
+<div class="step"><b>3.</b> Premi <span class="ui">Esegui Verifica Incrociata 🔍</span>.</div>
+<div class="step"><b>4.</b> Leggi il risultato. Un risultato positivo è un elemento da esaminare, non una decisione automatica.</div>
+<div class="step"><b>5.</b> Se disponibile, apri la pratica origine e verifica il contesto.</div>
+<div class="result">La decisione finale sulla presenza del conflitto resta al professionista.</div></section>
+
+<section id="matters"><h2>9. Fascicoli &amp; Contenzioso</h2>
+<div class="where"><strong>Dove:</strong> <span class="ui">Gestione pratiche e attività → Fascicoli &amp; Contenzioso</span>.</div>
+<h3>Cercare un fascicolo</h3><ol><li>Usa <span class="ui">Cerca fascicolo</span> per filtrare.</li><li>Usa <span class="ui">Stato</span> per limitare i risultati.</li><li>Premi <span class="ui">Aggiorna</span> se necessario.</li><li>Apri il fascicolo desiderato.</li></ol>
+<h3>Lavorare nella scheda fascicolo</h3><p>La scheda è il contenitore centrale: cliente, controparte, materia, stato, descrizione, documenti, attività, agenda, comunicazioni, AI, tempi, fatturazione e PCT sono funzioni collegate al fascicolo.</p>
+<table><tr><th>Operazione</th><th>Come procedere</th></tr><tr><td>Documento</td><td>Apri il documento e controlla la provenienza/stato prima di usarlo.</td></tr><tr><td>AI</td><td>Usa <span class="ui">Analizza fascicolo con AI</span> per una prima analisi, poi verifica il contenuto.</td></tr><tr><td>Agenda</td><td>Usa l'azione agenda per collegare un evento al fascicolo.</td></tr><tr><td>PCT</td><td>Usa <span class="ui">Gestisci PCT</span> per aprire il registro depositi.</td></tr><tr><td>Tempi</td><td>Usa <span class="ui">Gestisci tempi</span>.</td></tr><tr><td>Fatturazione</td><td>Usa <span class="ui">Gestisci fatturazione</span>.</td></tr></table>
+<h3>Visibilità al cliente</h3><p>Quando una funzione prevede <span class="ui">Rendi visibile al Cliente</span>, controlla prima il contenuto: la visibilità sul portale è un'operazione distinta dalla registrazione interna.</p></section>
+
+<section id="search"><h2>10. Ricerca interna</h2>
+<div class="where"><strong>Dove:</strong> <span class="ui">Gestione pratiche e attività → Ricerca interna</span>.</div>
+<ol><li>Nel campo <span class="ui">Quesito / Parola chiave:</span> scrivi il termine da cercare.</li><li>Premi <span class="ui">Cerca nei dati dello Studio 🔎</span>.</li><li>Leggi <span class="ui">Risultati</span>.</li><li>Verifica il fascicolo o la fonte prima di utilizzare l'informazione.</li></ol>
+<div class="warning">La ricerca interna non è una fonte giuridica esterna e non sostituisce la verifica del documento originale.</div></section>
+
+<section id="agenda"><h2>11. Agenda &amp; Scadenze</h2><div class="where"><strong>Titolo effettivo della schermata:</strong> <span class="ui">📅 Agenda Legale &amp; Scadenze</span>. La funzione usa il calendario persistente dello Studio.</div>
+<div class="where"><strong>Dove:</strong> <span class="ui">Gestione pratiche e attività → Agenda &amp; Scadenze</span>.</div>
+<h3>Creare un evento</h3><ol><li>Premi <span class="ui">➕ Nuovo evento</span>. Il modulo mostra i campi <span class="ui">Titolo</span>, <span class="ui">Cliente/Fascicolo</span>, <span class="ui">Tipo</span>, <span class="ui">Data e ora</span>, <span class="ui">Priorità</span> e <span class="ui">Salva</span>.</li><li>Inserisci <span class="ui">Titolo</span>.</li><li>Collega <span class="ui">Cliente/Fascicolo</span> quando disponibile.</li><li>Scegli il tipo: <strong>Udienza, Scadenza, Deposito, Adempimento, Appuntamento, Altro</strong>.</li><li>Inserisci <span class="ui">Data e ora *</span>.</li><li>Per gli eventi che lo prevedono inserisci <span class="ui">Luogo</span>.</li><li>Inserisci la <span class="ui">Nota visibile al Cliente</span> solo se deve essere realmente pubblicata.</li><li>Se previsto, seleziona <span class="ui">Rendi subito visibile al Cliente</span>.</li><li>Premi <span class="ui">Salva evento</span>.</li></ol>
+<h3>Dati aggiuntivi per un'udienza</h3><p>Quando il tipo è Udienza possono essere richiesti Tribunale, Sezione, Giudice, Numero R.G., Aula, Indirizzo e note. Compilali con i dati ufficiali dell'atto/calendario.</p>
+<h3>Gestione</h3><p>Usa <span class="ui">Completa</span> quando l'evento è realmente concluso. Usa <span class="ui">Elimina</span> solo dopo aver verificato che non serva più allo storico operativo.</section>
+
+<section id="pct"><h2>12. Registro Depositi PCT</h2>
+<div class="where"><strong>Dove:</strong> <span class="ui">Gestione pratiche e attività → Registro Depositi PCT</span>. Il pannello attuale mostra <strong>PCT / PEC · Depositi</strong>.</div>
+<h3>Prima di iniziare</h3><p>Il deposito deve essere collegato a un procedimento. La procedura interna è strutturata in 10 fasi: <strong>Preparazione → Dati procedimento → Atto → Allegati → Controlli → Firma → Verifica firma → Busta → Validazione/Riepilogo → Conferma/Invio → Ricevute/Chiusura</strong>. La UI visualizza le fasi numerate.</p>
+<h3>A. Creare il deposito</h3><ol><li>Apri <span class="ui">➕ Nuovo deposito</span>.</li><li>In <span class="ui">— seleziona procedimento —</span> scegli il procedimento corretto. Se non esiste, prima prepara il procedimento dalla funzione disponibile.</li><li>Compila <span class="ui">Tipo atto</span>.</li><li>Compila <span class="ui">Oggetto</span>.</li><li>Compila <span class="ui">Ufficio destinatario</span>.</li><li>Inserisci <span class="ui">Note operative</span> se servono.</li><li>Premi <span class="ui">Crea deposito</span>.</li><li>Attendi <span class="ui">Deposito creato in preparazione.</span>.</li></ol>
+<h3>B. Fase 1 — Preparazione</h3><p>Controlla procedimento, tipo atto, oggetto e ufficio. Lo stato iniziale è <span class="badge">preparazione</span>.</p>
+<h3>C. Fase Documenti</h3><ol><li>Controlla la sezione <span class="ui">Documenti</span>.</li><li>Usa <span class="ui">+ aggiungi dal fascicolo</span> quando il documento è già nel fascicolo.</li><li>Usa <span class="ui">Allega</span> per il file previsto dal modulo.</li><li>Verifica che gli allegati abbiano file reale e non solo una riga descrittiva.</li></ol>
+<div class="error"><strong>Non puoi considerare pronto un deposito</strong> se gli allegati obbligatori non sono disponibili, se la validazione è in errore o se la firma richiesta non è stata completata.</div>
+<h3>D. Fase Controlli — <span class="ui">Verifica</span></h3><ol><li>Premi <span class="ui">Verifica</span>.</li><li>Leggi il risultato della validazione.</li><li>Se è <strong>OK</strong>, puoi procedere.</li><li>Se è <strong>WARN</strong>, leggi l'avviso e correggi ciò che è necessario.</li><li>Se è <strong>ERROR/FATAL</strong>, non tentare l'invio: correggi il problema.</li></ol>
+<h3>E. Firma degli allegati</h3><p>Per ogni allegato il modulo gestisce modalità <strong>Carta / USB firma</strong>, <strong>File firmato</strong> o <strong>Servizio esterno</strong>.</p>
+<div class="step"><b>Carta / USB:</b> premi <span class="ui">🔐 Leggi carta / USB</span>. Il browser può rilevare un dispositivo tramite WebUSB/WebHID. <strong>Il rilevamento del dispositivo non equivale alla firma crittografica.</strong> Devi completare la firma con il middleware/redattore qualificato installato e previsto dal dispositivo/provider.</div>
+<div class="step"><b>File firmato:</b> utilizza un file già firmato secondo la procedura dello Studio e verifica lo stato.</div>
+<div class="step"><b>Servizio esterno:</b> completa la firma nel servizio/provider previsto e poi riporta lo stato nel gestionale.</div>
+<h3>F. <span class="ui">Conferma firma</span></h3><p>Usa <span class="ui">Conferma firma</span> solo quando gli allegati sono realmente firmati. Il sistema registra la modalità e gli eventi disponibili.</p>
+<h3>G. Busta</h3><p>Premi <span class="ui">Conferma busta generata</span> quando la busta prevista dal canale è stata realmente generata e resa disponibile. Non dichiarare generata una busta che non esiste.</p>
+<h3>H. Validazione e preparazione all'invio</h3><p>Premi <span class="ui">Pronto per invio</span> dopo aver completato firma, busta e controlli. Il sistema richiede la conferma professionale prevista prima dello stato di pronto.</p>
+<h3>I. Invio</h3><p>Quando il canale Namirial è configurato può comparire <span class="ui">Invia con Namirial</span>. In alternativa il modulo consente <span class="ui">Registra trasmissione</span> per registrare una trasmissione realmente eseguita esternamente.</p>
+<div class="warning"><strong>Non confondere registrazione e trasmissione:</strong> <span class="ui">Registra trasmissione</span> registra nel gestionale un invio già avvenuto tramite il canale esterno indicato; non inventa una ricevuta ministeriale.</div>
+<h3>J. Dopo l'invio</h3><ol><li>Usa <span class="ui">Interroga servizio</span> quando il provider lo supporta.</li><li>Registra <span class="ui">accettazione</span>, <span class="ui">consegna</span> ed <span class="ui">esito</span> quando le ricevute reali sono disponibili.</li><li>Controlla <strong>Ricevute, esiti e documenti recuperati</strong>.</li><li>Scarica gli artefatti quando disponibili.</li><li>Solo dopo aver verificato l'esito usa <span class="ui">Chiudi deposito</span>.</li></ol>
+<h3>K. Riapertura</h3><p>Se compare <span class="ui">Riapri</span>, usalo solo per un deposito realmente chiuso che deve essere riaperto secondo la motivazione richiesta dal sistema. Registra sempre il motivo.</p>
+<h3>L. Configurazione opzionale</h3><p>La sezione <span class="ui">⚙️ Configurazione integrazione · opzionale</span> permette di impostare Provider/portale, URL portale, modalità <strong>Manuale, API, PEC, PdA, PST</strong> e abilitazione. Per Namirial API sono presenti Base URL, modalità di autenticazione, header API key e parametri tecnici ulteriori.</p>
+<p>Le credenziali vengono salvate tramite procedura protetta; il segreto non viene restituito alla pagina. Inserisci esclusivamente valori forniti dal provider.</p>
+<h3>M. Test e sincronizzazione Namirial</h3><ol><li>Salva la configurazione.</li><li>Se il connettore è configurato, usa <span class="ui">Test API Namirial</span>.</li><li>Controlla il messaggio HTTP di esito.</li><li>Usa <span class="ui">Sincronizza depositi Namirial</span> per importare lo stato quando il collegamento reale è disponibile.</li><li>Usa <span class="ui">Verifica configurazione</span> per il controllo della connessione.</li></ol>
+<div class="warning">La disponibilità di un pulsante non significa che il provider sia già configurato. Prima di un invio reale verifica sempre stato della connessione, credenziali, canale e ricevute.</div></section>
+
+<section id="pst"><h2>13. PST Ministero · Consultazione</h2>
+<div class="where"><strong>Dove:</strong> questa voce viene aggiunta dinamicamente dal modulo <span class="ui">studio-pst.js</span> accanto a <span class="ui">Registro Depositi PCT</span>. Non è scritta staticamente nel menu iniziale.</div>
+<h3>Configurare il canale futuro</h3><ol><li>Apri <span class="ui">PST Ministero · Consultazione</span>.</li><li>Controlla lo stato mostrato: <strong>non_configurata</strong>, <strong>verificata</strong> o <strong>errore</strong>.</li><li>In <span class="ui">Modalità</span> scegli <strong>Software House</strong>, <strong>Punto di Accesso</strong>, <strong>Provider esterno</strong> oppure <strong>Manuale / test</strong>.</li><li>Compila <span class="ui">Proxy / endpoint</span>.</li><li>Compila <span class="ui">Codice Software House / soggetto</span> e <span class="ui">Codice fiscale soggetto</span> quando richiesti.</li><li>Inserisci <span class="ui">Etichetta certificato</span> e <span class="ui">Scadenza certificato</span>.</li><li>Annota <span class="ui">Note / requisiti</span>.</li><li>Spunta <span class="ui">Abilita la configurazione per il futuro connettore</span> solo quando i dati sono corretti.</li><li>Premi <span class="ui">Salva configurazione PST</span>.</li></ol>
+<h3>Servizi predisposti</h3><p>La schermata prepara le funzioni relative a consultazione fascicoli, documenti, comunicazioni/notifiche, ReGIndE, uffici giudiziari, pagamenti telematici ed eventi.</p>
+<div class="warning"><strong>Stato reale:</strong> la schermata registra la configurazione e prepara le operazioni. Non simula risposte ministeriali. La consultazione reale richiede il canale tecnico/censimento/certificato e le abilitazioni effettivamente necessari.</div>
+</section>
+
+<section id="time"><h2>14. Time Tracker</h2>
+<div class="where"><strong>Dove:</strong> <span class="ui">Gestione pratiche e attività → Time Tracker</span>.</div>
+<ol><li>Seleziona il <span class="ui">Fascicolo:</span>.</li><li>Se richiesto seleziona il <span class="ui">Professionista:</span>.</li><li>Premi <span class="ui">Avvia sessione</span>.</li><li>Controlla il cronometro <span class="ui">00:00:00</span>.</li><li>Quando hai terminato premi <span class="ui">Ferma</span>.</li><li>Verifica la registrazione nella tabella/storico.</li></ol>
+<div class="warning">Non lasciare una sessione aperta intenzionalmente: se una sessione è già attiva il sistema impedisce di avviarne una seconda.</div></section>
+
+<section id="ai-letters"><h2>15. Lettere &amp; Comunicazioni AI</h2><div class="where"><strong>Titolo effettivo:</strong> <span class="ui">✉️ Lettere &amp; Comunicazioni AI</span>. La voce viene aggiunta dinamicamente dal modulo Lexroom.</div>
+<div class="where"><strong>Dove:</strong> la voce <span class="ui">Lettere &amp; Comunicazioni AI</span> viene aggiunta dinamicamente sotto <strong>Intelligenza Artificiale</strong>.</div>
+<ol><li>Seleziona <span class="ui">Fascicolo di riferimento</span>.</li><li>In <span class="ui">Tipo di comunicazione</span> scegli: <strong>Lettera al cliente, Lettera alla controparte, Diffida, Sollecito di pagamento, Richiesta documentazione, Riscontro a comunicazione ricevuta, Comunicazione professionale, Email professionale, Altro</strong>.</li><li>Compila <span class="ui">Destinatario</span> se necessario.</li><li>Compila <span class="ui">Oggetto</span>.</li><li>Inserisci le <span class="ui">Istruzioni dell'avvocato</span>.</li><li>Premi <span class="ui">Genera comunicazione con AI 🚀</span>.</li><li>Leggi la bozza generata nel riquadro di output.</li><li>Controlla lo storico <span class="ui">📨 Comunicazioni generate recentemente</span>.</li></ol>
+<div class="result">La bozza viene salvata nello storico. Il sistema comunica esplicitamente che <strong>nessun invio è effettuato</strong>.</div>
+</section>
+
+<section id="ai-acts"><h2>16. Redazione Atti AI</h2>
+<div class="where"><strong>Dove:</strong> <span class="ui">Intelligenza Artificiale → Redazione Atti AI</span>.</div>
+<ol><li>Seleziona il fascicolo di riferimento quando previsto.</li><li>Nel campo <span class="ui">Istruzioni Redazione:</span> descrivi esattamente l'atto da predisporre: tipo di atto, rito, ufficio, obiettivo, fatti, richieste, tono e vincoli.</li><li>Premi <span class="ui">Genera Bozza con IA 🚀</span> quando disponibile nel modulo.</li><li>Leggi <span class="ui">Testo Bozza:</span>.</li><li>Correggi manualmente il testo e verifica i dati del fascicolo.</li><li>Solo dopo la revisione professionale considera la bozza utilizzabile.</li></ol>
+<h3>Firma e PEC</h3><p>La sezione mostra <span class="ui">✍ Firma Digitale &amp; Invio PEC</span> / FEQ, ma in LAB la firma reale e l'invio PEC non sono collegati a un provider reale. Il pulsante non deve essere interpretato come invio eseguito.</section>
+
+<section id="lab"><h2>17. Lexroom LAB</h2><div class="where"><strong>Funzioni AI presenti nell'Area Studio:</strong> <span class="ui">Analizza fascicolo con AI</span>, <span class="ui">Interroga AI gratuitamente</span>, <span class="ui">Analizza archivio con AI</span>, oltre ad <span class="ui">Analisi LAB</span> e <span class="ui">Bozza LAB</span>.</div>
+<div class="where"><strong>Dove:</strong> la voce <span class="ui">Lexroom LAB</span> viene aggiunta dinamicamente nell'Area Studio per utenti Studio/Admin.</div>
+<h3>Analizzare un fascicolo</h3><ol><li>Apri <span class="ui">Lexroom LAB</span>.</li><li>Individua il fascicolo nella tabella.</li><li>Premi <span class="ui">Analisi LAB</span>.</li><li>Leggi il risultato.</li></ol>
+<h3>Generare una bozza LAB</h3><ol><li>Premi <span class="ui">Bozza LAB</span> sulla pratica interessata.</li><li>Attendi <span class="ui">Lexroom in elaborazione…</span>.</li><li>Leggi la bozza.</li><li>Premi <span class="ui">Approva bozza</span> solo dopo la revisione professionale.</li><li>Se serve una comunicazione interna, usa <span class="ui">Prepara comunicazione LAB</span>.</li></ol>
+<h3>Modelli dello Studio</h3><ol><li>In <span class="ui">📚 Modelli dello Studio</span> inserisci <span class="ui">Nome modello</span>.</li><li>Inserisci <span class="ui">Materia</span>.</li><li>Incolla modello/istruzioni in <span class="ui">Incolla qui il modello o le istruzioni dello Studio</span>.</li><li>Premi <span class="ui">Salva modello</span>.</li></ol>
+<div class="warning">LAB è gratuito e di prova. Le operazioni AI sono assistive: non sostituiscono il controllo dell'avvocato. Nessuna email reale viene inviata automaticamente.</div></section>
+
+<section id="communications"><h2>18. Registro Comunicazioni</h2>
+<div class="where"><strong>Dove:</strong> <span class="ui">Comunicazioni e amministrazione → Registro Comunicazioni</span>.</div>
+<p>Il registro serve a documentare comunicazioni già effettuate o gestite dal sistema.</p>
+<ol><li>Seleziona il canale previsto, ad esempio <strong>Email, PEC o PCT</strong> quando disponibile.</li><li>Collega il fascicolo.</li><li>Inserisci destinatario, oggetto e contenuto.</li><li>Premi <span class="ui">Registra</span>.</li><li>Controlla la riga nello storico con data, canale, pratica, destinatario, oggetto e stato.</li></ol>
+<div class="warning">Il messaggio di registrazione chiarisce che <strong>nessun invio PEC automatico è stato eseguito</strong>. Registrare una comunicazione non equivale a spedirla.</div></section>
+
+<section id="billing"><h2>19. Fatturazione</h2>
+<div class="where"><strong>Dove:</strong> <span class="ui">Comunicazioni e amministrazione → Fatturazione</span>.</div>
+<ol><li>Seleziona <span class="ui">Cliente</span>.</li><li>Seleziona <span class="ui">Pratica</span> quando richiesta.</li><li>Inserisci <span class="ui">Descrizione</span>.</li><li>Inserisci <span class="ui">Imponibile</span>.</li><li>Inserisci <span class="ui">IVA</span>.</li><li>Premi <span class="ui">Salva</span>.</li><li>Verifica il messaggio <span class="ui">Fattura salvata in bozza.</span>.</li></ol>
+<div class="warning">La fatturazione presente nel gestionale non va considerata emissione SDI reale se il collegamento SDI non è configurato. La bozza resta una registrazione interna.</div></section>
+
+<section id="archive"><h2>20. Archivio &amp; Audit</h2><div class="where"><strong>Titolo effettivo:</strong> <span class="ui">🗄️ Archivio Storico e Audit Trail</span>. La tabella legge gli eventi reali da <span class="ui">studio_audit</span>.</div>
+<div class="where"><strong>Dove:</strong> <span class="ui">Controllo e conformità → Archivio &amp; Audit</span>.</div>
+<p>Lo storico raccoglie gli eventi operativi utili alla ricostruzione delle attività.</p>
+<ol><li>Apri <span class="ui">Archivio &amp; Audit</span>.</li><li>Premi <span class="ui">Aggiorna</span>.</li><li>Leggi data/ora, attività, fascicolo, utente e dettagli dell'evento.</li><li>Per un documento o evento, usa le azioni disponibili come <span class="ui">Apri</span>, <span class="ui">Visualizza</span> o <span class="ui">Apri / Scarica</span>.</li><li>Non cancellare un evento solo perché non è più utile alla schermata corrente: l'audit serve proprio a conservare la storia operativa.</li></ol>
+</section>
+
+<section id="privacy"><h2>21. Gestione Privacy</h2>
+<div class="where"><strong>Dove:</strong> <span class="ui">Controllo e conformità → Gestione Privacy</span>. Il modulo contiene schede separate.</div>
+<h3>21.1 Trattamenti</h3><ol><li>Apri la scheda <span class="ui">Trattamenti</span>.</li><li>Premi <span class="ui">+ Nuovo trattamento</span>.</li><li>Compila nome, finalità, base giuridica, categorie di interessati, categorie di dati, destinatari, conservazione e misure di sicurezza secondo il modello del trattamento.</li><li>Imposta lo <span class="ui">Stato</span>: <strong>Attivo</strong>, <strong>In revisione</strong> oppure <strong>Archiviato</strong>.</li><li>Salva e verifica la riga nell'elenco.</li></ol>
+<h3>21.2 Modello Privacy dello Studio</h3><ol><li>Apri <span class="ui">Modello Privacy dello Studio</span>.</li><li>Inserisci <span class="ui">Nome modello</span>.</li><li>Inserisci <span class="ui">Versione</span>.</li><li>Se disponibile allega <span class="ui">File originale del modulo (opzionale)</span>.</li><li>Inserisci/modifica <span class="ui">Testo del modello</span>.</li><li>Premi <span class="ui">Salva modello</span>.</li></ol>
+<h3>21.3 Studio e logo</h3><ol><li>Apri <span class="ui">Studio e logo</span>.</li><li>Inserisci i dati identificativi dello Studio, indirizzo, contatti, PEC, sito e footer secondo i campi presenti.</li><li>In <span class="ui">Logo dello Studio (JPG o PNG, max 2 MB)</span> seleziona un JPG/PNG non superiore a 2 MB.</li><li>Premi <span class="ui">Salva identità</span>.</li><li>Se necessario usa <span class="ui">Rimuovi logo</span>.</li></ol>
+<div class="error">Se compare <span class="ui">Logo non valido: usa JPG o PNG fino a 2 MB.</span>, sostituisci il file prima di riprovare.</div>
+<h3>21.4 Informativa pubblicata</h3><ol><li>Apri <span class="ui">Informativa pubblicata</span>.</li><li>Controlla titolo, versione, data di validità e stato.</li><li>Assicurati che l'informativa che deve essere inviata al cliente sia effettivamente attiva e vigente.</li></ol>
+<h3>21.5 Consensi / prese visione</h3><ol><li>Apri <span class="ui">Consensi / prese visione</span>.</li><li>Seleziona <span class="ui">Cliente</span>.</li><li>Seleziona <span class="ui">Informativa / versione</span>.</li><li>Registra l'azione: <strong>Presa visione</strong>, <strong>Consenso</strong> o <strong>Revoca</strong>.</li><li>Controlla lo stato registrato.</li></ol>
+<h3>21.6 Responsabili</h3><ol><li>Premi <span class="ui">+ Nuovo responsabile</span>.</li><li>Inserisci il soggetto/fornitore, il servizio e lo stato contratto/nomina.</li><li>Collega il trattamento quando previsto.</li><li>Registra scadenze e stato.</li></ol>
+<h3>21.7 Diritti interessati</h3><ol><li>Premi <span class="ui">+ Nuova richiesta</span>.</li><li>Indica richiedente, <span class="ui">Tipo richiesta</span>, data, termine, stato e risposta.</li><li>Gli stati operativi previsti comprendono <strong>Aperta, In lavorazione, Evasa, Chiusa</strong>.</li><li>Non chiudere una richiesta finché la risposta non è stata realmente gestita.</li></ol>
+<h3>21.8 DPIA / rischio</h3><ol><li>Premi <span class="ui">+ Nuova valutazione</span>.</li><li>Collega il <span class="ui">Trattamento collegato</span>.</li><li>Compila valutazione e <span class="ui">Rischio</span>.</li><li>Usa lo stato corretto: <strong>Bozza, In valutazione, Approvata, Non necessaria, Archiviata</strong> secondo le opzioni disponibili.</li><li>Imposta la prossima revisione quando prevista.</li></ol>
+<h3>21.9 Data breach</h3><ol><li>Premi <span class="ui">+ Nuovo evento</span>.</li><li>Registra evento, rilevazione, rischio, stato e dati relativi all'eventuale notifica.</li><li>Conserva la documentazione di valutazione.</li></ol>
+<div class="warning">La schermata non deve essere interpretata come invio automatico di una notifica a un'autorità: registra e gestisce l'evento secondo la procedura dello Studio.</div>
+<h3>21.10 Preparare l'informativa per un cliente</h3><ol><li>Apri la funzione <span class="ui">Prepara informativa per il cliente</span>.</li><li>Seleziona il cliente.</li><li>Il sistema usa l'informativa vigente.</li><li>Premi <span class="ui">Prepara documento</span>.</li><li>Leggi il messaggio <span class="ui">Verifica il PDF generato. Il cliente non lo vede ancora.</span>.</li><li>Controlla il PDF generato.</li><li>Solo se corretto premi <span class="ui">Approva e invia al cliente</span>.</li><li>Attendi <span class="ui">Documento approvato e inviato al Portale Cliente.</span>.</li></ol>
+<div class="result">L'invio avviene nel Portale Cliente. Non è un invio PEC automatico.</div><h3>21.11 Informativa: creazione e pubblicazione</h3><ol><li>In <span class="ui">Informativa pubblicata</span> usa <span class="ui">+ Nuova informativa</span> quando devi creare una nuova versione.</li><li>Compila <span class="ui">Titolo</span>, <span class="ui">Tipo</span>, <span class="ui">Versione</span>, <span class="ui">Valida dal</span>, <span class="ui">Valida al</span>.</li><li>Scegli lo stato <strong>Bozza</strong>, <strong>Attiva</strong> o <strong>Archiviata</strong>.</li><li>Compila <span class="ui">Testo informativa</span> e, se serve, <span class="ui">Note</span>.</li><li>Premi <span class="ui">Salva</span>. Usa <span class="ui">Modifica</span> per correggere una versione esistente.</li></ol>
+<h3>21.12 Data breach: gestione completa</h3><p>Oltre a titolo, data rilevazione, rischio e stato, registra <span class="ui">Descrizione</span>, <span class="ui">Categorie dati</span>, <span class="ui">Interessati coinvolti</span>, <span class="ui">Valutazione del rischio</span>, <span class="ui">Azioni intraprese</span>, <span class="ui">Misure preventive/correttive</span>, eventuale <span class="ui">Notifica Garante il</span>, <span class="ui">Notifica interessati il</span>, <span class="ui">Riferimento Garante</span>, <span class="ui">Decisione sulla notifica</span> e <span class="ui">Data chiusura</span>. Usa i checkbox <span class="ui">Notifica Garante prevista/effettuata</span> e <span class="ui">Notifica interessati prevista/effettuata</span> quando pertinenti.</p>
+<h3>21.13 Diritti degli interessati: dati obbligatori della pratica</h3><p>Per ogni richiesta puoi registrare <span class="ui">Nome richiedente</span>, <span class="ui">Email</span>, <span class="ui">Tipo richiesta</span>, <span class="ui">Ricevuta il</span>, <span class="ui">Scadenza ordinaria</span>, <span class="ui">Verifica identità</span>, <span class="ui">Descrizione</span>, <span class="ui">Note interne</span>, <span class="ui">Risposta il</span>, <span class="ui">Proroga fino al</span>, <span class="ui">Motivazione proroga</span>, <span class="ui">Esito risposta</span> ed <span class="ui">Evidenza risposta / riferimento</span>.</p></section>
+
+<section id="errors"><h2>22. Errori, controlli e cosa fare</h2>
+<table><tr><th>Messaggio/condizione</th><th>Cosa fare</th></tr>
+<tr><td><span class="ui">Sessione Studio non disponibile</span></td><td>Esci, rientra nell'Area Studio e riprova. Non modificare dati per aggirare il controllo.</td></tr>
+<tr><td><span class="ui">Servizio Supabase non disponibile</span></td><td>Verifica che la pagina sia caricata correttamente e che la sessione sia attiva; riprova dopo il refresh.</td></tr>
+<tr><td><span class="ui">Nome e email sono obbligatori.</span></td><td>Compila entrambi i campi del professionista.</td></tr>
+<tr><td><span class="ui">Seleziona un procedimento.</span></td><td>Nel PCT devi creare/selezionare prima il procedimento.</td></tr>
+<tr><td><span class="ui">Il cliente non ha ancora un accesso attivo.</span></td><td>Attiva/invita prima il cliente al Portale.</td></tr>
+<tr><td><span class="ui">Seleziona un file.</span></td><td>Scegli il documento prima dell'invio.</td></tr>
+<tr><td><span class="ui">Il file supera 10 MB.</span></td><td>Riduci il PDF/file oppure usa la procedura prevista dallo Studio.</td></tr>
+<tr><td><span class="ui">Informativa vigente non disponibile.</span></td><td>Controlla Gestione Privacy → Informativa pubblicata e verifica che esista una versione attiva e valida.</td></tr>
+<tr><td>PCT: validazione error/fatal</td><td>Non inviare. Correggi l'allegato/dato indicato e ripeti <span class="ui">Verifica</span>.</td></tr>
+<tr><td>Dispositivo USB/HID rilevato ma documento non firmato</td><td>È normale: il rilevamento hardware non è la firma. Completa la firma con middleware/redattore/provider e poi aggiorna lo stato.</td></tr>
+<tr><td>Namirial non raggiungibile</td><td>Controlla configurazione, endpoint, autenticazione e credenziali. Non registrare un invio come riuscito senza un esito reale.</td></tr>
+<tr><td>PST non verificato</td><td>La consultazione ministeriale reale richiede il canale tecnico e le abilitazioni effettive; la schermata non simula dati.</td></tr>
+</table>
+</section>
+
+<section id="workflow"><h2>23. Flusso completo consigliato dello Studio</h2>
+<ol>
+<li><strong>Richiesta:</strong> ricevi la richiesta dal Portale e la apri.</li>
+<li><strong>Anagrafica:</strong> controlli o completi il cliente.</li>
+<li><strong>Conflict Check:</strong> verifichi controparte e identificativi.</li>
+<li><strong>Decisione professionale:</strong> accetti o non prosegui.</li>
+<li><strong>Privacy/onboarding:</strong> prepari informativa, la controlli e la invii nel Portale.</li>
+<li><strong>Documenti:</strong> ricevi e convalidi i documenti restituiti.</li>
+<li><strong>Fascicolo:</strong> crei/gestisci la pratica.</li>
+<li><strong>Agenda:</strong> registri termini, udienze e adempimenti.</li>
+<li><strong>Comunicazioni:</strong> registri gli scambi e, quando usi AI, verifichi le bozze prima dell'utilizzo.</li>
+<li><strong>AI:</strong> usi Lettere &amp; Comunicazioni AI, Redazione Atti AI o Lexroom LAB come supporto.</li>
+<li><strong>PCT:</strong> prepari procedimento, deposito, documenti, firma, busta, validazione, conferma e invio/registrazione della trasmissione.</li>
+<li><strong>Ricevute:</strong> acquisisci accettazione, consegna ed esito reali.</li>
+<li><strong>Fatturazione:</strong> registri la parcella/fattura in bozza se SDI non è collegato.</li>
+<li><strong>Audit:</strong> controlli che gli eventi importanti risultino nello storico.</li>
+</ol>
+<div class="result"><strong>Regola finale:</strong> ogni fase deve essere chiusa solo dopo la verifica del risultato reale. Il gestionale supporta il professionista; non sostituisce il suo controllo, non trasforma una bozza in un atto definitivo e non dichiara inviato ciò che non è stato realmente trasmesso.</div>
+<p class="top"><a href="#accesso">Torna all'inizio ↑</a></p>
+</section>
+</main></div></body></html>
