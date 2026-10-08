@@ -1,7 +1,7 @@
 import { corsHeaders } from "npm:@supabase/supabase-js@2.112.3/cors";
 import { createClient } from "npm:@supabase/supabase-js@2.112.3";
 
-const MANUAL_URL = "https://josriz.github.io/StudioLegaleSilella/manuale.html";
+const MANUAL_URL = "https://raw.githubusercontent.com/josriz/StudioLegaleSilella/main/manuale.html";
 const GEMINI_MODEL = "gemini-3.5-flash";
 
 function json(data: unknown, status = 200) {
