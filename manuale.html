@@ -25,11 +25,119 @@
 <div class="result"><strong>Risultato corretto:</strong> la Dashboard è una vista di controllo; la modifica dei dati operativi si effettua nei relativi moduli.</div>
 </section>
 
-<section id="demo"><h2>3. Demo — Una giornata nello Studio</h2>
-<div class="where"><strong>Dove:</strong> <span class="ui">Studio → Demo — Una giornata nello Studio</span>.</div>
-<p>La demo è una simulazione guidata del flusso professionale. Il caso mostrato è costruito attorno a un cliente, una materia civile, una controparte e una controversia contrattuale.</p>
-<ol><li><strong>Arriva una richiesta:</strong> il potenziale cliente invia dati essenziali e descrizione del problema.</li><li><strong>Richiesta allo Studio:</strong> il professionista controlla le notifiche e le richieste ricevute.</li><li><strong>Valutazione:</strong> vengono controllati dati, documenti disponibili e conflitti.</li><li><strong>Accettazione:</strong> la decisione professionale viene registrata; registrazione non equivale ad accettazione.</li><li><strong>Onboarding:</strong> si prepara la privacy e si raccolgono/verificano i documenti necessari.</li><li><strong>Abilitazione:</strong> il cliente viene portato nel percorso operativo.</li><li><strong>Fascicolo:</strong> si apre/gestisce la pratica e si collegano attività, agenda, documenti, AI e PCT.</li><li><strong>AI:</strong> genera analisi o bozze, sempre sottoposte a verifica professionale.</li><li><strong>Audit:</strong> le operazioni importanti restano tracciate.</li></ol>
-<div class="warning">La demo non sostituisce il lavoro reale e non deve essere interpretata come un invio automatico a PEC, PCT o Ministero.</div>
+<section id="demo"><h2>3. Demo — Una giornata tipo nello Studio</h2>
+<div class="where"><strong>Dove:</strong> <span class="ui">Studio → Demo — Una giornata nello Studio</span>. Questa sezione non è una funzione automatica che esegue operazioni sul fascicolo: è una simulazione operativa che spiega, nell'ordine corretto, come utilizzare le funzioni dell'Area Studio durante una normale giornata di lavoro.</div>
+
+<h3>Obiettivo della giornata</h3>
+<p>La giornata tipo parte da una richiesta di assistenza e arriva alla gestione ordinata del fascicolo. Il percorso collega le funzioni dello Studio senza saltare i controlli professionali: <strong>richiesta → verifica cliente → conflict check → decisione professionale → onboarding/privacy → documenti → fascicolo → agenda e attività → comunicazioni → AI → eventuale PCT → ricevute/esiti → fatturazione → audit</strong>.</p>
+
+<h3>08:30 — Apertura dello Studio</h3>
+<div class="step"><b>1.</b> Accedi all'<span class="ui">Area Studio</span> con l'utenza professionale.</div>
+<div class="step"><b>2.</b> Controlla la <span class="ui">Dashboard</span>: fascicoli, scadenze aperte, comunicazioni, attività recenti e prossime scadenze.</div>
+<div class="step"><b>3.</b> Controlla <span class="ui">🔔 Notifiche</span> e apri quelle che richiedono un'azione.</div>
+<div class="result"><strong>Risultato:</strong> sai quali attività sono nuove, quali scadenze sono imminenti e quali richieste richiedono una presa in carico.</div>
+
+<h3>09:00 — Arriva una nuova richiesta cliente</h3>
+<div class="step"><b>1.</b> Apri <span class="ui">Clienti → Pratiche ricevute</span> quando la richiesta proviene dal Portale Clienti.</div>
+<div class="step"><b>2.</b> Apri la richiesta e leggi <strong>identità del richiedente, descrizione del problema e documenti allegati</strong>.</div>
+<div class="step"><b>3.</b> Apri gli allegati disponibili e controlla che siano leggibili e pertinenti.</div>
+<div class="step"><b>4.</b> Non confondere la <strong>ricezione</strong> della richiesta con l'<strong>accettazione dell'incarico</strong>: la prima registra ciò che è arrivato allo Studio; la seconda è una decisione professionale.</div>
+
+<h3>09:15 — Verifica anagrafica e conflitto di interessi</h3>
+<div class="step"><b>1.</b> Vai in <span class="ui">Clienti → Anagrafica Clienti</span> e verifica che il cliente sia correttamente identificato.</div>
+<div class="step"><b>2.</b> Se il cliente non esiste ancora, crea la scheda con i dati richiesti dalla schermata.</div>
+<div class="step"><b>3.</b> Vai in <span class="ui">Gestione pratiche e attività → Conflict Check</span>.</div>
+<div class="step"><b>4.</b> Inserisci il nome della controparte e, quando disponibile, il <strong>Codice Fiscale / P.IVA</strong>.</div>
+<div class="step"><b>5.</b> Premi <span class="ui">Esegui Verifica Incrociata 🔍</span>.</div>
+<div class="step"><b>6.</b> Esamina gli eventuali risultati e apri la pratica di origine quando disponibile.</div>
+<div class="warning"><strong>Regola professionale:</strong> il risultato del Conflict Check è un elemento di verifica. Non è il gestionale a decidere automaticamente se esiste un conflitto: la decisione resta al professionista.</div>
+
+<h3>09:30 — Decisione dello Studio</h3>
+<p>Il professionista decide se procedere con la richiesta. Se non si procede, la gestione si ferma secondo le procedure dello Studio. Se si procede, si passa all'onboarding del cliente e alla costruzione del fascicolo.</p>
+
+<h3>10:00 — Onboarding e privacy</h3>
+<div class="step"><b>1.</b> Apri la scheda del cliente in <span class="ui">Anagrafica Clienti</span>.</div>
+<div class="step"><b>2.</b> Controlla in <span class="ui">Gestione Privacy</span> che esista un'informativa <strong>attiva e vigente</strong>.</div>
+<div class="step"><b>3.</b> Usa <span class="ui">Prepara informativa per il cliente</span>, seleziona il cliente e premi <span class="ui">Prepara documento</span>.</div>
+<div class="step"><b>4.</b> Controlla il PDF generato. Il cliente non lo vede ancora in questa fase.</div>
+<div class="step"><b>5.</b> Solo dopo il controllo usa <span class="ui">Approva e invia al cliente</span>.</div>
+<div class="step"><b>6.</b> L'informativa viene inviata nel <strong>Portale Cliente</strong>; non viene eseguito automaticamente un invio PEC.</div>
+<div class="result"><strong>Risultato:</strong> il documento privacy è stato preparato, verificato e, dopo l'approvazione dello Studio, reso disponibile al cliente nel canale previsto.</div>
+
+<h3>10:30 — Documenti e apertura del fascicolo</h3>
+<div class="step"><b>1.</b> Torna in <span class="ui">Anagrafica Clienti</span> e apri il cliente.</div>
+<div class="step"><b>2.</b> Se necessario usa <span class="ui">Nuova pratica</span> e compila <strong>Area legale, Controparte e Descrizione / oggetto</strong>.</div>
+<div class="step"><b>3.</b> Premi <span class="ui">Crea fascicolo</span> e verifica il messaggio di conferma.</div>
+<div class="step"><b>4.</b> Quando il cliente restituisce documenti dal portale, esaminali e usa <span class="ui">Convalida</span> solo dopo il controllo professionale.</div>
+<div class="result"><strong>Risultato:</strong> il fascicolo diventa il contenitore centrale della pratica e collega cliente, controparte, documenti e attività.</div>
+
+<h3>11:00 — Lavorazione del fascicolo</h3>
+<div class="step"><b>1.</b> Apri <span class="ui">Gestione pratiche e attività → Fascicoli &amp; Contenzioso</span>.</div>
+<div class="step"><b>2.</b> Apri il fascicolo interessato e controlla stato, descrizione, documenti e attività.</div>
+<div class="step"><b>3.</b> Se devi cercare informazioni già presenti nello Studio, usa <span class="ui">Ricerca interna</span>.</div>
+<div class="step"><b>4.</b> Se devi registrare tempo lavorato, usa <span class="ui">Time Tracker → Avvia sessione</span> e, al termine, <span class="ui">Ferma</span>.</div>
+
+<h3>11:30 — Agenda e scadenze</h3>
+<div class="step"><b>1.</b> Apri <span class="ui">Agenda &amp; Scadenze</span>, la cui schermata è <span class="ui">📅 Agenda Legale &amp; Scadenze</span>.</div>
+<div class="step"><b>2.</b> Premi <span class="ui">➕ Nuovo evento</span>.</div>
+<div class="step"><b>3.</b> Inserisci <strong>Titolo, Cliente/Fascicolo, Tipo, Data e ora e Priorità</strong> secondo le esigenze dell'evento.</div>
+<div class="step"><b>4.</b> Se si tratta di un'udienza, completa i dati aggiuntivi richiesti dalla schermata, come tribunale, sezione, giudice, R.G., aula e indirizzo.</div>
+<div class="step"><b>5.</b> Usa la visibilità al cliente solo quando l'informazione è stata verificata ed è effettivamente destinata al portale.</div>
+<div class="step"><b>6.</b> Premi <span class="ui">Salva evento</span>.</div>
+
+<h3>12:00 — Comunicazioni</h3>
+<div class="step"><b>1.</b> Se devi predisporre una comunicazione, usa <span class="ui">Intelligenza Artificiale → Lettere &amp; Comunicazioni AI</span>.</div>
+<div class="step"><b>2.</b> Seleziona il fascicolo, il tipo di comunicazione, il destinatario quando necessario, l'oggetto e inserisci le <strong>Istruzioni dell'avvocato</strong>.</div>
+<div class="step"><b>3.</b> Premi <span class="ui">Genera comunicazione con AI 🚀</span>.</div>
+<div class="step"><b>4.</b> Leggi e correggi la bozza. L'AI non sostituisce il controllo professionale.</div>
+<div class="step"><b>5.</b> Se la comunicazione deve essere semplicemente registrata, usa <span class="ui">Registro Comunicazioni</span>. La registrazione non equivale a un invio PEC.</div>
+
+<h3>14:30 — Redazione di un atto o analisi AI</h3>
+<div class="step"><b>1.</b> Per una bozza di atto apri <span class="ui">Redazione Atti AI</span>, indica il fascicolo quando previsto e inserisci istruzioni precise.</div>
+<div class="step"><b>2.</b> Premi <span class="ui">Genera Bozza con IA 🚀</span> quando disponibile.</div>
+<div class="step"><b>3.</b> Leggi l'intero testo generato, confrontalo con il fascicolo e correggi ogni dato necessario.</div>
+<div class="step"><b>4.</b> Per le funzioni di prova usa <span class="ui">Lexroom LAB</span>, compresi <span class="ui">Analisi LAB</span>, <span class="ui">Bozza LAB</span>, <span class="ui">Approva bozza</span> e le funzioni AI gratuite disponibili.</div>
+<div class="warning">Una bozza AI non è un atto definitivo e non equivale a firma digitale, deposito PCT o invio PEC.</div>
+
+<h3>15:30 — Eventuale deposito PCT</h3>
+<p>Quando la pratica richiede un deposito, il lavoro passa nel <span class="ui">Registro Depositi PCT</span>. L'ordine operativo è:</p>
+<ol>
+<li>selezionare/creare il <strong>procedimento</strong>;</li>
+<li>creare il <strong>Nuovo deposito</strong>;</li>
+<li>compilare <strong>Tipo atto, Oggetto, Ufficio destinatario e Note operative</strong>;</li>
+<li>collegare gli <strong>allegati</strong> dal fascicolo;</li>
+<li>eseguire <span class="ui">Verifica</span> e correggere gli errori prima di proseguire;</li>
+<li>gestire la <strong>firma</strong> dei documenti con il metodo effettivamente configurato;</li>
+<li>verificare lo stato della firma;</li>
+<li>generare e validare la <strong>busta</strong>;</li>
+<li>portare il deposito allo stato <strong>Pronto per invio</strong> dopo la conferma professionale richiesta;</li>
+<li>eseguire o registrare l'<strong>INVIO</strong> solo quando esiste una trasmissione reale attraverso il canale configurato;</li>
+<li>acquisire <strong>ricevute, esiti e documenti recuperati</strong>;</li>
+<li>chiudere il deposito con l'esito reale.</li>
+</ol>
+<div class="warning"><strong>Importante:</strong> il gestionale non deve dichiarare inviato un deposito solo perché è stato preparato. Se il collegamento esterno non è attivo, la trasmissione deve essere eseguita con il canale reale previsto dallo Studio e poi registrata nel gestionale.</div>
+
+<h3>16:30 — Controllo finale della giornata</h3>
+<div class="step"><b>1.</b> Controlla <span class="ui">Agenda &amp; Scadenze</span> per verificare che nessun termine o udienza sia rimasto senza registrazione.</div>
+<div class="step"><b>2.</b> Controlla i depositi PCT in corso e assicurati che ogni deposito abbia lo stato coerente con ciò che è realmente avvenuto.</div>
+<div class="step"><b>3.</b> Controlla <span class="ui">Registro Comunicazioni</span> e la documentazione prodotta durante la giornata.</div>
+<div class="step"><b>4.</b> Controlla <span class="ui">Fatturazione</span> se è necessario registrare una bozza.</div>
+<div class="step"><b>5.</b> Apri <span class="ui">Archivio &amp; Audit</span> e verifica gli eventi che devono risultare tracciati.</div>
+<div class="result"><strong>Fine giornata corretta:</strong> ogni attività importante è collegata al fascicolo corretto, le scadenze sono registrate, i documenti sono verificati, le comunicazioni sono tracciate, gli eventuali depositi riportano lo stato reale e l'audit consente di ricostruire le operazioni eseguite.</div>
+
+<h3>Che cosa la demo NON deve mai far credere</h3>
+<ul>
+<li>che una richiesta ricevuta sia automaticamente un incarico accettato;</li>
+<li>che il Conflict Check produca da solo una decisione professionale;</li>
+<li>che una bozza AI sia automaticamente un atto definitivo;</li>
+<li>che una firma venga eseguita solo perché è stato rilevato un dispositivo USB/HID;</li>
+<li>che una registrazione nel Registro Comunicazioni sia un invio PEC;</li>
+<li>che la preparazione di un deposito PCT equivalga alla trasmissione;</li>
+<li>che il gestionale riceva ricevute ministeriali se il canale esterno non è realmente collegato;</li>
+<li>che la fatturazione in bozza equivalga a un'emissione SDI reale.</li>
+</ul>
+
+<div class="result"><strong>La giornata tipo, quindi, non è una sequenza dimostrativa generica:</strong> è il percorso operativo completo che collega le funzioni dell'Area Studio, mantenendo sempre separati <strong>preparazione, verifica, approvazione professionale, invio reale e registrazione dell'esito</strong>.</div>
 </section>
 
 <section id="team"><h2>4. Professionisti &amp; Team</h2>
