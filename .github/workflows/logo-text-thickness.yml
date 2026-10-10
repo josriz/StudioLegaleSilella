@@ -1,0 +1,95 @@
+name: Logo Studio Silella - ispessimento caratteri (solo test)
+
+on:
+  push:
+    paths:
+      - "DO_THICKEN_LOGO"
+      - ".github/workflows/logo-text-thickness.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  create-test:
+    if: hashFiles('DO_THICKEN_LOGO') != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install image tools
+        run: python -m pip install --upgrade opencv-python-headless numpy
+      - name: Create candidate without touching online logo
+        shell: python
+        run: |
+          from pathlib import Path
+          import cv2
+          import numpy as np
+
+          src = Path("Logo_Studio_Silella.jpg")
+          out = Path("Logo_Studio_Silella_caratteri-test.jpg")
+          img = cv2.imread(str(src), cv2.IMREAD_COLOR)
+          if img is None:
+              raise SystemExit("Original logo non leggibile: nessuna modifica.")
+          h, w = img.shape[:2]
+
+          # Area strettamente limitata alla scritta centrale; bilancia,
+          # pannello e decorazioni esterne restano identici.
+          x1, x2 = int(w * 0.26), int(w * 0.82)
+          y1, y2 = int(h * 0.42), int(h * 0.65)
+          roi = img[y1:y2, x1:x2].copy()
+          hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+          lab = cv2.cvtColor(roi, cv2.COLOR_BGR2LAB)
+          L = lab[:, :, 0]
+          S = hsv[:, :, 1]
+          V = hsv[:, :, 2]
+
+          # Maschera conservativa per i tratti chiari e poco saturi delle
+          # lettere avorio/oro; evita toni scuri dello sfondo.
+          mask = ((L >= 145) & (V >= 150) & (S <= 115)).astype(np.uint8) * 255
+          n, labels, stats, _ = cv2.connectedComponentsWithStats(mask, 8)
+          clean = np.zeros_like(mask)
+          for i in range(1, n):
+              area = stats[i, cv2.CC_STAT_AREA]
+              bw = stats[i, cv2.CC_STAT_WIDTH]
+              bh = stats[i, cv2.CC_STAT_HEIGHT]
+              if area >= 3 and bw >= 1 and bh >= 3:
+                  clean[labels == i] = 255
+
+          # Elimina i bordi verticali/orizzontali sottili del pannello,
+          # mantenendo solo la fascia in cui si trova la scritta.
+          clean[:int(clean.shape[0] * 0.10), :] = 0
+          clean[int(clean.shape[0] * 0.92):, :] = 0
+          if cv2.countNonZero(clean) < 1000:
+              raise SystemExit("Maschera testo insufficiente: stop, originale intatto.")
+
+          # Ispessimento minimo (un solo pixel) con colore originale dei
+          # caratteri propagato sui nuovi pixel. Non ridimensiona l'immagine.
+          expanded = cv2.dilate(clean, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)), iterations=1)
+          added = (expanded > 0) & (clean == 0)
+          dist_input = np.where(clean > 0, 0, 255).astype(np.uint8)
+          _, nearest = cv2.distanceTransformWithLabels(dist_input, cv2.DIST_L2, 5, labelType=cv2.DIST_LABEL_PIXEL)
+          # Mappa etichette dei pixel sorgente per riutilizzare i colori
+          # effettivi del testo senza introdurre un nuovo colore.
+          source_labels = nearest[clean > 0]
+          source_pixels = roi[clean > 0]
+          unique_labels, first_idx = np.unique(source_labels, return_index=True)
+          label_to_color = {int(k): source_pixels[j] for k, j in zip(unique_labels, first_idx)}
+          ys, xs = np.where(added)
+          for yy, xx in zip(ys, xs):
+              k = int(nearest[yy, xx])
+              color = label_to_color.get(k)
+              if color is not None:
+                  roi[yy, xx] = color
+
+          result = img.copy()
+          result[y1:y2, x1:x2] = roi
+          if not cv2.imwrite(str(out), result, [cv2.IMWRITE_JPEG_QUALITY, 98]):
+              raise SystemExit("Impossibile salvare il test.")
+          print(f"Creato {out.name}, dimensioni invariate {w}x{h}; originale non modificato.")
+      - name: Commit only the test image and remove trigger
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f DO_THICKEN_LOGO
+          git add Logo_Studio_Silella_caratteri-test.jpg DO_THICKEN_LOGO
+          git commit -m "Crea test logo con caratteri leggermente più spessi"
+          git push
