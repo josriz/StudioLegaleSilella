@@ -1,4 +1,4 @@
-name: Logo Studio Silella - ispessimento caratteri (solo test)
+name: Logo Studio Silella - ispessimento caratteri
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install image tools
         run: python -m pip install --upgrade opencv-python-headless numpy
-      - name: Create candidate without touching online logo
+      - name: Create stronger version from preserved original
         shell: python
         run: |
           from pathlib import Path
@@ -28,8 +28,8 @@ jobs:
               print("Nessun trigger: nessuna modifica.")
               raise SystemExit(0)
 
-          src = Path("Logo_Studio_Silella.jpg")
-          out = Path("Logo_Studio_Silella_caratteri-test.jpg")
+          src = Path("loghi_sfondi/Logo_Studio_Silella.jpg")
+          out = Path("Logo_Studio_Silella.jpg")
           img = cv2.imread(str(src), cv2.IMREAD_COLOR)
           if img is None:
               raise SystemExit("Original logo non leggibile: nessuna modifica.")
@@ -63,9 +63,9 @@ jobs:
           if cv2.countNonZero(clean) < 1000:
               raise SystemExit("Maschera testo insufficiente: stop, originale intatto.")
 
-          # Ispessimento minimo (un solo pixel) con colore originale dei
+          # Ispessimento marcato (circa tre pixel) con colore originale dei
           # caratteri propagato sui nuovi pixel. Nessun ridimensionamento.
-          expanded = cv2.dilate(clean, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)), iterations=1)
+          expanded = cv2.dilate(clean, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)), iterations=3)
           added = (expanded > 0) & (clean == 0)
           # Per ogni nuovo pixel usa il colore del pixel di testo più vicino.
           _, nearest = cv2.distanceTransformWithLabels(
@@ -88,15 +88,15 @@ jobs:
           if not cv2.imwrite(str(out), result, [cv2.IMWRITE_JPEG_QUALITY, 98]):
               raise SystemExit("Impossibile salvare il test.")
           print(f"Creato {out.name}, dimensioni invariate {w}x{h}; originale non modificato.")
-      - name: Commit only the test image and remove trigger
+      - name: Commit updated logo and remove trigger
         run: |
-          if [ ! -f Logo_Studio_Silella_caratteri-test.jpg ]; then
+          if [ ! -f Logo_Studio_Silella.jpg ]; then
             echo "Test non generato: nessun commit."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           rm -f DO_THICKEN_LOGO
-          git add Logo_Studio_Silella_caratteri-test.jpg DO_THICKEN_LOGO
-          git commit -m "Crea test logo con caratteri leggermente più spessi"
+          git add Logo_Studio_Silella.jpg DO_THICKEN_LOGO
+          git commit -m "Rende ben più marcati i caratteri del logo"
           git push
