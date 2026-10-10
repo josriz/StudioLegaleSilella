@@ -11,7 +11,6 @@ permissions:
 
 jobs:
   create-test:
-    if: hashFiles('DO_THICKEN_LOGO') != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,6 +22,11 @@ jobs:
           from pathlib import Path
           import cv2
           import numpy as np
+
+          marker = Path("DO_THICKEN_LOGO")
+          if not marker.exists():
+              print("Nessun trigger: nessuna modifica.")
+              raise SystemExit(0)
 
           src = Path("Logo_Studio_Silella.jpg")
           out = Path("Logo_Studio_Silella_caratteri-test.jpg")
@@ -54,29 +58,28 @@ jobs:
               if area >= 3 and bw >= 1 and bh >= 3:
                   clean[labels == i] = 255
 
-          # Elimina i bordi verticali/orizzontali sottili del pannello,
-          # mantenendo solo la fascia in cui si trova la scritta.
           clean[:int(clean.shape[0] * 0.10), :] = 0
           clean[int(clean.shape[0] * 0.92):, :] = 0
           if cv2.countNonZero(clean) < 1000:
               raise SystemExit("Maschera testo insufficiente: stop, originale intatto.")
 
           # Ispessimento minimo (un solo pixel) con colore originale dei
-          # caratteri propagato sui nuovi pixel. Non ridimensiona l'immagine.
+          # caratteri propagato sui nuovi pixel. Nessun ridimensionamento.
           expanded = cv2.dilate(clean, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)), iterations=1)
           added = (expanded > 0) & (clean == 0)
-          dist_input = np.where(clean > 0, 0, 255).astype(np.uint8)
-          _, nearest = cv2.distanceTransformWithLabels(dist_input, cv2.DIST_L2, 5, labelType=cv2.DIST_LABEL_PIXEL)
-          # Mappa etichette dei pixel sorgente per riutilizzare i colori
-          # effettivi del testo senza introdurre un nuovo colore.
-          source_labels = nearest[clean > 0]
-          source_pixels = roi[clean > 0]
-          unique_labels, first_idx = np.unique(source_labels, return_index=True)
-          label_to_color = {int(k): source_pixels[j] for k, j in zip(unique_labels, first_idx)}
+          # Per ogni nuovo pixel usa il colore del pixel di testo più vicino.
+          _, nearest = cv2.distanceTransformWithLabels(
+              np.where(clean > 0, 255, 0).astype(np.uint8),
+              cv2.DIST_L2, 5, labelType=cv2.DIST_LABEL_PIXEL
+          )
+          ys0, xs0 = np.where(clean > 0)
+          source_labels = nearest[ys0, xs0]
+          label_to_color = {}
+          for yy, xx, labid in zip(ys0, xs0, source_labels):
+              label_to_color.setdefault(int(labid), roi[yy, xx].copy())
           ys, xs = np.where(added)
           for yy, xx in zip(ys, xs):
-              k = int(nearest[yy, xx])
-              color = label_to_color.get(k)
+              color = label_to_color.get(int(nearest[yy, xx]))
               if color is not None:
                   roi[yy, xx] = color
 
@@ -87,6 +90,10 @@ jobs:
           print(f"Creato {out.name}, dimensioni invariate {w}x{h}; originale non modificato.")
       - name: Commit only the test image and remove trigger
         run: |
+          if [ ! -f Logo_Studio_Silella_caratteri-test.jpg ]; then
+            echo "Test non generato: nessun commit."
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           rm -f DO_THICKEN_LOGO
