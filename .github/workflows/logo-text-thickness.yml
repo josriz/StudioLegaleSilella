@@ -15,13 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install image tools
-        run: python -m pip install --upgrade opencv-python-headless numpy
-      - name: Create stronger version from preserved original
+        run: python -m pip install --upgrade opencv-python-headless numpy scipy
+      - name: Create visibly bolder version from preserved original
         shell: python
         run: |
           from pathlib import Path
           import cv2
           import numpy as np
+          from scipy.ndimage import distance_transform_edt
 
           marker = Path("DO_THICKEN_LOGO")
           if not marker.exists():
@@ -35,20 +36,17 @@ jobs:
               raise SystemExit("Original logo non leggibile: nessuna modifica.")
           h, w = img.shape[:2]
 
-          # Area strettamente limitata alla scritta centrale; bilancia,
-          # pannello e decorazioni esterne restano identici.
+          # Intervento limitato alla zona della scritta centrale.
           x1, x2 = int(w * 0.26), int(w * 0.82)
           y1, y2 = int(h * 0.42), int(h * 0.65)
           roi = img[y1:y2, x1:x2].copy()
           hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
           lab = cv2.cvtColor(roi, cv2.COLOR_BGR2LAB)
-          L = lab[:, :, 0]
-          S = hsv[:, :, 1]
-          V = hsv[:, :, 2]
+          L, S, V = lab[:, :, 0], hsv[:, :, 1], hsv[:, :, 2]
 
-          # Maschera conservativa per i tratti chiari e poco saturi delle
-          # lettere avorio/oro; evita toni scuri dello sfondo.
-          mask = ((L >= 145) & (V >= 150) & (S <= 115)).astype(np.uint8) * 255
+          # Seleziona tratti chiari/avorio e oro chiaro delle lettere.
+          # La maschera viene limitata verticalmente per non toccare cornici.
+          mask = ((L >= 135) & (V >= 145) & (S <= 145)).astype(np.uint8) * 255
           n, labels, stats, _ = cv2.connectedComponentsWithStats(mask, 8)
           clean = np.zeros_like(mask)
           for i in range(1, n):
@@ -57,46 +55,46 @@ jobs:
               bh = stats[i, cv2.CC_STAT_HEIGHT]
               if area >= 3 and bw >= 1 and bh >= 3:
                   clean[labels == i] = 255
+          clean[:int(clean.shape[0] * 0.08), :] = 0
+          clean[int(clean.shape[0] * 0.94):, :] = 0
+          count = cv2.countNonZero(clean)
+          if count < 500:
+              raise SystemExit(f"Maschera testo insufficiente ({count} pixel): originale intatto.")
 
-          clean[:int(clean.shape[0] * 0.10), :] = 0
-          clean[int(clean.shape[0] * 0.92):, :] = 0
-          if cv2.countNonZero(clean) < 1000:
-              raise SystemExit("Maschera testo insufficiente: stop, originale intatto.")
-
-          # Ispessimento marcato (circa tre pixel) con colore originale dei
-          # caratteri propagato sui nuovi pixel. Nessun ridimensionamento.
-          expanded = cv2.dilate(clean, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)), iterations=3)
+          # Ispessimento più evidente: espansione fino a circa 5 pixel.
+          kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+          expanded = cv2.dilate(clean, kernel, iterations=5)
           added = (expanded > 0) & (clean == 0)
-          # Per ogni nuovo pixel usa il colore del pixel di testo più vicino.
-          _, nearest = cv2.distanceTransformWithLabels(
-              np.where(clean > 0, 255, 0).astype(np.uint8),
-              cv2.DIST_L2, 5, labelType=cv2.DIST_LABEL_PIXEL
-          )
-          ys0, xs0 = np.where(clean > 0)
-          source_labels = nearest[ys0, xs0]
-          label_to_color = {}
-          for yy, xx, labid in zip(ys0, xs0, source_labels):
-              label_to_color.setdefault(int(labid), roi[yy, xx].copy())
-          ys, xs = np.where(added)
-          for yy, xx in zip(ys, xs):
-              color = label_to_color.get(int(nearest[yy, xx]))
-              if color is not None:
-                  roi[yy, xx] = color
+
+          # Ogni pixel aggiunto eredita il colore del tratto originale più vicino.
+          inside = clean > 0
+          _, nearest_indices = distance_transform_edt(~inside, return_indices=True)
+          nearest_y, nearest_x = nearest_indices[0], nearest_indices[1]
+          roi[added] = roi[nearest_y[added], nearest_x[added]]
 
           result = img.copy()
           result[y1:y2, x1:x2] = roi
           if not cv2.imwrite(str(out), result, [cv2.IMWRITE_JPEG_QUALITY, 98]):
-              raise SystemExit("Impossibile salvare il test.")
-          print(f"Creato {out.name}, dimensioni invariate {w}x{h}; originale non modificato.")
+              raise SystemExit("Impossibile salvare il logo ispessito.")
+          reread = cv2.imread(str(out), cv2.IMREAD_COLOR)
+          if reread is None or reread.shape != img.shape or np.array_equal(reread, img):
+              raise SystemExit("Verifica fallita: il file non risulta modificato.")
+          changed = int(np.count_nonzero(np.any(reread != img, axis=2)))
+          print(f"VERIFICA OK: {out.name}; dimensioni invariate {w}x{h}; pixel diversi dall'originale: {changed}; area modificata solo nella zona della scritta.")
+
       - name: Commit updated logo and remove trigger
         run: |
           if [ ! -f Logo_Studio_Silella.jpg ]; then
             echo "Test non generato: nessun commit."
-            exit 0
+            exit 1
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           rm -f DO_THICKEN_LOGO
           git add Logo_Studio_Silella.jpg DO_THICKEN_LOGO
-          git commit -m "Rende ben più marcati i caratteri del logo"
+          if git diff --cached --quiet; then
+            echo "Nessuna modifica rilevata: stop."
+            exit 1
+          fi
+          git commit -m "Ispessisce visibilmente i caratteri del logo"
           git push
