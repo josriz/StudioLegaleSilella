@@ -34,7 +34,7 @@ button,input,select,textarea{font:inherit}.container{width:min(1160px,calc(100% 
 /* Logo mobile: stessa logica del desktop, larghezza piena e proporzioni originali; rimosso il livello duplicato usato per lo stretching */
 @media(max-width:600px){.heroIdentity{background-color:transparent}.heroIdentity img{width:100%;max-width:100%;height:auto;margin-left:0;transform:none;object-fit:contain;object-position:center}.heroIdentity img.logo-left-stretch{display:none}}
 /* Solo smartphone: aumenta l'altezza visiva del logo mantenendolo largo quanto il contenitore */
-@media(max-width:600px){.heroIdentity img:not(.logo-left-stretch){width:110%;max-width:none;height:180px;max-height:none;margin-left:-5%;transform:none;object-fit:fill;object-position:center}.heroIdentity{height:140px;min-height:140px}.heroIdentity img.logo-left-stretch{display:none}}
+@media(max-width:600px){.heroIdentity img:not(.logo-left-stretch){width:110%;max-width:none;height:180px;max-height:none;margin-left:-5%;transform:translateX(8px);object-fit:fill;object-position:center}.heroIdentity{height:140px;min-height:140px}.heroIdentity img.logo-left-stretch{display:none}}
 </style>
 </head>
 <body>
